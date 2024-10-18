@@ -203,6 +203,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string Directory;
 
+        private Dictionary<StaticMover, Vector2> StaticMoversPositions = new();
+
         public CustomBounceBlock(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, safe: false)
         {
             Directory = data.Attr("directory", "objects/bumpblocknew");
@@ -227,6 +229,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
             coldCenterSprite.Visible = false;
             Add(coldCenterSprite);
             Add(new CoreModeListener(OnChangeMode));
+        }
+
+        public override void Awake(Scene scene)
+        {
+            base.Awake(scene);
+            foreach (StaticMover staticMover in staticMovers)
+            {
+                StaticMoversPositions.Add(staticMover, staticMover.Entity.Position);
+            }
         }
 
         private List<Image> BuildSprite(MTexture source)
@@ -484,7 +495,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Depth = -9000;
             foreach (StaticMover staticMover in staticMovers)
             {
-                staticMover.Move(Position - staticMover.Entity.Position);
+                staticMover.Entity.Position = StaticMoversPositions[staticMover];
             }
             EnableStaticMovers();
             Collidable = true;
