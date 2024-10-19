@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
@@ -423,7 +422,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 moveSpeed = Calc.Approach(moveSpeed, 140f, 800f * Engine.DeltaTime);
                 Vector2 vector4 = startPos + bounceDir * 24f;
                 Vector2 vector5 = Calc.Approach(ExactPosition, vector4, moveSpeed * Engine.DeltaTime);
-                bounceLift = (vector5 - ExactPosition).SafeNormalize(Math.Min(moveSpeed * 3f, 200f));
+                bounceLift = (vector5 - ExactPosition).SafeNormalize(Math.Min(moveSpeed * 3f, 200f * bounceStrengthMultiplier));
                 bounceLift.X *= 0.75f;
                 MoveTo(vector5, bounceLift * bounceStrengthMultiplier);
                 windUpProgress = 1f;
@@ -519,7 +518,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Player WindUpPlayerCheck()
         {
-            Player player = CollideFirst<Player>(Position - Vector2.UnitY);
+            Player player = GetPlayerOnTop();
             if (player != null && player.Speed.Y < 0f)
             {
                 player = null;
