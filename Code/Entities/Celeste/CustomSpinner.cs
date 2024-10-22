@@ -400,17 +400,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (type == "mines")
                 {
                     color = Calc.HexToColor("5B3311");
-                }
-                if (type != "magma")
-                {
                     CrystalDebris.Burst(Position, color, boss, 8);
                 }
-                else
+                if (type == "magma")
                 {
                     color = Calc.HexToColor("792E00");
                     CrystalDebris.Burst(Position, color, boss, 4);
                     color = Calc.HexToColor("F0900F");
                     CrystalDebris.Burst(Position, color, boss, 4);
+                }
+                else
+                {
+                    CrystalDebris.Burst(Position, color, boss, 8);
                 }
             }
             foreach (Entity entity in Scene.Tracker.GetEntities<Filler>())

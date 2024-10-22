@@ -804,7 +804,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             CustomSpinner spinner = CollideFirst<CustomSpinner>();
             if (spinner != null)
             {
-                spinner.Hide();
+                spinner.Destroy();
             }
         }
 
