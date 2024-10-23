@@ -375,7 +375,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void HitByMissile(Missile missile)
         {
-            missile.CollideImmune(missile.Direction, missile.Center.X < Center.X ? -30f : 30f);
+            if (type == "magma")
+            {
+                missile.CollideSolid(missile.Direction);
+                Destroy();
+            }
+            else
+            {
+                missile.CollideImmune(missile.Direction, missile.Center.X < Center.X ? -30f : 30f);
+            }
         }
 
         public override void Removed(Scene scene)
