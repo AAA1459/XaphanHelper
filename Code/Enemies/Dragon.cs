@@ -97,7 +97,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
         {
             initialDelay = data.Float("initialDelay");
             Collider = new Hitbox(13f, 34f, 3f, 3f);
-            Health = 20;
+            Health = 300;
             Damage = 20;
             pc.Collider = new Hitbox(13f, 34f, 3f, 3f);
             bc.Collider = new Hitbox(13f, 34f, 3f, 3f);
