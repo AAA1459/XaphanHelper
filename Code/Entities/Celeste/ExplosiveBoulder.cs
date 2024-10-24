@@ -61,6 +61,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             Add(new PlayerCollider(onPlayer, Collider));
             Add(new SpringCollider(onSpring, Collider));
+            Add(new WeaponCollider(HitByBeam, HitByMissile, Collider));
             Add(Sprite = new Sprite(GFX.Game, Directory + "/"));
             Sprite.AddLoop("idleA", "boulder", 0.12f, 0, 1, 2, 3, 4, 3, 2, 1);
             Sprite.AddLoop("idleB", "boulder", 0.12f, 5, 6, 7, 8, 9, 8, 7, 6);
@@ -209,6 +210,43 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     Spring_BounceAnimate.Invoke(spring, null);
                     Push(new Vector2(200, -290), -Vector2.UnitX);
+                }
+            }
+        }
+
+        private void HitByBeam(Beam beam)
+        {
+            beam.CollideImmune(beam.Direction);
+        }
+
+        private void HitByMissile(Missile missile)
+        {
+            if (!explode)
+            {
+                Gravity = true;
+                missile.CollideSolid(missile.Direction);
+                if (missile.SuperMissile)
+                {
+                    Explode();
+                }
+                else
+                {
+                    foreach (Entity entity in Scene.Tracker.GetEntities<CustomSpinner.Filler>())
+                    {
+                        CustomSpinner.Filler filler = (CustomSpinner.Filler)entity;
+                        if (CollideCheck(filler))
+                        {
+                            filler.RemoveSelf();
+                        }
+                    }
+                    if (missile.Direction.Y == 0)
+                    {
+                        Push(new Vector2(200, -100), missile.Direction);
+                    }
+                    else
+                    {
+                        Push(new Vector2(100, -235), Speed.X < 0 ? -Vector2.UnitX : (Speed.X > 0 ? Vector2.UnitX : Vector2.Zero));
+                    }
                 }
             }
         }
