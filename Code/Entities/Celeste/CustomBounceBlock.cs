@@ -8,6 +8,7 @@ using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
+    [Tracked(true)]
     [CustomEntity("XaphanHelper/CustomBounceBlock")]
     public class CustomBounceBlock : Solid
     {
@@ -475,6 +476,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        public void Bounce(Vector2 direction, bool respawn)
+        {
+            bounceDir = direction;
+            state = States.Bouncing;
+            if (!respawn)
+            {
+                Break(false);
+            }
+        }
+
         public IEnumerator EndRespawnTimer(Vector2 position)
         {
             while (respawnTimer > 0f)
@@ -549,7 +560,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
-        private void Break()
+        private void Break(bool respawn = true)
         {
             if (!iceMode)
             {
@@ -588,7 +599,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     level.Particles.Emit(iceMode ? BounceBlock.P_IceBreak : BounceBlock.P_FireBreak, vector, direction2);
                 }
             }
-            outlineFader.Replace(OutlineFade(1f));
+            if (!respawn)
+            {
+                RemoveSelf();
+            }
+            else
+            {
+                outlineFader.Replace(OutlineFade(1f));
+            }
         }
 
         private IEnumerator OutlineFade(float to)

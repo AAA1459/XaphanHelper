@@ -420,6 +420,23 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
+            foreach (BreakBlock breackBlock in Scene.Tracker.GetEntities<BreakBlock>())
+            {
+                if (breackBlock.type == "Missile" || (breackBlock.type == "SuperMissile" && SuperMissile))
+                {
+                    if (CollideCheck(breackBlock, Position + dir))
+                    {
+                        breackBlock.Break();
+                    }
+                }
+            }
+            foreach (CustomBounceBlock bounceBlock in Scene.Tracker.GetEntities<CustomBounceBlock>())
+            {
+                if (CollideCheck(bounceBlock, Position + dir))
+                {
+                    bounceBlock.Bounce(Direction, !SuperMissile);
+                }
+            }
             if (XaphanModule.useMetroidGameplay)
             {
                 foreach (BubbleDoor bubbleDoor in Scene.Tracker.GetEntities<BubbleDoor>())
@@ -448,16 +465,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         {
                             destructibleBlock.Reveal();
                         }
-                    }
-                }
-            }
-            foreach (BreakBlock breackBlock in Scene.Tracker.GetEntities<BreakBlock>())
-            {
-                if (breackBlock.type == "Missile" || (breackBlock.type == "SuperMissile" && SuperMissile))
-                {
-                    if (CollideCheck(breackBlock, Position + dir))
-                    {
-                        breackBlock.Break();
                     }
                 }
             }
