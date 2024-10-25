@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
+using System.IO;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -99,8 +99,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Coroutine breakRoutine = new();
 
+        private string directory;
+
         public BubbleBlock(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, safe: false)
         {
+            directory = data.Attr("directory", "objects/XaphanHelper/BubbleBlock");
             columns = data.Width / 8;
             lines = data.Height / 8;
             anchor = Position;
@@ -112,7 +115,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
-            MTexture mTexture = GFX.Game["objects/XaphanHelper/BubbleBlock/bubbles"];
+            MTexture mTexture = GFX.Game[directory + "/bubbles"];
             int textureColumns = mTexture.Width / 8;
             int textureLines = mTexture.Height / 8;
             for (int i = 0; i < columns; i++)
