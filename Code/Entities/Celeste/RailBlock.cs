@@ -149,7 +149,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             if (component.GetType() == typeof(StaticMover))
                             {
                                 StaticMover staticMover = (StaticMover)component;
-                                staticMover.Entity.Position.Y -= staticMover.Entity.Center.Y > Center.Y ? (staticMover.Entity.GetType() == typeof(MagneticCeiling) ? 2f : 1f) : -1f;
+                                staticMover.Entity.Position.Y -= staticMover.Entity.Center.Y > Center.Y ? 1f : -1f;
                                 staticMover.Entity.Depth = Depth + 1;
                                 staticMovers.Add(staticMover);
                             }
@@ -188,7 +188,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                     else
                     {
-                        if (speed <= 0 && !rewind && !WaitingRoutine.Active)
+                        if (!rewind && !WaitingRoutine.Active)
                         {
                             speed = 0;
                             Add(WaitingRoutine = new Coroutine(Waiting()));
@@ -204,13 +204,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                 speed = 75f * speedMult / lengths[lengths.Length - 1];
                             }
                         }
-                    }
-                }
-                else if (noReturn)
-                {
-                    if (speed <= 0)
-                    {
-                        speed = 0;
                     }
                 }
                 yield return null;
@@ -295,11 +288,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     
                     if (nodes[previousNode].Y < GetPercentPosition(percent).Y)
                     {
-                        this.direction = 1;
+                        this.direction = -1;
                     }
                     else if (nodes[previousNode].Y > GetPercentPosition(percent).Y)
                     {
-                        this.direction = -1;
+                        this.direction = 1;
                     }
                     else if (nodes[nextNode].Y < GetPercentPosition(percent).Y)
                     {
@@ -326,11 +319,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                     else if (nodes[previousNode].Y > GetPercentPosition(percent).Y)
                     {
-                        this.direction = 1;
+                        this.direction = -1;
                     }
                     else if ((nodes[previousNode].Y < GetPercentPosition(percent).Y))
                     {
-                        this.direction = -1;
+                        this.direction = 1;
                     }
                     else
                     {
@@ -388,6 +381,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Update()
         {
+
             alpha += Engine.DeltaTime * 4f;
             if ((Scene as Level).Transitioning)
             {
@@ -401,8 +395,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     direction = -1;
                 }
-                if (speed == 0)
+                if (speed <= 0)
                 {
+                    speed = 0;
                     return;
                 }
                 if (percent < 0)
