@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.Utils;
-using static Celeste.Tentacles;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
@@ -62,6 +59,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private bool particles;
 
         private ParticleType P_Trail;
+
+        private bool rewind;
+
+        private Coroutine WaitingRoutine = new();
 
         public RailBlock(int id, Vector2[] nodes, string directory, string lineColorA, string lineColorB, string particlesColorA, string particlesColorB, int index, float speedMult, string moveFlag, bool drawTrack, bool particles, int direction, float startPercent = -1f, bool swapped = false, bool fromFirstLoad = false) : base(nodes[0], 8, 8, false)
         {
@@ -168,96 +169,132 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             while (true)
             {
-                if (speed > 0)
+                if (speed > 0 && !rewind)
                 {
-                    speed -= Engine.DeltaTime;
+                    speed -= Engine.DeltaTime / lengths[lengths.Length - 1] * 300;
                 }
                 else
                 {
-                    speed = 0;
+                    if (percent == 0)
+                    {
+                        rewind = false;
+                        yield return null;
+                    }
+                    else
+                    {
+                        if (speed <= 0 && !rewind && !WaitingRoutine.Active)
+                        {
+                            speed = 0;
+                            Add(WaitingRoutine = new Coroutine(Waiting()));
+                        }
+                        else if (rewind)
+                        {
+                            if (speed < 75f / lengths[lengths.Length - 1])
+                            {
+                                speed += Engine.DeltaTime / lengths[lengths.Length - 1] * 300;
+                            }
+                            else
+                            {
+                                speed = 75f / lengths[lengths.Length - 1];
+                            }
+                        }
+                    }
                 }
                 yield return null;
             }
         }
 
+        private IEnumerator Waiting()
+        {
+            Vector2 WaitPos = Position;
+            yield return 1.5f;
+            if (Position == WaitPos)
+            {
+                rewind = true;
+            }
+        }
+
         private DashCollisionResults onDashCollide(Player player, Vector2 direction)
         {
-            float position = lengths[lengths.Length - 1] * percent;
-            int previousNode = 0;
-            int nextNode = 0;
-            foreach (float length in lengths)
+            if (!rewind)
             {
-                if (position >= length)
+                float position = lengths[lengths.Length - 1] * percent;
+                int previousNode = 0;
+                int nextNode = 0;
+                foreach (float length in lengths)
                 {
-                    bool isLastNode = Array.IndexOf(lengths, length) == lengths.GetUpperBound(0);
-                    previousNode = !isLastNode ? Array.IndexOf(lengths, length) : Array.IndexOf(lengths, length) - 1;
-                    nextNode = previousNode + 1;
+                    if (position >= length)
+                    {
+                        bool isLastNode = Array.IndexOf(lengths, length) == lengths.GetUpperBound(0);
+                        previousNode = !isLastNode ? Array.IndexOf(lengths, length) : Array.IndexOf(lengths, length) - 1;
+                        nextNode = previousNode + 1;
+                    }
                 }
-            }
 
-            if (direction.X == -1)
-            {
-                if (nodes[previousNode].X < GetPercentPosition(percent).X)
+                if (direction.X == -1)
                 {
-                    this.direction = -1;
+                    if (nodes[previousNode].X < GetPercentPosition(percent).X)
+                    {
+                        this.direction = -1;
+                    }
+                    else if (nodes[previousNode].X > GetPercentPosition(percent).X)
+                    {
+                        this.direction = 1;
+                    }
+                    else
+                    {
+                        this.direction = 0;
+                    }
                 }
-                else if (nodes[previousNode].X > GetPercentPosition(percent).X)
+                else if (direction.X == 1)
                 {
-                    this.direction = 1;
+                    if (nodes[nextNode].X > GetPercentPosition(percent).X)
+                    {
+                        this.direction = 1;
+                    }
+                    else if ((nodes[nextNode].X < GetPercentPosition(percent).X))
+                    {
+                        this.direction = -1;
+                    }
+                    else
+                    {
+                        this.direction = 0;
+                    }
                 }
-                else
+                else if (direction.Y == -1)
                 {
-                    this.direction = 0;
+                    if (nodes[previousNode].Y < GetPercentPosition(percent).Y)
+                    {
+                        this.direction = -1;
+                    }
+                    else if (nodes[previousNode].X > GetPercentPosition(percent).Y)
+                    {
+                        this.direction = 1;
+                    }
+                    else
+                    {
+                        this.direction = 0;
+                    }
                 }
-            }
-            else if (direction.X == 1)
-            {
-                if (nodes[nextNode].X > GetPercentPosition(percent).X)
+                else if (direction.Y == 1)
                 {
-                    this.direction = 1;
+                    if (nodes[nextNode].Y > GetPercentPosition(percent).Y)
+                    {
+                        this.direction = 1;
+                    }
+                    else if ((nodes[nextNode].Y < GetPercentPosition(percent).Y))
+                    {
+                        this.direction = -1;
+                    }
+                    else
+                    {
+                        this.direction = 0;
+                    }
                 }
-                else if ((nodes[nextNode].X < GetPercentPosition(percent).X))
-                {
-                    this.direction = -1;
-                }
-                else
-                {
-                    this.direction = 0;
-                }
-            }
-            else if (direction.Y == -1)
-            {
-                if (nodes[previousNode].Y < GetPercentPosition(percent).Y)
-                {
-                    this.direction = -1;
-                }
-                else if (nodes[previousNode].X > GetPercentPosition(percent).Y)
-                {
-                    this.direction = 1;
-                }
-                else
-                {
-                    this.direction = 0;
-                }
-            }
-            else if (direction.Y == 1)
-            {
-                if (nodes[nextNode].Y > GetPercentPosition(percent).Y)
-                {
-                    this.direction = 1;
-                }
-                else if ((nodes[nextNode].Y < GetPercentPosition(percent).Y))
-                {
-                    this.direction = -1;
-                }
-                else
-                {
-                    this.direction = 0;
-                }
-            }
 
-            speed = 240f / lengths[lengths.Length - 1];
-
+                speed = 240f / lengths[lengths.Length - 1];
+            }
+            
             if (Input.GrabCheck)
             {
                 player.StateMachine.State = Player.StClimb;
@@ -302,6 +339,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Update();
             if (index != 0)
             {
+                if (rewind)
+                {
+                    direction = -1;
+                }
                 if (speed == 0)
                 {
                     return;
