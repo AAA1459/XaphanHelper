@@ -241,6 +241,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         this.direction = 1;
                     }
+                    else if (nodes[nextNode].X < GetPercentPosition(percent).X)
+                    {
+                        this.direction = 1;
+                    }
+                    else if (nodes[nextNode].X > GetPercentPosition(percent).X)
+                    {
+                        this.direction = -1;
+                    }
                     else
                     {
                         this.direction = 0;
@@ -256,6 +264,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         this.direction = -1;
                     }
+                    else if (nodes[previousNode].X > GetPercentPosition(percent).X)
+                    {
+                        this.direction = -1;
+                    }
+                    else if ((nodes[previousNode].X < GetPercentPosition(percent).X))
+                    {
+                        this.direction = 1;
+                    }
                     else
                     {
                         this.direction = 0;
@@ -263,13 +279,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else if (direction.Y == -1)
                 {
+                    
                     if (nodes[previousNode].Y < GetPercentPosition(percent).Y)
+                    {
+                        this.direction = 1;
+                    }
+                    else if (nodes[previousNode].Y > GetPercentPosition(percent).Y)
                     {
                         this.direction = -1;
                     }
-                    else if (nodes[previousNode].X > GetPercentPosition(percent).Y)
+                    else if (nodes[nextNode].Y < GetPercentPosition(percent).Y)
                     {
                         this.direction = 1;
+                    }
+                    else if (nodes[nextNode].Y > GetPercentPosition(percent).Y)
+                    {
+                        this.direction = -1;
                     }
                     else
                     {
@@ -283,6 +308,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         this.direction = 1;
                     }
                     else if ((nodes[nextNode].Y < GetPercentPosition(percent).Y))
+                    {
+                        this.direction = -1;
+                    }
+                    else if (nodes[previousNode].Y > GetPercentPosition(percent).Y)
+                    {
+                        this.direction = 1;
+                    }
+                    else if ((nodes[previousNode].Y < GetPercentPosition(percent).Y))
                     {
                         this.direction = -1;
                     }
