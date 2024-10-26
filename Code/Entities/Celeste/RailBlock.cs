@@ -62,7 +62,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool canDash;
 
-        public RailBlock(int id, Vector2[] nodes, string directory, string lineColorA, string lineColorB, string particlesColorA, string particlesColorB, int index, float speedMult, bool drawTrack, bool particles, bool canDash, bool fromFirstLoad = false) : base(nodes[0], 8, 8, false)
+        private bool playerMomentum;
+
+        public RailBlock(int id, Vector2[] nodes, string directory, string lineColorA, string lineColorB, string particlesColorA, string particlesColorB, int index, float speedMult, bool drawTrack, bool particles, bool canDash, bool playerMomentum, bool fromFirstLoad = false) : base(nodes[0], 8, 8, false)
         {
             Tag = Tags.TransitionUpdate;
             Collider = new Hitbox(32f, 14f, -16f, -7f);
@@ -82,6 +84,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 this.canDash = true;
                 OnDashCollide += onDashCollide;
             }
+            this.playerMomentum = playerMomentum;
             this.fromFirstLoad = fromFirstLoad;
             if (string.IsNullOrEmpty(this.directory))
             {
@@ -157,7 +160,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             while (true)
             {
-                if (speed > 0 && !rewind)
+                if (playerMomentum && HasPlayerRider() && !rewind && percent < 1)
+                {
+                    if (speed < 150f * speedMult / lengths[lengths.Length - 1])
+                    {
+                        speed += Engine.DeltaTime / lengths[lengths.Length - 1] * 300 * speedMult;
+                    }
+                    else
+                    {
+                        speed = 150f * speedMult / lengths[lengths.Length - 1];
+                    }
+                    direction = 1;
+                }
+                else if (speed > 0 && !rewind)
                 {
                     speed -= Engine.DeltaTime / lengths[lengths.Length - 1] * 300 * speedMult;
                 }
@@ -341,6 +356,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             data.Bool("drawTrack", true),
             data.Bool("particles", true), 
             data.Bool("canDash", true),
+            data.Bool("playerMomentum", false),
             fromFirstLoad: true)
         {
         }
@@ -350,7 +366,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Added(scene);
             if (fromFirstLoad)
             {
-                Scene.Add(new RailBlock(id, nodes, directory, lineColorA, lineColorB, particlesColorA, particlesColorB, 1, speedMult, drawTrack, particles, canDash));
+                Scene.Add(new RailBlock(id, nodes, directory, lineColorA, lineColorB, particlesColorA, particlesColorB, 1, speedMult, drawTrack, particles, canDash, playerMomentum));
             }
             if (trackSfx != null)
             {
