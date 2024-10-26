@@ -44,15 +44,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private int direction;
 
-        private bool swapped;
-
         private bool fromFirstLoad;
 
         private int id;
 
         private float speedMult;
-
-        private string moveFlag;
 
         private bool drawTrack;
 
@@ -64,7 +60,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Coroutine WaitingRoutine = new();
 
-        public RailBlock(int id, Vector2[] nodes, string directory, string lineColorA, string lineColorB, string particlesColorA, string particlesColorB, int index, float speedMult, string moveFlag, bool drawTrack, bool particles, int direction, float startPercent = -1f, bool swapped = false, bool fromFirstLoad = false) : base(nodes[0], 8, 8, false)
+        public RailBlock(int id, Vector2[] nodes, string directory, string lineColorA, string lineColorB, string particlesColorA, string particlesColorB, int index, float speedMult, bool drawTrack, bool particles, bool fromFirstLoad = false) : base(nodes[0], 8, 8, false)
         {
             Tag = Tags.TransitionUpdate;
             Collider = new Hitbox(32f, 14f, -16f, -7f);
@@ -78,11 +74,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             this.particlesColorB = particlesColorB;
             this.index = index;
             this.speedMult = speedMult;
-            this.moveFlag = moveFlag;
             this.drawTrack = drawTrack;
             this.particles = particles;
-            this.direction = direction;
-            this.swapped = swapped;
             this.fromFirstLoad = fromFirstLoad;
             if (string.IsNullOrEmpty(this.directory))
             {
@@ -94,22 +87,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 lengths[i] = lengths[i - 1] + Vector2.Distance(nodes[i - 1], nodes[i]);
             }
             speed = 0;
-            if (startPercent == -1f && index != 0)
-            {
-                percent = (index - 1) * spacingOffset;
-                percent += startOffset;
-                if (Math.Truncate(percent) % 2 != 0)
-                {
-                    float substract = Math.Abs(1 - percent);
-                    percent = 1 - substract;
-                    this.direction = -direction;
-                }
-            }
-            else
-            {
-                percent = startPercent;
-            }
-            percent %= 1f;
+            percent = 0f;
             Position = GetPercentPosition(percent);
             Add(saw = new Sprite(GFX.Game, this.directory + "/"));
             saw.AddLoop("idle", "idle", 0.1f, 0, 1, 2, 3, 2, 1);
@@ -148,17 +126,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
-
-            foreach (Entity entity in SceneAs<Level>().Entities)
+            if (index != 0)
             {
-                if (CollideCheckOutside(entity, Position + Vector2.UnitX * 2) || CollideCheckOutside(entity, Position - Vector2.UnitX * 2) || CollideCheckOutside(entity, Position - Vector2.UnitY * 2) || CollideCheckOutside(entity, Position + Vector2.UnitY * 2))
+                foreach (Entity entity in SceneAs<Level>().Entities)
                 {
-                    foreach (Component component in entity.Components)
+                    if (CollideCheck(entity, Position + Vector2.UnitX * 2) || CollideCheck(entity, Position - Vector2.UnitX * 2) || CollideCheck(entity, Position - Vector2.UnitY * 2) || CollideCheck(entity, Position + Vector2.UnitY * 2))
                     {
-                        if (component.GetType() == typeof(StaticMover))
+                        foreach (Component component in entity.Components)
                         {
-                            StaticMover staticMover = (StaticMover)component;
-                            staticMovers.Add(staticMover);
+                            if (component.GetType() == typeof(StaticMover))
+                            {
+                                StaticMover staticMover = (StaticMover)component;
+                                staticMover.Entity.Position.Y -= staticMover.Entity.Center.Y > Center.Y ? (staticMover.Entity.GetType() == typeof(MagneticCeiling) ? 2f : 1f) : -1f;
+                                staticMover.Entity.Depth = Depth + 1;
+                                staticMovers.Add(staticMover);
+                            }
                         }
                     }
                 }
@@ -340,7 +322,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             return DashCollisionResults.NormalCollision;
         }
 
-        public RailBlock(EntityData data, Vector2 offset, EntityID eid) : this(eid.ID, data.NodesWithPosition(offset), data.Attr("directory", "objects/XaphanHelper/RailBlock"), data.Attr("lineColorA", "2A251F"), data.Attr("lineColorB", "C97F35"), data.Attr("particlesColorA", "696A6A"), data.Attr("particlesColorB", "700808"), 0, data.Float("speed", 60f), data.Attr("moveFlag"), data.Bool("drawTrack", true), data.Bool("particles", true), 0, fromFirstLoad: true)
+        public RailBlock(EntityData data, Vector2 offset, EntityID eid) : this(eid.ID, data.NodesWithPosition(offset), data.Attr("directory", "objects/XaphanHelper/RailBlock"), data.Attr("lineColorA", "2A251F"), data.Attr("lineColorB", "C97F35"), data.Attr("particlesColorA", "696A6A"), data.Attr("particlesColorB", "700808"), 0, data.Float("speedMult", 1f), data.Bool("drawTrack", true), data.Bool("particles", true), fromFirstLoad: true)
         {
         }
 
@@ -349,10 +331,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Added(scene);
             if (fromFirstLoad)
             {
-                for (int i = 0; i < 1; i++)
-                {
-                    Scene.Add(new RailBlock(id, nodes, directory, lineColorA, lineColorB, particlesColorA, particlesColorB, i + 1, speedMult, moveFlag, drawTrack, particles, 0));
-                }
+                Scene.Add(new RailBlock(id, nodes, directory, lineColorA, lineColorB, particlesColorA, particlesColorB, 1, speedMult, drawTrack, particles));
             }
             if (trackSfx != null)
             {
