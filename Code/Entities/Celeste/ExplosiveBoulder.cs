@@ -204,12 +204,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 else if (spring.Orientation == Spring.Orientations.WallLeft)
                 {
                     Spring_BounceAnimate.Invoke(spring, null);
-                    Push(new Vector2(200, -290), Vector2.UnitX);
+                    Push(new Vector2(200, -150), Vector2.UnitX);
                 }
                 else if (spring.Orientation == Spring.Orientations.WallRight)
                 {
                     Spring_BounceAnimate.Invoke(spring, null);
-                    Push(new Vector2(200, -290), -Vector2.UnitX);
+                    Push(new Vector2(200, -150), -Vector2.UnitX);
                 }
             }
         }
