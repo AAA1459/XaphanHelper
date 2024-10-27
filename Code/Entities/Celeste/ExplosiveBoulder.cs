@@ -71,13 +71,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Play("idle" + (Calc.Random.Next(2) == 1 ? "A" : "B"));
             onCollide = OnCollide;
             Add(new Coroutine(GravityRoutine()));
-            Add(new StaticMover
-            {
-                OnShake = OnShake,
-                OnMove = OnMove,
-                SolidChecker = IsRiding,
-                JumpThruChecker = IsRiding
-            });
             P_Explode = new ParticleType
             {
                 Color = Calc.HexToColor("F8C820"),
@@ -97,7 +90,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 LifeMin = 1f,
                 LifeMax = 2f,
             };
-            AllowPushing = false;
             Depth = -8499;
         }
 
@@ -111,6 +103,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
+            if (SceneAs<Level>().CollideCheck<Solid>(Position + new Vector2(0, Height + 1)))
+            {
+                Solid solid = SceneAs<Level>().CollideFirst<Solid>(Position + new Vector2(0, Height + 1));
+                if (solid != null)
+                {
+                    imageOffset = solid.Shake;
+                }
+            }
             MoveH(Speed.X * Engine.DeltaTime, onCollide);
             MoveV(Speed.Y * Engine.DeltaTime, onCollide);
             if (Scene.OnInterval(0.25f))
@@ -256,22 +256,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Explode();
         }
 
-        private void OnMove(Vector2 amount)
-        {
-            if (!explode)
-            {
-                Position += amount;
-            }
-        }
-
         protected override void OnSquish(CollisionData data)
         {
             Explode();
-        }
-
-        private void OnShake(Vector2 amount)
-        {
-            imageOffset += amount;
         }
 
         public void HitSpinner(Entity spinner)
