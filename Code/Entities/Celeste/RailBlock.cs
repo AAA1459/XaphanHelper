@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Celeste.Mod.Entities;
+using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -67,6 +68,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private bool playerMomentum;
 
         private bool noReturn;
+
+        private EventInstance LoopSfx;
 
         public RailBlock(int id, Vector2[] nodes, string directory, string lineColorA, string lineColorB, string particlesColorA, string particlesColorB, int index, float speedMult, bool drawTrack, bool particles, bool canDash, bool playerMomentum, bool noReturn, bool fromFirstLoad = false) : base(nodes[0], 8, 8, false)
         {
@@ -180,13 +183,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 else if (speed > 0 && !rewind)
                 {
                     speed -= Engine.DeltaTime / lengths[lengths.Length - 1] * 300 * speedMult;
+                    if (percent >= 1)
+                    {
+                        percent = 1;
+                        speed = 0;
+                    }
                 }
                 else if (!noReturn)
                 {
                     if (percent == 0 && rewind)
                     {
+                        speed = 0;
                         rewind = false;
-                        yield return null;
+                        yield return 0.5f;
                     }
                     else
                     {
@@ -399,11 +408,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (speed <= 0)
                 {
                     speed = 0;
-                    return;
                 }
                 if (percent < 0)
                 {
                     percent = 0;
+                    speed = 0;
                     if (Shake == Vector2.Zero && !CanShake)
                     {
                         CanShake = true;
@@ -424,6 +433,31 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 else
                 {
                     CanShake = false;
+                }
+                if (speed > 0)
+                {
+                    if (LoopSfx == null)
+                    {
+                       LoopSfx = Audio.Play("event:/game/09_core/conveyor_activate", Position, "end", 0f);
+                    }
+                    Audio.Position(LoopSfx, Position);
+                }
+                else
+                {
+                    if (LoopSfx != null)
+                    {
+                        if (percent > 0 && percent < 1)
+                        {
+                            LoopSfx.setParameterValue("end", 1f);
+                            LoopSfx.release();
+                        }
+                        else
+                        {
+                            Audio.Stop(LoopSfx);
+                            Audio.Play("event:/game/xaphan/zip_mover_impact", Position);
+                        }
+                        LoopSfx = null;
+                    }
                 }
                 if (direction == -1 && percent > 0)
                 {
@@ -521,6 +555,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
             float max = lengths[i + 1] / num;
             float num3 = Calc.ClampedMap(percent, min, max);
             return Vector2.Lerp(nodes[i], nodes[i + 1], num3);
+        }
+
+        public override void Removed(Scene scene)
+        {
+            base.Removed(scene);
+            Audio.Stop(LoopSfx);
+        }
+
+        public override void SceneEnd(Scene scene)
+        {
+            Audio.Stop(LoopSfx);
         }
     }
 }
