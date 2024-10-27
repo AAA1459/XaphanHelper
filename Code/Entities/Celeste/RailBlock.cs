@@ -38,7 +38,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private SoundSource trackSfx;
 
-        public Sprite saw;
+        public Sprite block;
 
         private Sprite node;
 
@@ -59,6 +59,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private bool rewind;
 
         private Coroutine WaitingRoutine = new();
+
+        private bool CanShake;
 
         private bool canDash;
 
@@ -101,10 +103,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             speed = 0;
             percent = 0f;
             Position = GetPercentPosition(percent);
-            Add(saw = new Sprite(GFX.Game, this.directory + "/"));
-            saw.AddLoop("idle", "idle", 0.1f, 0, 1, 2, 3, 2, 1);
-            saw.CenterOrigin();
-            saw.Play("idle");
+            Add(block = new Sprite(GFX.Game, this.directory + "/"));
+            block.AddLoop("idle", "idle", 0.1f, 0, 1, 2, 3, 2, 1);
+            block.CenterOrigin();
+            block.Play("idle");
             Add(node = new Sprite(GFX.Game, this.directory + "/"));
             node.AddLoop("node", "node", 0.15f);
             node.CenterOrigin();
@@ -181,7 +183,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else if (!noReturn)
                 {
-                    if (percent == 0)
+                    if (percent == 0 && rewind)
                     {
                         rewind = false;
                         yield return null;
@@ -214,7 +216,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             Vector2 WaitPos = Position;
             yield return 1.5f;
-            if (Position == WaitPos)
+            if (Position == WaitPos && Position != nodes[0])
             {
                 rewind = true;
             }
@@ -330,7 +332,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         this.direction = 0;
                     }
                 }
-
                 speed = 240f * speedMult / lengths[lengths.Length - 1];
             }
             
@@ -403,10 +404,26 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (percent < 0)
                 {
                     percent = 0;
+                    if (Shake == Vector2.Zero && !CanShake)
+                    {
+                        CanShake = true;
+                        Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
+                        StartShaking(0.2f);
+                    }
                 }
-                else if (percent > 1)
+                else if (percent >= 1)
                 {
                     percent = 1;
+                    if (Shake == Vector2.Zero && !CanShake)
+                    {
+                        CanShake = true;
+                        Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
+                        StartShaking(0.2f);
+                    }
+                }
+                else
+                {
+                    CanShake = false;
                 }
                 if (direction == -1 && percent > 0)
                 {
@@ -475,7 +492,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else
             {
-                saw.Render();
+                block.RenderPosition = Position + Shake;
+                block.Render();
             }
         }
 
