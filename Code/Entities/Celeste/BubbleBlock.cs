@@ -101,6 +101,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string directory;
 
+        private int[,] bubbles;
+
         public BubbleBlock(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, safe: false)
         {
             directory = data.Attr("directory", "objects/XaphanHelper/BubbleBlock");
@@ -109,25 +111,61 @@ namespace Celeste.Mod.XaphanHelper.Entities
             anchor = Position;
             Add(sine = new SineWave(0.44f, 0f).Randomize());
             Add(new DashListener(OnDashed));
+            bubbles = new int[lines, columns];
             //OnDashCollide = OnDashed;
         }
 
-        public override void Awake(Scene scene)
+        public override void Added(Scene scene)
         {
-            base.Awake(scene);
-            MTexture mTexture = GFX.Game[directory + "/bubbles"];
-            int textureColumns = mTexture.Width / 8;
-            int textureLines = mTexture.Height / 8;
+            base.Added(scene);
             for (int i = 0; i < columns; i++)
             {
                 for (int j = 0; j < lines; j++)
                 {
-                    int selectedTextureColumn = Calc.Random.Next(0, textureColumns - 1);
-                    int selectedTextureLine = Calc.Random.Next(0, textureLines);
-                    Image image = new(mTexture.GetSubtexture(selectedTextureColumn * 8, selectedTextureLine * 8, 8, 8));
-                    image.X = i * 8;
-                    image.Y = j * 8;
-                    Add(image);
+                    if (bubbles[j, i] == 0)
+                    {
+                        bool bigBubble = false;
+                        if (j < lines - 1 && i < columns - 1)
+                        {
+                            if (bubbles[j + 1, i] == 0 && bubbles[j, i + 1] == 0)
+                            {
+                                if (
+                                    (j == 0 && i != 0 && bubbles[j, i - 1] == 1) ||
+                                    (j != 0 && i == 0 && bubbles[j - 1, i] == 1) ||
+                                    (j != 0 && i != 0 && bubbles[j - 1, i] == 1 && bubbles[j, i - 1] == 1)
+                                    )
+                                {
+                                    bigBubble = true;
+                                }
+                                else
+                                {
+                                    bigBubble = Calc.Random.Next(0, 101) >= 70;
+                                }
+                            }
+                        }
+                        MTexture mTexture = GFX.Game[directory + "/" + (bigBubble ? "bigBubbles" : "bubbles")];
+                        int size = bigBubble ? 16 : 8;
+                        int textureColumns = mTexture.Width / size;
+                        int textureLines = mTexture.Height / size;
+                        int selectedTextureColumn = Calc.Random.Next(0, textureColumns - 1);
+                        int selectedTextureLine = Calc.Random.Next(0, textureLines);
+                        Image image = new(mTexture.GetSubtexture(selectedTextureColumn * size, selectedTextureLine * size, size, size));
+                        image.CenterOrigin();
+                        image.X = i * 8 + (bigBubble ? 8 : 4);
+                        image.Y = j * 8 + (bigBubble ? 8 : 4);
+                        Add(image);
+                        if (bigBubble)
+                        {
+                            bubbles[j, i] = 2;
+                            bubbles[j + 1, i] = 2;
+                            bubbles[j, i + 1] = 2;
+                            bubbles[j + 1, i + 1] = 2;
+                        }
+                        else
+                        {
+                            bubbles[j, i] = 1;
+                        }
+                    }
                 }
             }
         }
@@ -176,14 +214,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         if (component.GetType() == typeof(Image))
                         {
                             Image image = (Image)component;
-                            if (image.X == i && image.Y == j)
+                            if (image.X == i + (image.Width == 16 ? 8 : 4) && image.Y == j + (image.Height == 16 ? 8 : 4))
                             {
                                 debrisImage = image;
+                                if (image.Width == 16 && image.Height == 16)
+                                {
+                                    vector += Vector2.One * 4f;
+                                }
                                 break;
                             }
                         }
                     }
-                    Scene.Add(Engine.Pooler.Create<RespawnDebris>().Init(vector, vector + (vector - Center).SafeNormalize() * 16f * mult, respawnTimer, debrisImage));
+                    if (debrisImage != null)
+                    {
+                        Scene.Add(Engine.Pooler.Create<RespawnDebris>().Init(vector, vector + (vector - Center).SafeNormalize() * 16f * mult, respawnTimer, debrisImage));
+                    }
                 }
             }
             Collidable = Visible = false;
