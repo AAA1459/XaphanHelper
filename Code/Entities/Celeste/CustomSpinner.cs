@@ -212,25 +212,25 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (Scene.OnInterval(0.05f, offset))
                     {
                         Player player = Scene.Tracker.GetEntity<Player>();
-                        bool beamClose = false;
-                        bool missileClose = false;
-                        foreach (Beam beam in Scene.Tracker.GetEntities<Beam>())
+                        bool actorClose = false;
+                        float actorDistance;
+                        foreach (Actor actor in Scene.Tracker.GetEntities<Actor>())
                         {
-                            if (Math.Abs(beam.X - X) < 32f && Math.Abs(beam.Y - Y) < 32f)
+                            if (actor.GetType() == typeof(Player) || actor.GetType() == typeof(FakePlayer))
                             {
-                                beamClose = true;
+                                actorDistance = 128f;
+                            }
+                            else
+                            {
+                                actorDistance = 48f;
+                            }
+                            if (Math.Abs(actor.X - X) < actorDistance && Math.Abs(actor.Y - Y) < actorDistance)
+                            {
+                                actorClose = true;
                                 break;
                             }
                         }
-                        foreach (Missile missile in Scene.Tracker.GetEntities<Missile>())
-                        {
-                            if (Math.Abs(missile.X - X) < 32f && Math.Abs(missile.Y - Y) < 32f)
-                            {
-                                missileClose = true;
-                                break;
-                            }
-                        }
-                        Collidable = AlwaysCollidable || (player != null && Math.Abs(player.X - X) < 128f && Math.Abs(player.Y - Y) < 128f) || beamClose || missileClose;
+                        Collidable = AlwaysCollidable || actorClose;
                     }
                 }
             }
