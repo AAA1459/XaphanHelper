@@ -93,6 +93,50 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Depth = -8499;
         }
 
+        public static void Load()
+        {
+            On.Celeste.Actor.MoveHExact += OnActorMoveH;
+            On.Celeste.Actor.MoveVExact += OnActorMoveV;
+        }
+
+        public static void Unload()
+        {
+            On.Celeste.Actor.MoveHExact -= OnActorMoveH;
+            On.Celeste.Actor.MoveVExact -= OnActorMoveV;
+        }
+
+        private static bool OnActorMoveH(On.Celeste.Actor.orig_MoveHExact orig, Actor self, int moveH, Collision onCollide, Solid pusher)
+        {
+            if (self.GetType() == typeof(ExplosiveBoulder))
+            {
+                ExplosiveBoulder boulder = self as ExplosiveBoulder;
+                foreach (CustomSpinner.Filler filler in self.SceneAs<Level>().Tracker.GetEntities<CustomSpinner.Filler>())
+                {
+                    if (boulder.CollideCheck(filler))
+                    {
+                        filler.RemoveSelf();
+                    }
+                }
+            }
+            return orig(self, moveH, onCollide, pusher);
+        }
+
+        private static bool OnActorMoveV(On.Celeste.Actor.orig_MoveVExact orig, Actor self, int moveV, Collision onCollide, Solid pusher)
+        {
+            if (self.GetType() == typeof(ExplosiveBoulder))
+            {
+                ExplosiveBoulder boulder = self as ExplosiveBoulder;
+                foreach (CustomSpinner.Filler filler in self.SceneAs<Level>().Tracker.GetEntities<CustomSpinner.Filler>())
+                {
+                    if (boulder.CollideCheck(filler))
+                    {
+                        filler.RemoveSelf();
+                    }
+                }
+            }
+            return orig(self, moveV, onCollide, pusher);
+        }
+
         public override void Added(Scene scene)
         {
             base.Added(scene);

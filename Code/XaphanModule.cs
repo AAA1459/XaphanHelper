@@ -762,6 +762,7 @@ namespace Celeste.Mod.XaphanHelper
             Lever.Load();
             LightManager.Load();
             ClimbableVine.Load();
+            ExplosiveBoulder.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -873,6 +874,7 @@ namespace Celeste.Mod.XaphanHelper
             Lever.Unload();
             LightManager.Unload();
             ClimbableVine.Unload();
+            ExplosiveBoulder.Unload();
         }
 
 
