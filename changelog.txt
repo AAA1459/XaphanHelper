@@ -12,6 +12,7 @@ Version 1.0.64 :
 - The Remote Drone can no longer be deployed by pressing down while holding it. Madeline will now attempt to throw it instead
 - Bag and Misc upgrades now only tell the player to select the upgrade to use it if the player already have another upgrade using the same slot
 - Campaigns using a Merge Chapters Controller now always display the total amount of strawberries in a chapter on the journal once the player entred the chapter at least once
+- Rooms will no longer appear as heated on the In-Game map if the inactive flag of their Heat Controller is true
 - Fixed a bug that prevented the "Golden Start With X" attributes to work correctly, removing abilities on room transition when holding a golden strawberry
 - Fixed a bug that prevented Flag On Interact Triggers to work if their "Req Flags" attribute was left empty
 - Fixed a bug that killed both Madeline and the Remote Drone at the same time if the player died while holding the drone
