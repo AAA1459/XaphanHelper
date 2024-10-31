@@ -61,7 +61,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string color;
 
-        private float transparency;
+        private float outsideTransparency;
+
+        private float insideTransparency;
+
+        private float currentTransparency;
 
         private bool foreground;
 
@@ -126,7 +130,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             lowPosition = data.Int("lowPosition");
             delay = data.Float("frameDelay");
             color = data.Attr("color");
-            transparency = data.Float("transparency");
+            outsideTransparency = data.Float("transparency");
+            insideTransparency = data.Float("insideTransparency", outsideTransparency);
             foreground = data.Bool("foreground");
             riseDelay = data.Float("riseDelay");
             riseDistance = data.Int("riseDistance");
@@ -175,13 +180,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         break;
                 }
             }
-            if (transparency == 0f)
+            if (outsideTransparency <= 0f)
             {
-                transparency = 0.65f;
+                outsideTransparency = 0.65f;
             }
-            if (transparency >= 1f)
+            if (outsideTransparency >= 1f)
             {
-                transparency = 1f;
+                outsideTransparency = 1f;
+            }
+            if (insideTransparency <= 0f)
+            {
+                insideTransparency = 0;
+            }
+            if (insideTransparency >= 1f)
+            {
+                insideTransparency = 1f;
             }
             Depth = foreground ? -19999 : -9999;
             if (liquidType == "lava")
@@ -230,7 +243,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             waterSplashIn.AddLoop("splash", "splash", 0.04f);
             Add(waterSplashOut = new Sprite(GFX.Game, "objects/XaphanHelper/liquid/water/"));
             waterSplashOut.AddLoop("splash", "splash", 0.04f);
-            liquidSprite.Color = waterSplashIn.Color = waterSplashOut.Color = Calc.HexToColor(color) * transparency;
             Add(pc = new PlayerCollider(OnCollide));
             if (upsideDown)
             {
@@ -579,6 +591,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
+            liquidSprite.Color = waterSplashIn.Color = waterSplashOut.Color = Calc.HexToColor(color) * (PlayerCompletelyInside() ? insideTransparency : outsideTransparency);
             if (!string.IsNullOrEmpty(removeFlags))
             {
                 string[] flags = removeFlags.Split(',');
@@ -761,6 +774,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
+            if (!PlayerCompletelyInside())
+            {
+                currentTransparency = Calc.Approach(currentTransparency, outsideTransparency, Engine.DeltaTime * 2f);
+            }
+            else
+            {
+                currentTransparency = Calc.Approach(currentTransparency, insideTransparency, Engine.DeltaTime * 2f);
+            }
+            liquidSprite.Color = waterSplashIn.Color = waterSplashOut.Color = Calc.HexToColor(color) * currentTransparency;
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
             if ((liquidType == "lava" && GravityJacket.determineIfInLava() && !GravityJacket.Active(SceneAs<Level>())) || (liquidType.Contains("acid") && GravityJacket.determineIfInAcid()))
             {
@@ -1085,6 +1107,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         return true;
                     }
+                }
+            }
+            return false;
+        }
+
+        public bool PlayerCompletelyInside()
+        {
+            foreach (Player player in SceneAs<Level>().Tracker.GetEntities<Player>())
+            {
+                if (CollideCheck(player) && (upsideDown ? player.Bottom < Bottom - 4 : player.Top > Top + 4) && player.Left > Left && player.Right < Right)
+                {
+                    return true;
                 }
             }
             return false;
