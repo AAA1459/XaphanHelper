@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Celeste.Mod.Entities;
-using Celeste.Mod.XaphanHelper.UI_Elements;
+using Celeste.Mod.XaphanHelper.Managers;
 using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -73,14 +73,7 @@ namespace Celeste.Mod.XaphanHelper.Controllers
                 grid = new bool[SceneAs<Level>().Bounds.Width / 8, SceneAs<Level>().Bounds.Height / 8];
                 Add(new DisplacementRenderHook(RenderDisplacement));
             }
-            if (SceneAs<Level>().Tracker.GetEntity<HeatIndicator>() == null)
-            {
-                SceneAs<Level>().Add(new HeatIndicator(maxDuration, inactiveFlag));
-            }
-            else
-            {
-                SceneAs<Level>().Tracker.GetEntity<HeatIndicator>().updateMaxDuration(maxDuration);
-            }
+            SceneAs<Level>().Add(new HeatManager(maxDuration, inactiveFlag));
             if (heatEffect)
             {
                 int i = 0;

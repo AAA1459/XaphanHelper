@@ -36,7 +36,7 @@ namespace Celeste.Mod.XaphanHelper.Effects
                 }
                 if (!levelHasLava)
                 {
-                    //SceneAs<Level>().SnapColorGrade("none");
+                    SceneAs<Level>().SnapColorGrade("none");
                     RemoveSelf();
                 }
                 grid = new bool[SceneAs<Level>().Bounds.Width / 8, SceneAs<Level>().Bounds.Height / 8];
@@ -57,14 +57,14 @@ namespace Celeste.Mod.XaphanHelper.Effects
                 base.Update();
                 Distort.WaterSineDirection = -1f;
                 Distort.WaterAlpha = 0.5f;
-                /*if (!SceneAs<Level>().Transitioning)
+                if (!SceneAs<Level>().Transitioning)
                 {
                     SceneAs<Level>().NextColorGrade("hot", 0.85f);
                 }
                 else
                 {
                     SceneAs<Level>().NextColorGrade("none", 5f);
-                }*/
+                }
             }
 
             public void RenderDisplacement()
