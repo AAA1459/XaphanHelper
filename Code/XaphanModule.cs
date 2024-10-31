@@ -21,7 +21,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using MonoMod.Utils;
-using On.Celeste;
 using static Celeste.Mod.XaphanHelper.XaphanModuleSession;
 
 namespace Celeste.Mod.XaphanHelper
@@ -4576,6 +4575,10 @@ namespace Celeste.Mod.XaphanHelper
 
         private Backdrop OnLoadBackdrop(MapData map, BinaryPacker.Element child, BinaryPacker.Element super)
         {
+            if (child.Name.Equals("XaphanHelper/Heat", StringComparison.OrdinalIgnoreCase))
+            {
+                return new Heat();
+            }
             if (child.Name.Equals("XaphanHelper/HeatParticles", StringComparison.OrdinalIgnoreCase))
             {
                 return new HeatParticles(child.Attr("particlesColors"), child.AttrInt("particlesAmount"), child.AttrBool("noMist"));

@@ -13,6 +13,8 @@ namespace Celeste.Mod.XaphanHelper.Controllers
     [CustomEntity("XaphanHelper/HeatController")]
     class HeatController : Entity
     {
+        private static FieldInfo playerFlash = typeof(Player).GetField("flash", BindingFlags.NonPublic | BindingFlags.Instance);
+
         public float maxDuration;
 
         public static bool Flashing;
@@ -24,8 +26,6 @@ namespace Celeste.Mod.XaphanHelper.Controllers
         private bool[,] grid;
 
         public string inactiveFlag;
-
-        private static FieldInfo playerFlash = typeof(Player).GetField("flash", BindingFlags.NonPublic | BindingFlags.Instance);
 
         public HeatController(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
