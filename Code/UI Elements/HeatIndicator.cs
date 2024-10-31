@@ -41,6 +41,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Level level = SceneAs<Level>();
             Player player = Scene.Tracker.GetEntity<Player>();
             HeatController controller = level.Tracker.GetEntity<HeatController>();
+            if (controller != null)
+            {
+                inactiveFlag = controller.inactiveFlag;
+            }
             if (level != null && (level.FrozenOrPaused || level.RetryPlayerCorpse != null || level.SkippingCutscene || level.InCutscene) || (player != null && !player.Sprite.Visible) || XaphanModule.ShowUI || level.Session.GetFlag(inactiveFlag))
             {
                 Visible = false;
@@ -86,6 +90,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         Add(HeatDamageRoutine = new Coroutine(HeatDamage()));
                     }
                 }
+            }
+            else
+            {
+                heat -= Engine.DeltaTime;
             }
         }
 
