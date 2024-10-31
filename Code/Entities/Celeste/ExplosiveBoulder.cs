@@ -24,7 +24,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public Vector2 Speed;
 
-        private Collision onCollide;
+        private Collision onCollideH;
+
+        private Collision onCollideV;
 
         private bool Gravity;
 
@@ -46,10 +48,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Vector2 imageOffset;
 
+        private float ImmunityTimer;
 
         public ExplosiveBoulder(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
-            Collider = new Circle(12f);
+            Collider = new ColliderList(new Hitbox(14, 24, -7, -12), new Hitbox(24, 14, -12, -7), new Hitbox(20, 20, -10, -10));
             Directory = data.Attr("directory");
             Gravity = data.Bool("gravity");
             BounceForce = data.Float("bounceForce", 280f);
@@ -59,9 +62,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Directory = "objects/XaphanHelper/ExplosiveBoulder";
             }
-            Add(new PlayerCollider(onPlayer, Collider));
-            Add(new SpringCollider(onSpring, Collider));
-            Add(new WeaponCollider(HitByBeam, HitByMissile, Collider));
+            Add(new PlayerCollider(onPlayer, new Circle(12f)));
+            Add(new SpringCollider(onSpring, new Circle(12f)));
+            Add(new WeaponCollider(HitByBeam, HitByMissile, new Circle(12f)));
             Add(Sprite = new Sprite(GFX.Game, Directory + "/"));
             Sprite.AddLoop("idleA", "boulder", 0.12f, 0, 1, 2, 3, 4, 3, 2, 1);
             Sprite.AddLoop("idleB", "boulder", 0.12f, 5, 6, 7, 8, 9, 8, 7, 6);
@@ -69,7 +72,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.CenterOrigin();
             Sprite.Position += new Vector2(20);
             Sprite.Play("idle" + (Calc.Random.Next(2) == 1 ? "A" : "B"));
-            onCollide = OnCollide;
+            onCollideH = OnCollideH;
+            onCollideV = OnCollideV;
             Add(new Coroutine(GravityRoutine()));
             P_Explode = new ParticleType
             {
@@ -155,14 +159,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     imageOffset = solid.Shake;
                 }
             }
-            MoveH(Speed.X * Engine.DeltaTime, onCollide);
-            MoveV(Speed.Y * Engine.DeltaTime, onCollide);
+            MoveH(Speed.X * Engine.DeltaTime, onCollideH);
+            MoveV(Speed.Y * Engine.DeltaTime, onCollideV);
             if (Scene.OnInterval(0.25f))
             {
                 int count = (int)Math.Floor(Width * Height / 256f);
                 SceneAs<Level>().ParticlesFG.Emit(P_Steam, count, Center, new Vector2(Width / 2, Height / 2), -(float)Math.PI / 2f);
             }
-            if (CollideCheck<ExplosiveBoulder>() || CollideCheck<CrystalStaticSpinner>() || CollideCheck<CustomSpinner>() || (Scene.CollideCheck<Solid>(new Rectangle((int)(Position.X - Width / 2), (int)(Position.Y - Height / 2), (int)Width, (int)Height)) && Speed.Y > 0))
+            if (CollideCheck<ExplosiveBoulder>() || CollideCheck<CrystalStaticSpinner>() || CollideCheck<CustomSpinner>())
             {
                 Explode();
             }
@@ -295,9 +299,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
-        private void OnCollide(CollisionData data)
+        private void OnCollideH(CollisionData data)
         {
             Explode();
+        }
+
+        private void OnCollideV(CollisionData data)
+        {
+            if (ImmunityTimer <= 0)
+            {
+                Explode();
+            }
         }
 
         protected override void OnSquish(CollisionData data)
@@ -370,15 +382,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator GravityRoutine()
         {
-            while (!Gravity || Scene.CollideCheck<Solid>(new Rectangle((int)(Position.X - Width / 2), (int)(Position.Y - Height / 2) + 1, (int)Width, (int)Height)))
+            while (!Gravity || OnGround())
             {
                 yield return null;
             }
-            while (!explode)
+            ImmunityTimer = 0.15f;
+            while (!explode && !OnGround())
             {
                 Speed.Y = Calc.Approach(Speed.Y, 150f, 800f * Engine.DeltaTime);
+                ImmunityTimer -= Engine.DeltaTime;
                 yield return null;
             }
+            Add(new Coroutine(GravityRoutine()));
         }
 
         public override void Render()
