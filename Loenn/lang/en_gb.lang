@@ -145,6 +145,7 @@ entities.XaphanHelper/CustomCollectable.attributes.description.loopBurst=If true
 entities.XaphanHelper/CustomCollectable.attributes.description.staticTime=Time in seconds between each sprite loop during which the sprite will pause on its first frame. 0 = no pause.
 entities.XaphanHelper/CustomCollectable.attributes.description.particlesColor=Hexadecimal code for the color of the particles. Leave blank for no particles.
 entities.XaphanHelper/CustomCollectable.attributes.description.wiggle=If true, the collectable will slowly wiggle up and down.
+entities.XaphanHelper/CustomCollectable.attributes.description.animationSpeed= Delay between each frame of the animation. Default: 0.08.
 
 # CustomCoverupWall
 entities.XaphanHelper/CustomCoverupWall.placements.name.CustomCoverupWall=Custom Coverup Wall

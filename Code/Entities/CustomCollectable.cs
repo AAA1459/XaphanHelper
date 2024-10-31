@@ -120,7 +120,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             Collider = new Hitbox(12f, 12f, 2f, 2f);
             Add(collectable = new Sprite(GFX.Game, sprite));
-            collectable.AddLoop("idle", "", 0.08f);
+            collectable.AddLoop("idle", "", data.Float("animationSpeed", 0.08f));
             collectable.AddLoop("static", "", data.Float("staticTime"), 0);
             collectable.Play("idle");
             collectable.CenterOrigin();
