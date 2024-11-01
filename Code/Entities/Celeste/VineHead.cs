@@ -51,8 +51,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float PauseTime;
 
-        private bool WasHitByMissile;
-
         public VineHead(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Tag = Tags.TransitionUpdate;

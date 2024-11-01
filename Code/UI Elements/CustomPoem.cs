@@ -218,15 +218,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         TotalLenght = ActiveFont.Measure(inputActA).X * scale + spacing + buttonATextureWidth + spacing + (controlB != null ? ActiveFont.Measure(inputActB).X * scale + spacing + buttonBTextureWidth + spacing : 0) + ActiveFont.Measure(textC).X * scale;
                     }
                 }
-                float selectHoldPosition = 0;
-                float selectAndPressPosition = 0;
                 float selectPosition = 0;
                 float SpritePosition = 0;
                 float inputActAPosition = 0;
                 float InputAPosition = 0;
                 float inputActBPosition = 0;
                 float InputBPosition = 0;
-                float InputCPosition = 0f;
                 float TextCPosition = 0;
                 if (!select)
                 {

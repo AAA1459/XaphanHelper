@@ -15,10 +15,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private int index;
 
-        private float startOffset;
-
-        private float spacingOffset;
-
         private float[] lengths;
 
         private float speed;
