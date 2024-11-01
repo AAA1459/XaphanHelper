@@ -782,16 +782,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Update()
         {
             base.Update();
-            if (!PlayerCompletelyInside())
+            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+            if (player != null)
             {
-                currentTransparency = Calc.Approach(currentTransparency, outsideTransparency, Engine.DeltaTime * 2f);
-            }
-            else
-            {
-                currentTransparency = Calc.Approach(currentTransparency, insideTransparency, Engine.DeltaTime * 2f);
+                if (!PlayerCompletelyInside())
+                {
+                    currentTransparency = Calc.Approach(currentTransparency, outsideTransparency, Engine.DeltaTime * 2f);
+                }
+                else
+                {
+                    currentTransparency = Calc.Approach(currentTransparency, insideTransparency, Engine.DeltaTime * 2f);
+                }
             }
             liquidSprite.Color = waterSplashIn.Color = waterSplashOut.Color = Calc.HexToColor(color) * currentTransparency;
-            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
             if ((liquidType == "lava" && GravityJacket.determineIfInLava() && !GravityJacket.Active(SceneAs<Level>())) || (liquidType.Contains("acid") && GravityJacket.determineIfInAcid()))
             {
                 FlashingRed = true;
