@@ -4047,10 +4047,13 @@ namespace Celeste.Mod.XaphanHelper
                     if (liquid.Position == new Vector2(self.Bounds.Left, self.Bounds.Top))
                     {
                         liquid.Collider = new Hitbox(self.Bounds.Width, self.Bounds.Height);
-                        liquid.Displacement.RemoveSelf();
-                        liquid.grid = new bool[(int)(liquid.Collider.Width / 8f), (int)(liquid.Collider.Height / 8f)];
-                        liquid.CheckSolidsForDisplacement();
-                        liquid.Add(liquid.Displacement = new DisplacementRenderHook(liquid.RenderDisplacement));
+                        if (liquid.liquidType == "water")
+                        {
+                            liquid.Displacement.RemoveSelf();
+                            liquid.grid = new bool[(int)(liquid.Collider.Width / 8f), (int)(liquid.Collider.Height / 8f)];
+                            liquid.CheckSolidsForDisplacement();
+                            liquid.Add(liquid.Displacement = new DisplacementRenderHook(liquid.RenderDisplacement));
+                        }
                         break;
                     }
                 }
