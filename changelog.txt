@@ -13,6 +13,7 @@ Version 1.0.64 :
 - The Remote Drone can no longer be deployed by pressing down while holding it. Madeline will now attempt to throw it instead
 - The Remote Drone is now correctly affected by liquids physics while in a liquid set to lava
 - The Varia Jacket ability no longer allows the player to enter lava
+- Bombs now disapear shortly after entering water, without exploding
 - Bag and Misc upgrades now only tell the player to select the upgrade to use it if the player already have another upgrade using the same slot
 - Campaigns using a Merge Chapters Controller now always display the total amount of strawberries in a chapter on the journal once the player entred the chapter at least once
 - Rooms will no longer appear as heated on the In-Game map if the inactive flag of their Heat Controller is true
@@ -21,6 +22,7 @@ Version 1.0.64 :
 - Fixed a bug that killed both Madeline and the Remote Drone at the same time if the player died while holding the drone
 - Fixed a bug that could prevent Arrow Hints on the In-Game map to point to the correct direction when more than one is in the same chapter
 - Fixed a bug that displayed secret rooms on the In-game map before the player enter them when the "Reveal Unexplored Rooms" attribute of the In-Game map Controller was set to true
+- Fixed a bug that allowed Bombs to be used in liquids
 - Fixed a crash when using the retry option in the pause menu while holding the drone
 
 Version 1.0.63 :

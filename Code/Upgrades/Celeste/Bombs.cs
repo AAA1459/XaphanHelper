@@ -105,7 +105,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 {
                     yield return null;
                 }
-                if (player.Scene != null && !player.Dead && !player.DashAttacking && player.StateMachine.State != Player.StClimb)
+                if (player.Scene != null && !player.Dead && !player.DashAttacking && player.StateMachine.State != Player.StClimb && !GravityJacket.determineIfInLiquid())
                 {
                     cooldown = true;
                     level.Add(new Bomb(player.Position, player));

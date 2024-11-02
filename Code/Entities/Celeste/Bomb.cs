@@ -14,12 +14,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
     {
         private class BombSpriteDisplay : Entity
         {
-            private Bomb Bomb;
+            public Bomb Bomb;
+
+            private Sprite Sprite;
 
             public BombSpriteDisplay(Vector2 position, Bomb bomb) : base(position)
             {
                 Bomb = bomb;
-                Add(bomb.bombSprite);
+                Add(Sprite = bomb.bombSprite);
                 Depth = -9999;
             }
 
@@ -43,6 +45,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool explode;
 
+        private bool disapear;
+
         private Player player;
 
         private Collision onCollideH;
@@ -62,6 +66,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private Vector2 previousPosition;
 
         private bool WasThrown;
+
+        private Coroutine ExplodeRoutine = new();
 
         public Bomb(Vector2 position, Player player) : base(position)
         {
@@ -301,7 +307,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             else
             {
                 Scene.Add(bombSpriteDisplay = new BombSpriteDisplay(Position, this));
-                Add(new Coroutine(Explode()));
+                Add(ExplodeRoutine = new Coroutine(Explode()));
             }
         }
 
@@ -321,6 +327,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             Slope.SetCollisionBeforeUpdate(this);
             base.Update();
+            foreach (Liquid liquid in SceneAs<Level>().Tracker.GetEntities<Liquid>())
+            {
+                if (CollideCheck(liquid))
+                {
+                    if ((liquid.liquidType == "lava" || liquid.liquidType.Contains("acid")))
+                    {
+                        shouldExplodeImmediately = true;
+                    }
+                    else if (liquid.liquidType == "water" && !disapear)
+                    {
+                        disapear = true;
+                        Add(new Coroutine(Disapear()));
+                    }
+                }
+            }
             if (Hold.IsHeld)
             {
                 if (player.Facing == Facings.Right)
@@ -414,19 +435,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     MoveV(Speed.Y * Engine.DeltaTime, onCollideV);
                     foreach (KeyValuePair<Type, List<Entity>> entityList in Scene.Tracker.Entities)
                     {
-                        if (entityList.Key == typeof(Liquid))
-                        {
-                            foreach (Entity entity in entityList.Value)
-                            {
-                                Liquid liquid = (Liquid)entity;
-                                if (CollideCheck(liquid) && (liquid.liquidType == "lava" || liquid.liquidType.Contains("acid")))
-                                {
-                                    shouldExplodeImmediately = true;
-                                }
-                            }
-
-                        }
-                        else if (entityList.Key == typeof(LaserBeam))
+                        if (entityList.Key == typeof(LaserBeam))
                         {
                             foreach (Entity entity in entityList.Value)
                             {
@@ -489,6 +498,29 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             Slope.SetCollisionAfterUpdate(this);
             platforms.ForEach(entity => entity.Collidable = false);
+        }
+
+        public IEnumerator Disapear()
+        {
+            if (ExplodeRoutine.Active)
+            {
+                ExplodeRoutine.Cancel();
+            }
+            Collidable = false;
+            HoldableCannotHoldTimer.SetValue(Hold, 5f);
+            if (Hold.IsHeld)
+            {
+                Hold.Holder.Drop();
+            }
+            bombSprite.Stop();
+            float time = 1f;
+            while (time > 0f)
+            {
+                time -= Engine.DeltaTime;
+                bombSpriteDisplay.Bomb.bombSprite.Color = Color.White * time;
+                yield return null;
+            }
+            RemoveSelf();
         }
 
         public IEnumerator Explode()
