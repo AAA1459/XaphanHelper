@@ -1154,7 +1154,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                     else
                     {
-                        if (!XaphanModule.useMetroidGameplay ? !VariaJacket.Active(SceneAs<Level>()) : !GravityJacket.Active(SceneAs<Level>()))
+                        if (!XaphanModule.useMetroidGameplay ? /* To allow Varia Jacket in lava : !VariaJacket.Active(SceneAs<Level>())*/ true : !GravityJacket.Active(SceneAs<Level>()))
                         {
                             if (!XaphanModule.PlayerIsControllingRemoteDrone())
                             {

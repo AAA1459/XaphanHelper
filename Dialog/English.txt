@@ -151,10 +151,9 @@
 
 #Common Upgrades
 	XaphanHelper_get_VariaJacket_Name= VARIA JACKET
-	XaphanHelper_get_VariaJacket_Desc= Allows you to survive in lava
-	XaphanHelper_get_VariaJacket_Desc_b= and protect from extreme temperatures
+	XaphanHelper_get_VariaJacket_Desc= Allows you to survive extreme temperatures
 	XaphanHelper_get_GravityJacket_Name= GRAVITY JACKET
-	XaphanHelper_get_GravityJacket_Desc= Allows free movement in liquids
+	XaphanHelper_get_GravityJacket_Desc= Allows free movement in water
 	XaphanHelper_get_LongBeam_Name= LONG BEAM
 	XaphanHelper_get_LongBeam_Desc= Beams can reach distant targets
 	XaphanHelper_get_LongBeam_Desc_drone= Allows the drone beam to reach distant targets

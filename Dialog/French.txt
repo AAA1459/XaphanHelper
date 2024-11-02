@@ -151,10 +151,9 @@
 
 #Common Upgrades
 	XaphanHelper_get_VariaJacket_Name= VESTE VARIA
-	XaphanHelper_get_VariaJacket_Desc= Permet de survivre dans la lave
-	XaphanHelper_get_VariaJacket_Desc_b= et protège des températures extrêmes
+	XaphanHelper_get_VariaJacket_Desc= Permet de survivre aux températures extrêmes
 	XaphanHelper_get_GravityJacket_Name= VESTE DE GRAVITÉ
-	XaphanHelper_get_GravityJacket_Desc= Permet de se déplacer librement dans les liquides
+	XaphanHelper_get_GravityJacket_Desc= Permet de se déplacer librement dans l'eau
 	XaphanHelper_get_LongBeam_Name= RAYON LONG
 	XaphanHelper_get_LongBeam_Desc= Permet aux rayons d'atteindre les cibles éloignées
 	XaphanHelper_get_LongBeam_Desc_drone= Permet au rayon du drone d'atteindre les cibles éloignées
