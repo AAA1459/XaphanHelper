@@ -5,6 +5,7 @@ using System.Collections;
 using Celeste.Mod.XaphanHelper.Colliders;
 using System.Reflection;
 using System;
+using Celeste.Mod.XaphanHelper.Enemies;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
@@ -348,23 +349,28 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     RemoveSelf();
                 };
                 Collider = new Circle(24f);
-                foreach (Entity entity in Scene.Tracker.GetEntities<CrystalStaticSpinner>())
+                foreach (CrystalStaticSpinner crystalSpinner in Scene.Tracker.GetEntities<CrystalStaticSpinner>())
                 {
-                    CrystalStaticSpinner crystalSpinner = (CrystalStaticSpinner)entity;
                     if (CollideCheck(crystalSpinner))
                     {
                         crystalSpinner.Destroy();
                     }
                 }
-                foreach (Entity entity in Scene.Tracker.GetEntities<CustomSpinner>())
+                foreach (CustomSpinner spinner in Scene.Tracker.GetEntities<CustomSpinner>())
                 {
-                    CustomSpinner spinner = (CustomSpinner)entity;
                     if (spinner.CanDestroy)
                     {
                         if (CollideCheck(spinner))
                         {
                             spinner.Destroy();
                         }
+                    }
+                }
+                foreach (Enemy enemy in Scene.Tracker.GetEntities<Enemy>())
+                {
+                    if (CollideCheck(enemy))
+                    {
+                        enemy.Die();
                     }
                 }
                 for (float num = 0f; num < (float)Math.PI * 4f; num += 0.17453292f)
