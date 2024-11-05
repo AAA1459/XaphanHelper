@@ -186,81 +186,73 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                     if (CollideCheck<Liquid>() && canFloat)
                     {
-                        break;
+                        Liquid liquid = SceneAs<Level>().Tracker.GetNearestEntity<Liquid>(BottomCenter);
+                        if (liquid != null)
+                        {
+                            if (liquid.liquidType == "Water")
+                            {
+                                Audio.Play("event:/char/madeline/water_in", BottomCenter, "deep", 1);
+                                liquid.PlaySplashIn(new Vector2(BottomCenter.X - 12f, liquid.Top - 21f));
+                            }
+                            while ((TopCenter.Y < (liquid.TopCenter.Y - 24f)) && !CollideCheck<SolidTiles>(Position + new Vector2(0f, 1f)))
+                            {
+                                speed = Calc.Approach(speed, maxSpeed, 500f * Engine.DeltaTime);
+                                if (MoveVCollideSolids(speed * Engine.DeltaTime, thruDashBlocks: true))
+                                {
+                                    break;
+                                }
+                                yield return null;
+                            }
+                            while (speed > 0)
+                            {
+                                speed = Calc.Approach(speed, 0, 350f * Engine.DeltaTime);
+                                if (MoveVCollideSolids(speed * Engine.DeltaTime, thruDashBlocks: true))
+                                {
+                                    break;
+                                }
+                                yield return null;
+                            }
+                            while (TopCenter.Y > (HasPlayerRider() ? liquid.TopCenter.Y + 8 : liquid.TopCenter.Y - 8))
+                            {
+                                speed = Calc.Approach(speed, -80f, 325f * Engine.DeltaTime);
+                                if (MoveVCollideSolids(speed * Engine.DeltaTime, thruDashBlocks: true))
+                                {
+                                    break;
+                                }
+                                yield return null;
+                            }
+                            while (true)
+                            {
+                                if ((HasPlayerRider() && !CollideCheck<SolidTiles>(Position + new Vector2(0f, 1f))) || TopCenter.Y > liquid.TopCenter.Y + 8)
+                                {
+                                    MoveTowardsY(liquid.TopCenter.Y + 8, Math.Max(0.3f, Math.Abs(liquid.TopCenter.Y + 8 - TopCenter.Y) / 24f));
+                                }
+                                else if (!HasPlayerRider() && (TopCenter.Y != liquid.TopCenter.Y - 8) && !CollideCheck<SolidTiles>(Position - new Vector2(0f, 1f)))
+                                {
+                                    MoveTowardsY(liquid.TopCenter.Y - 8, Math.Max(0.3f, Math.Abs(liquid.TopCenter.Y - 8 - TopCenter.Y) / 16f));
+                                }
+                                yield return null;
+                            }
+                        }
                     }
                     yield return null;
                 }
-                if (canFloat)
+                ImpactSfx();
+                Input.Rumble(RumbleStrength.Strong, RumbleLength.Medium);
+                SceneAs<Level>().DirectionalShake(Vector2.UnitY, 0.3f);
+                StartShaking();
+                LandParticles();
+                yield return 0.2f;
+                StopShaking();
+                if (CollideCheck<SolidTiles>(Position + new Vector2(0f, 1f)))
                 {
-                    Liquid liquid = SceneAs<Level>().Tracker.GetNearestEntity<Liquid>(BottomCenter);
-                    if (liquid != null)
-                    {
-                        if (liquid.liquidType == "Water")
-                        {
-                            Audio.Play("event:/char/madeline/water_in", BottomCenter, "deep", 1);
-                            liquid.PlaySplashIn(new Vector2(BottomCenter.X - 12f, liquid.Top - 21f));
-                        }
-                        while ((TopCenter.Y < (liquid.TopCenter.Y - 24f)) && !CollideCheck<SolidTiles>(Position + new Vector2(0f, 1f)))
-                        {
-                            speed = Calc.Approach(speed, maxSpeed, 500f * Engine.DeltaTime);
-                            if (MoveVCollideSolids(speed * Engine.DeltaTime, thruDashBlocks: true))
-                            {
-                                break;
-                            }
-                            yield return null;
-                        }
-                        while (speed > 0)
-                        {
-                            speed = Calc.Approach(speed, 0, 350f * Engine.DeltaTime);
-                            if (MoveVCollideSolids(speed * Engine.DeltaTime, thruDashBlocks: true))
-                            {
-                                break;
-                            }
-                            yield return null;
-                        }
-                        while (TopCenter.Y > (HasPlayerRider() ? liquid.TopCenter.Y + 8 : liquid.TopCenter.Y - 8))
-                        {
-                            speed = Calc.Approach(speed, -80f, 325f * Engine.DeltaTime);
-                            if (MoveVCollideSolids(speed * Engine.DeltaTime, thruDashBlocks: true))
-                            {
-                                break;
-                            }
-                            yield return null;
-                        }
-                        while (true)
-                        {
-                            if ((HasPlayerRider() && !CollideCheck<SolidTiles>(Position + new Vector2(0f, 1f))) || TopCenter.Y > liquid.TopCenter.Y + 8)
-                            {
-                                MoveTowardsY(liquid.TopCenter.Y + 8, Math.Max(0.3f, Math.Abs(liquid.TopCenter.Y + 8 - TopCenter.Y) / 24f));
-                            }
-                            else if (!HasPlayerRider() && (TopCenter.Y != liquid.TopCenter.Y - 8) && !CollideCheck<SolidTiles>(Position - new Vector2(0f, 1f)))
-                            {
-                                MoveTowardsY(liquid.TopCenter.Y - 8, Math.Max(0.3f, Math.Abs(liquid.TopCenter.Y - 8 - TopCenter.Y) / 16f));
-                            }
-                            yield return null;
-                        }
-                    }
                     break;
                 }
-                else
+                while (CollideCheck<Platform>(Position + new Vector2(0f, 1f)))
                 {
-                    ImpactSfx();
-                    Input.Rumble(RumbleStrength.Strong, RumbleLength.Medium);
-                    SceneAs<Level>().DirectionalShake(Vector2.UnitY, 0.3f);
-                    StartShaking();
-                    LandParticles();
-                    yield return 0.2f;
-                    StopShaking();
-                    if (CollideCheck<SolidTiles>(Position + new Vector2(0f, 1f)))
-                    {
-                        break;
-                    }
-                    while (CollideCheck<Platform>(Position + new Vector2(0f, 1f)))
-                    {
-                        yield return 0.1f;
-                    }
-                    Safe = true;
+                    yield return 0.1f;
                 }
+                Safe = true;
             }
         }
 
