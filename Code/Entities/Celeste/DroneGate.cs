@@ -135,7 +135,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Update();
             {
                 Drone drone = SceneAs<Level>().Tracker.GetEntity<Drone>();
-                if (string.IsNullOrEmpty(forceInactiveFlag) || (!string.IsNullOrEmpty(forceInactiveFlag) && !SceneAs<Level>().Session.GetFlag(forceInactiveFlag)))
+                if ((string.IsNullOrEmpty(forceInactiveFlag) || (!string.IsNullOrEmpty(forceInactiveFlag) && !SceneAs<Level>().Session.GetFlag(forceInactiveFlag))) && !CollideCheck<Solid>())
                 {
                     if (string.IsNullOrEmpty(flag) || (!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)))
                     {
