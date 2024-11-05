@@ -483,6 +483,8 @@ entities.XaphanHelper/Liquid.attributes.description.visualOnly=If true, the liqu
 entities.XaphanHelper/Liquid.attributes.description.canSwim=If true, the player will be able to swim in the liquid just like vanilla water.
 entities.XaphanHelper/Liquid.attributes.description.removeFlags=If any of these flags are set, the liquid will not appear. Flags must be separated by a comma (,).
 entities.XaphanHelper/Liquid.attributes.description.upsideDown=If true, the liquid will render upside down.
+entities.XaphanHelper/Liquid.attributes.description.insideTransparency= Transparency of the liquid when the player is completely inside. Values can be 0.01 to 1 and must be lower or equal than the normal Transparancy. The closest to 1, the more opaque the liquid will be.\nSetting this to 0 will use the same value as the normal transparency value.
+entities.XaphanHelper/Liquid.attributes.description.group=Id of the group this liquid is part of.\nAll liquids in the same group will use the transparency set in "inside Transparency" when the player in side of any of them.\n-1 = no group.
 
 # MagneticCeiling
 entities.XaphanHelper/MagneticCeiling.placements.name.MagneticCeiling=Magnetic Ceiling

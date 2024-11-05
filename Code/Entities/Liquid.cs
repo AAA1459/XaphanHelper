@@ -122,6 +122,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public DisplacementRenderHook Displacement;
 
+        public int group;
+
+        public bool groupLeader;
+
         public Liquid(EntityData data, Vector2 position, EntityID eid) : base(data.Position + position)
         {
             Tag = Tags.TransitionUpdate;
@@ -147,6 +151,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             visualOnly = data.Bool("visualOnly", false);
             canSwim = data.Bool("canSwim", false);
             upsideDown = data.Bool("upsideDown", false);
+            group = data.Int("group", -1);
             StartPos = Position;
             FinalPos = Position - new Vector2(0, riseDistance);
             if (delay == 0)
@@ -189,13 +194,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 outsideTransparency = 1f;
             }
-            if (insideTransparency <= 0f)
+            if (insideTransparency <= 0f || insideTransparency >= outsideTransparency)
             {
-                insideTransparency = 0;
-            }
-            if (insideTransparency >= 1f)
-            {
-                insideTransparency = 1f;
+                insideTransparency = outsideTransparency;
             }
             Depth = foreground ? -19999 : -9999;
             if (liquidType == "lava")
@@ -627,6 +628,35 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     RemoveSelf();
                 }
             }
+            if (group != -1)
+            {
+                groupLeader = true;
+                foreach (Liquid liquid in SceneAs<Level>().Tracker.GetEntities<Liquid>())
+                {
+                    if (liquid != this && liquid.group == group)
+                    {
+                        groupLeader = false;
+                    }
+                }
+            }
+        }
+
+        private Liquid leader;
+
+        public override void Awake(Scene scene)
+        {
+            base.Awake(scene);
+            if (!groupLeader)
+            {
+                foreach (Liquid liquid in SceneAs<Level>().Tracker.GetEntities<Liquid>())
+                {
+                    if (liquid.group == group && liquid.groupLeader)
+                    {
+                        leader = liquid;
+                        break;
+                    }
+                }
+            }
         }
 
         private IEnumerator ShakeLevel()
@@ -791,7 +821,20 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else
                 {
-                    currentTransparency = Calc.Approach(currentTransparency, insideTransparency, Engine.DeltaTime * 2f);
+                    if (group == -1 || groupLeader)
+                    {
+                        currentTransparency = Calc.Approach(currentTransparency, insideTransparency, Engine.DeltaTime * 2f);
+                    }
+                    else
+                    {
+                        foreach (Liquid liquid in SceneAs<Level>().Tracker.GetEntities<Liquid>())
+                        {
+                            if (leader != null && liquid.group == group)
+                            {
+                                currentTransparency = leader.currentTransparency;
+                            }
+                        }
+                    }
                 }
             }
             liquidSprite.Color = waterSplashIn.Color = waterSplashOut.Color = Calc.HexToColor(color) * currentTransparency;
@@ -1123,9 +1166,23 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             foreach (Player player in SceneAs<Level>().Tracker.GetEntities<Player>())
             {
-                if (CollideCheck(player) && (upsideDown ? player.Bottom < Bottom - 4 : player.Top > Top + 4) && player.Left > Left && player.Right < Right)
+                if (group == -1)
                 {
-                    return true;
+                    if (CollideCheck(player) && (upsideDown ? player.Bottom <= Bottom - 4 : player.Top >= Top + 4) && player.Left >= Left && player.Right <= Right)
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    foreach (Liquid liquid in SceneAs<Level>().Tracker.GetEntities<Liquid>())
+                    {
+                        if (liquid.CollideCheck(player) && (liquid.upsideDown ? player.Bottom <= liquid.Bottom - 4 : player.Top >= liquid.Top + 4))
+                        {
+                            return true;
+                        }
+                    }
+
                 }
             }
             return false;
