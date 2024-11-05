@@ -57,13 +57,13 @@ namespace Celeste.Mod.XaphanHelper.Effects
                 base.Update();
                 Distort.WaterSineDirection = -1f;
                 Distort.WaterAlpha = 0.5f;
-                if (!SceneAs<Level>().Transitioning)
+                if (!SceneAs<Level>().Transitioning || TransitionBlackEffect.AtEndOfTransition)
                 {
-                    SceneAs<Level>().NextColorGrade("hot", 0.85f);
+                    SceneAs<Level>().NextColorGrade("hot", 5f);
                 }
                 else
                 {
-                    SceneAs<Level>().NextColorGrade("none", 5f);
+                    SceneAs<Level>().NextColorGrade("none", 3f);
                 }
             }
 

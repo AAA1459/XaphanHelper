@@ -111,10 +111,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        public static bool AtEndOfTransition;
 
         private static IEnumerator TranstionRoutine(Level level)
         {
+            AtEndOfTransition = true;
             yield return 0.35f;
+            AtEndOfTransition = false;
             LevelTransition.SetValue(level, null);
         }
 
