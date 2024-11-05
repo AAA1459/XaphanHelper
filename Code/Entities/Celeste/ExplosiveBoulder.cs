@@ -64,6 +64,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Directory = "objects/XaphanHelper/ExplosiveBoulder";
             }
             Add(new PlayerCollider(onPlayer, new Circle(12f)));
+            Add(new EnemyCollider(onEnemy, new Circle(12f)));
             Add(new SpringCollider(onSpring, new Circle(12f)));
             Add(new WeaponCollider(HitByBeam, HitByMissile, new Circle(12f)));
             Add(Sprite = new Sprite(GFX.Game, Directory + "/"));
@@ -239,6 +240,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
             return vector;
         }
 
+        private void onEnemy(Enemy enemy)
+        {
+            Explode();
+            enemy.Die();
+        }
+
         private void onSpring(Spring spring)
         {
             if (!explode)
@@ -364,13 +371,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         {
                             spinner.Destroy();
                         }
-                    }
-                }
-                foreach (Enemy enemy in Scene.Tracker.GetEntities<Enemy>())
-                {
-                    if (CollideCheck(enemy))
-                    {
-                        enemy.Die();
                     }
                 }
                 for (float num = 0f; num < (float)Math.PI * 4f; num += 0.17453292f)

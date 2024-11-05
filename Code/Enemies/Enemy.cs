@@ -77,6 +77,10 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             {
                 Add(PowerBombIgnoreRoutine = new Coroutine(ImmuneToPowerBombSequence()));
             }
+            foreach (EnemyCollider enemyCollider in Scene.Tracker.GetComponents<EnemyCollider>())
+            {
+                enemyCollider.Check(this);
+            }
         }
 
         public void AfterUpdate()
