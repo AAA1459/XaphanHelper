@@ -700,6 +700,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         case "WaveBeam":
                             UpgDesc_b = null;
                             break;
+                        case "MissilesModule":
+                            useExtraLineDesc = true;
+                            break;
+                        case "SuperMissilesModule":
+                            useExtraLineDesc = true;
+                            break;
                         case "DroneTeleport":
                             controlA = XaphanModule.ModSettings.UseBagItemSlot;
                             inputActionA = "XaphanHelper_Press";
@@ -736,6 +742,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             break;
                         case "EtherealDash":
                             UpgDesc_b = null;
+                            break;
+                        case "ScrewAttack":
+                            useExtraLineDesc = true;
                             break;
                         case "Binoculars":
                             select = true;
