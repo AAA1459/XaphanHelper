@@ -88,6 +88,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string riseEndFlag;
 
+        private string appearFlags;
+
         private string removeFlags;
 
         private int origLevelBottom;
@@ -144,6 +146,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             riseShake = data.Bool("riseShake");
             riseFlag = data.Attr("riseFlag");
             riseEndFlag = data.Attr("riseEndFlag");
+            appearFlags = data.Attr("appearFlags");
             removeFlags = data.Attr("removeFlags");
             riseSound = data.Bool("riseSound");
             directory = data.Attr("directory");
@@ -593,7 +596,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            liquidSprite.Color = waterSplashIn.Color = waterSplashOut.Color = Calc.HexToColor(color) * (PlayerCompletelyInside() ? insideTransparency : outsideTransparency);
+            if (!string.IsNullOrEmpty(appearFlags))
+            {
+                string[] flags = appearFlags.Split(',');
+                foreach (string flag in flags)
+                {
+                    if (!SceneAs<Level>().Session.GetFlag(flag))
+                    {
+                        RemoveSelf();
+                        break;
+                    }
+                }
+            }
             if (!string.IsNullOrEmpty(removeFlags))
             {
                 string[] flags = removeFlags.Split(',');
@@ -606,6 +620,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
+            liquidSprite.Color = waterSplashIn.Color = waterSplashOut.Color = Calc.HexToColor(color) * (PlayerCompletelyInside() ? insideTransparency : outsideTransparency);
             origLevelBottom = SceneAs<Level>().Bounds.Bottom;
             if (liquidType == "lava")
             {
