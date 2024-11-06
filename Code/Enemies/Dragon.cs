@@ -73,7 +73,16 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             Right
         }
 
+        private enum ShootsDirections
+        {
+            Left,
+            Right,
+            Both
+        }
+
         private Facings Facing;
+
+        private ShootsDirections ShootDirection;
 
         Sprite Body;
 
@@ -119,6 +128,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             FireballTimer = data.Float("fireballTimer", 0.7f);
             Fireballs = data.Int("fireballs", 3);
             IdleTimer = data.Float("idleTimer", 2f);
+            ShootDirection = data.Enum< ShootsDirections>("shootDirection", ShootsDirections.Both);
             Add(MainRoutine = new Coroutine(Routine()));
         }
 
@@ -126,7 +136,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
         {
             base.Update();
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-            if (player != null && !Freezed)
+            if (player != null && !Freezed && ShootDirection == ShootsDirections.Both)
             {
                 foreach (Sprite sprite in sprites)
                 {
@@ -139,6 +149,14 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                 else
                 {
                     Facing = Facings.Right;
+                }
+            }
+            if (ShootDirection != ShootsDirections.Both)
+            {
+                Facing = ShootDirection == ShootsDirections.Left ? Facings.Left : Facings.Right;
+                foreach (Sprite sprite in sprites)
+                {
+                    sprite.FlipX = ShootDirection == ShootsDirections.Left;
                 }
             }
             NaiveMove(Vector2.UnitY * Speed.Y * Engine.DeltaTime);
@@ -161,6 +179,18 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             yield return initialDelay;
             while (true)
             {
+                // Wait if player is not in front and ShootsDirection is not both
+
+                if (ShootDirection != ShootsDirections.Both)
+                {
+                    Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+
+                    while (player != null && ShootDirection == ShootsDirections.Right ? player.Center.X <= Center.X : player.Center.X > Center.X)
+                    {
+                        yield return null;
+                    }
+                }
+
                 // Rise for 2 tiles
 
                 while (Position.Y > StartHeight - 16)
