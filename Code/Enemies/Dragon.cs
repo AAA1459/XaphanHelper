@@ -17,29 +17,42 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
             public Vector2 Speed;
 
+            private bool CanPlaySound = true;
+
+            private Collision onCollide;
+
             public DragonFireball(Vector2 offset, Vector2 speed, bool toLeft) : base(offset)
             {
                 Add(pc = new PlayerCollider(onCollidePlayer, new Circle(2f)));
+                Collider = new Hitbox(2, 2, -1, -1);
                 Add(Sprite = new Sprite(GFX.Game, "enemies/Xaphan/Dragon/"));
                 Sprite.Origin = Vector2.One * 4;
                 Sprite.AddLoop("fireball", "fireball", 0.06f);
+                Sprite.Add("explode", "fireballExplode", 0.06f);
                 Sprite.Play("fireball");
                 Speed = new Vector2(speed.X * (toLeft ? -1 : 1), speed.Y); // for random : new Vector2((speed.X + Calc.Random.Next(-15, 16)) * (toLeft ? -1 : 1), speed.Y + Calc.Random.Next(-15, 16));
                 Add(new Coroutine(GravityRoutine()));
+                onCollide = OnCollide;
                 Depth = 1;
             }
 
             public override void Added(Scene scene)
             {
                 base.Added(scene);
-                Audio.Play("event:/game/xaphan/torizo_fireball", Position);
+                if (InView())
+                {
+                    Audio.Play("event:/game/xaphan/torizo_fireball", Position);
+                }
             }
 
             public override void Update()
             {
                 base.Update();
-                MoveH(Speed.X * Engine.DeltaTime);
-                MoveV(Speed.Y * Engine.DeltaTime);
+                if (Collidable)
+                {
+                    MoveH(Speed.X * Engine.DeltaTime, onCollide);
+                    MoveV(Speed.Y * Engine.DeltaTime, onCollide);
+                }
                 if (Center.X > SceneAs<Level>().Bounds.Right || Center.X < SceneAs<Level>().Bounds.Left || Center.Y > SceneAs<Level>().Bounds.Bottom)
                 {
                     RemoveSelf();
@@ -55,9 +68,34 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                 }
             }
 
+            private void OnCollide(CollisionData data)
+            {
+                if (InView() && CanPlaySound)
+                {
+                    CanPlaySound = false;
+                    Audio.Play("event:/game/xaphan/torizo_fireball_explode", Position);
+                }
+                Collidable = false;
+                Speed = Vector2.Zero;
+                Sprite.Play("explode");
+                Sprite.OnLastFrame = delegate
+                {
+                    if (Sprite.CurrentAnimationID == "explode")
+                    {
+                        RemoveSelf();
+                    }
+                };
+            }
+
             private void onCollidePlayer(Player player)
             {
                 player.Die((player.Position - Position).SafeNormalize());
+            }
+
+            private bool InView()
+            {
+                Camera camera = (Scene as Level).Camera;
+                return base.X > camera.X - 16f && Y > camera.Y - 16f && X < camera.X + 320f + 16f && Y < camera.Y + 180f + 16f;
             }
 
             public override void Render()
