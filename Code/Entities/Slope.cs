@@ -676,9 +676,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             List<Entity> slopes = entity.Scene.Tracker.GetEntities<Slope>().ToList();
             Player player = entity.Scene.Tracker.GetEntity<Player>();
             slopes.ForEach(entity => entity.Collidable = false);
+
             foreach (PlayerPlatform platform in entity.Scene.Tracker.GetEntities<PlayerPlatform>())
             {
-                platform.SetCollision(player);
+                platform.RestoreCollisionForPlayer();
             }
         }
 
