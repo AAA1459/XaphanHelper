@@ -73,7 +73,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             Right
         }
 
-        private enum ShootsDirections
+        private enum ShootDirections
         {
             Left,
             Right,
@@ -82,7 +82,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         private Facings Facing;
 
-        private ShootsDirections ShootDirection;
+        private ShootDirections ShootDirection;
 
         Sprite Body;
 
@@ -128,7 +128,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             FireballTimer = data.Float("fireballTimer", 0.7f);
             Fireballs = data.Int("fireballs", 3);
             IdleTimer = data.Float("idleTimer", 2f);
-            ShootDirection = data.Enum< ShootsDirections>("shootDirection", ShootsDirections.Both);
+            ShootDirection = data.Enum< ShootDirections>("shootDirection", ShootDirections.Both);
             Add(MainRoutine = new Coroutine(Routine()));
         }
 
@@ -136,7 +136,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
         {
             base.Update();
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-            if (player != null && !Freezed && ShootDirection == ShootsDirections.Both)
+            if (player != null && !Freezed && ShootDirection == ShootDirections.Both)
             {
                 foreach (Sprite sprite in sprites)
                 {
@@ -151,12 +151,12 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                     Facing = Facings.Right;
                 }
             }
-            if (ShootDirection != ShootsDirections.Both)
+            if (ShootDirection != ShootDirections.Both)
             {
-                Facing = ShootDirection == ShootsDirections.Left ? Facings.Left : Facings.Right;
+                Facing = ShootDirection == ShootDirections.Left ? Facings.Left : Facings.Right;
                 foreach (Sprite sprite in sprites)
                 {
-                    sprite.FlipX = ShootDirection == ShootsDirections.Left;
+                    sprite.FlipX = ShootDirection == ShootDirections.Left;
                 }
             }
             NaiveMove(Vector2.UnitY * Speed.Y * Engine.DeltaTime);
@@ -181,11 +181,11 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             {
                 // Wait if player is not in front and ShootsDirection is not both
 
-                if (ShootDirection != ShootsDirections.Both)
+                if (ShootDirection != ShootDirections.Both)
                 {
                     Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
 
-                    while (player != null && ShootDirection == ShootsDirections.Right ? player.Center.X <= Center.X : player.Center.X > Center.X)
+                    while (player != null && ShootDirection == ShootDirections.Right ? player.Center.X <= Center.X : player.Center.X > Center.X)
                     {
                         yield return null;
                     }
