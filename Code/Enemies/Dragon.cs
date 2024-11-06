@@ -140,6 +140,8 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         private float FireballTimer;
 
+        private float ShootStrength;
+
         public Dragon(EntityData data, Vector2 offset) : base(data, offset + Vector2.UnitY * 16)
         {
             initialDelay = data.Float("initialDelay");
@@ -167,6 +169,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             Fireballs = data.Int("fireballs", 3);
             IdleTimer = data.Float("idleTimer", 2f);
             ShootDirection = data.Enum< ShootDirections>("shootDirection", ShootDirections.Both);
+            ShootStrength = data.Float("shootStrength", 1f);
             Add(MainRoutine = new Coroutine(Routine()));
         }
 
@@ -279,7 +282,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             float animationTime = 0.08f * Head.CurrentAnimationTotalFrames;
             yield return animationTime;
             timer -= animationTime;
-            SceneAs<Level>().Add(new DragonFireball(new Vector2((Facing == Facings.Left ? TopLeft.X - 3f : TopRight.X + 3f), Top - 3f), new Vector2(110f, -140f), Facing == Facings.Left));
+            SceneAs<Level>().Add(new DragonFireball(new Vector2((Facing == Facings.Left ? TopLeft.X - 3f : TopRight.X + 3f), Top - 3f), new Vector2(110f, -140f) * ShootStrength, Facing == Facings.Left));
             yield return timer;
         }
     }
