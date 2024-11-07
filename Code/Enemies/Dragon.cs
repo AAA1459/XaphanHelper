@@ -220,16 +220,15 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         public IEnumerator Routine()
         {
+            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
             yield return initialDelay;
-            while (true)
+            while (player != null)
             {
                 // Wait if player is not in front and ShootsDirection is not both
 
                 if (ShootDirection != ShootDirections.Both)
                 {
-                    Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-
-                    while (player != null && ShootDirection == ShootDirections.Right ? player.Center.X <= Center.X : player.Center.X > Center.X)
+                    while (ShootDirection == ShootDirections.Right ? player.Center.X <= Center.X : player.Center.X > Center.X)
                     {
                         yield return null;
                     }
