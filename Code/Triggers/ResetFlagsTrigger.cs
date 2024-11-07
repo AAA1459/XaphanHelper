@@ -82,12 +82,14 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                         if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
                         {
                             XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag);
+                            SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + flag, true);
                         }
                         if (XaphanModule.PlayerHasGolden)
                         {
                             if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry"))
                             {
                                 XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry");
+                                SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry", true);
                             }
                         }
                     }
@@ -115,12 +117,14 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                         if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
                         {
                             XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + flag);
+                            SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + flag, false);
                         }
                         if (XaphanModule.PlayerHasGolden)
                         {
                             if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry"))
                             {
                                 XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry");
+                                SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry", false);
                             }
                         }
                     }
