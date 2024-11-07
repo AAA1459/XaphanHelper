@@ -8,20 +8,28 @@ namespace Celeste.Mod.XaphanHelper.Triggers
     [CustomEntity("XaphanHelper/DisableMovementTrigger")]
     class DisableMovementTrigger : Trigger
     {
+        private enum EndFacings
+        {
+            Left,
+            Right
+        }
+
         private string Flag;
 
         private float Time;
 
         private bool WalkCenter;
 
-        private bool SwitchFacing;
+        private EndFacings EndFacing;
+
+        private Coroutine WaitRoutine = new();
 
         public DisableMovementTrigger(EntityData data, Vector2 offset) : base(data, offset)
         {
             Flag = data.Attr("flag");
             Time = data.Float("time");
             WalkCenter = data.Bool("walkCenter");
-            SwitchFacing = data.Bool("switchFacing");
+            EndFacing = data.Enum< EndFacings>("endFacing");
         }
 
         public override void Added(Scene scene)
@@ -33,35 +41,37 @@ namespace Celeste.Mod.XaphanHelper.Triggers
             }
         }
 
-        public override void OnStay(Player player)
+        public override void OnEnter(Player player)
         {
-            base.OnStay(player);
-            if (!Triggered && !string.IsNullOrEmpty(Flag) && SceneAs<Level>().Session.GetFlag(Flag))
+            base.OnEnter(player);
+            if (!WaitRoutine.Active)
             {
-                Add(new Coroutine(WaitRoutine(player)));
+                Add(WaitRoutine = new Coroutine(Wait(player)));
             }
         }
 
-        private IEnumerator WaitRoutine(Player player)
+        private IEnumerator Wait(Player player)
         {
-            Triggered = true;
+            while (!SceneAs<Level>().Session.GetFlag(Flag))
+            {
+                yield return null;
+            }
             player.StateMachine.State = Player.StDummy;
             SceneAs<Level>().CanRetry = false;
+            Facings currentFacing = player.Facing;
             if (WalkCenter)
             {
-                yield return player.DummyWalkTo(Center.X - 4f);
+                Logger.Log(LogLevel.Info, "Xh", "Player at position X : " + player.X);
+                Logger.Log(LogLevel.Info, "Xh", "Player Will walk to : " + (currentFacing == Facings.Left ? Center.X - 4f : Center.X + 4f));
+                yield return player.DummyWalkTo(currentFacing == Facings.Left ? Center.X - 4f : Center.X + 4f);
             }
-            if (SwitchFacing)
+            if (EndFacing == EndFacings.Left)
             {
-                Facings currentFacing = player.Facing;
-                if (currentFacing == Facings.Left)
-                {
-                    player.Facing = Facings.Right;
-                }
-                else
-                {
-                    player.Facing = Facings.Left;
-                }
+                player.Facing = Facings.Left;
+            }
+            else
+            {
+                player.Facing = Facings.Right;
             }
             while (Time > 0)
             {
@@ -70,6 +80,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
             }
             player.StateMachine.State = Player.StNormal;
             SceneAs<Level>().CanRetry = true;
+            RemoveSelf();
         }
     }
 }

@@ -1245,7 +1245,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                     }
                                 }
                             }
-                            else
+                            /*else -- Kill the drone in dummy state ??? Why ?
                             {
                                 Drone drone = SceneAs<Level>().Tracker.GetEntity<Drone>();
                                 if (player.StateMachine.State == 11 && drone != null && !drone.dead)
@@ -1253,7 +1253,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                     player.Die(new Vector2(0f, -1f));
                                     Add(new Coroutine(drone.Destroy(true, true)));
                                 }
-                            }
+                            }*/
                         }
                     }
                 }
