@@ -100,7 +100,10 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
             public override void Render()
             {
-                Sprite.DrawOutline();
+                if (Sprite.CurrentAnimationID == "fireball")
+                {
+                    Sprite.DrawOutline();
+                }
                 base.Render();
             }
         }
