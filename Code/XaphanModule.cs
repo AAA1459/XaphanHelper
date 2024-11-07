@@ -3333,19 +3333,7 @@ namespace Celeste.Mod.XaphanHelper
                 level.DoScreenWipe(false, delegate
                 {
                     onTitleScreen = false;
-                    MergedChaptersGoldenStrawberry.ResetProgression(level, true);
-                    SoCMTitleFromGame = true;
-                    SkipSoCMIntro = false;
-                    level.Session.SetFlag("XaphanHelper_Loaded_Player", false);
-                    ModSaveData.LoadedPlayer = false;
-                    long currentTime = level.Session.Time;
-                    LevelEnter.Go(new Session(new AreaKey(AreaData.Get("Xaphan/0/0-Prologue").ToKey(AreaMode.Normal).ID))
-                    {
-                        Time = currentTime,
-                        DoNotLoad = ModSaveData.SavedNoLoadEntities.ContainsKey(level.Session.Area.LevelSet) ? ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet] : new HashSet<EntityID>(),
-                        Strawberries = ModSaveData.SavedSessionStrawberries.ContainsKey(level.Session.Area.LevelSet) ? ModSaveData.SavedSessionStrawberries[level.Session.Area.LevelSet] : new HashSet<EntityID>()
-                    }
-                    , fromSaveData: false);
+                    ReturnToTitleScreen(level);
                 });
             }));
             menu.Add(new TextMenu.Button(Dialog.Clean("menu_return_cancel")).Pressed(delegate
@@ -3368,6 +3356,25 @@ namespace Celeste.Mod.XaphanHelper
                 level.Pause(returnIndex, minimal: false);
             };
             level.Add(menu);
+        }
+
+        public static void ReturnToTitleScreen(Level level)
+        {
+            level.Paused = true;
+            onTitleScreen = false;
+            MergedChaptersGoldenStrawberry.ResetProgression(level, true);
+            SoCMTitleFromGame = true;
+            SkipSoCMIntro = false;
+            level.Session.SetFlag("XaphanHelper_Loaded_Player", false);
+            ModSaveData.LoadedPlayer = false;
+            long currentTime = level.Session.Time;
+            LevelEnter.Go(new Session(new AreaKey(AreaData.Get("Xaphan/0/0-Prologue").ToKey(AreaMode.Normal).ID))
+            {
+                Time = currentTime,
+                DoNotLoad = ModSaveData.SavedNoLoadEntities.ContainsKey(level.Session.Area.LevelSet) ? ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet] : new HashSet<EntityID>(),
+                Strawberries = ModSaveData.SavedSessionStrawberries.ContainsKey(level.Session.Area.LevelSet) ? ModSaveData.SavedSessionStrawberries[level.Session.Area.LevelSet] : new HashSet<EntityID>()
+            }
+            , fromSaveData: false);
         }
 
         private IEnumerator modLevelEnterRoutine(On.Celeste.LevelEnter.orig_Routine orig, LevelEnter self)
