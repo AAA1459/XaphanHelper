@@ -231,112 +231,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (!rewind)
             {
-                float position = lengths[lengths.Length - 1] * percent;
-                int previousNode = 0;
-                int nextNode = 0;
-                foreach (float length in lengths)
-                {
-                    if (position >= length)
-                    {
-                        bool isLastNode = Array.IndexOf(lengths, length) == lengths.GetUpperBound(0);
-                        previousNode = !isLastNode ? Array.IndexOf(lengths, length) : Array.IndexOf(lengths, length) - 1;
-                        nextNode = previousNode + 1;
-                    }
-                }
-
-                if (direction.X == -1)
-                {
-                    if (nodes[previousNode].X < GetPercentPosition(percent).X)
-                    {
-                        this.direction = -1;
-                    }
-                    else if (nodes[previousNode].X > GetPercentPosition(percent).X)
-                    {
-                        this.direction = 1;
-                    }
-                    else if (nodes[nextNode].X < GetPercentPosition(percent).X)
-                    {
-                        this.direction = 1;
-                    }
-                    else if (nodes[nextNode].X > GetPercentPosition(percent).X)
-                    {
-                        this.direction = -1;
-                    }
-                    else
-                    {
-                        this.direction = 0;
-                    }
-                }
-                else if (direction.X == 1)
-                {
-                    if (nodes[nextNode].X > GetPercentPosition(percent).X)
-                    {
-                        this.direction = 1;
-                    }
-                    else if ((nodes[nextNode].X < GetPercentPosition(percent).X))
-                    {
-                        this.direction = -1;
-                    }
-                    else if (nodes[previousNode].X > GetPercentPosition(percent).X)
-                    {
-                        this.direction = -1;
-                    }
-                    else if ((nodes[previousNode].X < GetPercentPosition(percent).X))
-                    {
-                        this.direction = 1;
-                    }
-                    else
-                    {
-                        this.direction = 0;
-                    }
-                }
-                else if (direction.Y == -1)
-                {
-                    
-                    if (nodes[previousNode].Y < GetPercentPosition(percent).Y)
-                    {
-                        this.direction = -1;
-                    }
-                    else if (nodes[previousNode].Y > GetPercentPosition(percent).Y)
-                    {
-                        this.direction = 1;
-                    }
-                    else if (nodes[nextNode].Y < GetPercentPosition(percent).Y)
-                    {
-                        this.direction = 1;
-                    }
-                    else if (nodes[nextNode].Y > GetPercentPosition(percent).Y)
-                    {
-                        this.direction = -1;
-                    }
-                    else
-                    {
-                        this.direction = 0;
-                    }
-                }
-                else if (direction.Y == 1)
-                {
-                    if (nodes[nextNode].Y > GetPercentPosition(percent).Y)
-                    {
-                        this.direction = 1;
-                    }
-                    else if ((nodes[nextNode].Y < GetPercentPosition(percent).Y))
-                    {
-                        this.direction = -1;
-                    }
-                    else if (nodes[previousNode].Y > GetPercentPosition(percent).Y)
-                    {
-                        this.direction = -1;
-                    }
-                    else if ((nodes[previousNode].Y < GetPercentPosition(percent).Y))
-                    {
-                        this.direction = 1;
-                    }
-                    else
-                    {
-                        this.direction = 0;
-                    }
-                }
+                DetermineMoveDirection(direction);
                 speed = 240f * speedMult / lengths[lengths.Length - 1];
             }
             
@@ -350,6 +245,125 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
 
             return DashCollisionResults.NormalCollision;
+        }
+
+        public void Push(Vector2 direction, float strength)
+        {
+            if (!rewind)
+            {
+                DetermineMoveDirection(direction);
+                speed = strength * speedMult / lengths[lengths.Length - 1];
+            }
+        }
+
+        private void DetermineMoveDirection(Vector2 direction)
+        {
+            float position = lengths[lengths.Length - 1] * percent;
+            int previousNode = 0;
+            int nextNode = 0;
+            foreach (float length in lengths)
+            {
+                if (position >= length)
+                {
+                    bool isLastNode = Array.IndexOf(lengths, length) == lengths.GetUpperBound(0);
+                    previousNode = !isLastNode ? Array.IndexOf(lengths, length) : Array.IndexOf(lengths, length) - 1;
+                    nextNode = previousNode + 1;
+                }
+            }
+
+            if (direction.X == -1)
+            {
+                if (nodes[previousNode].X < GetPercentPosition(percent).X)
+                {
+                    this.direction = -1;
+                }
+                else if (nodes[previousNode].X > GetPercentPosition(percent).X)
+                {
+                    this.direction = 1;
+                }
+                else if (nodes[nextNode].X < GetPercentPosition(percent).X)
+                {
+                    this.direction = 1;
+                }
+                else if (nodes[nextNode].X > GetPercentPosition(percent).X)
+                {
+                    this.direction = -1;
+                }
+                else
+                {
+                    this.direction = 0;
+                }
+            }
+            else if (direction.X == 1)
+            {
+                if (nodes[nextNode].X > GetPercentPosition(percent).X)
+                {
+                    this.direction = 1;
+                }
+                else if ((nodes[nextNode].X < GetPercentPosition(percent).X))
+                {
+                    this.direction = -1;
+                }
+                else if (nodes[previousNode].X > GetPercentPosition(percent).X)
+                {
+                    this.direction = -1;
+                }
+                else if ((nodes[previousNode].X < GetPercentPosition(percent).X))
+                {
+                    this.direction = 1;
+                }
+                else
+                {
+                    this.direction = 0;
+                }
+            }
+            else if (direction.Y == -1)
+            {
+
+                if (nodes[previousNode].Y < GetPercentPosition(percent).Y)
+                {
+                    this.direction = -1;
+                }
+                else if (nodes[previousNode].Y > GetPercentPosition(percent).Y)
+                {
+                    this.direction = 1;
+                }
+                else if (nodes[nextNode].Y < GetPercentPosition(percent).Y)
+                {
+                    this.direction = 1;
+                }
+                else if (nodes[nextNode].Y > GetPercentPosition(percent).Y)
+                {
+                    this.direction = -1;
+                }
+                else
+                {
+                    this.direction = 0;
+                }
+            }
+            else if (direction.Y == 1)
+            {
+                if (nodes[nextNode].Y > GetPercentPosition(percent).Y)
+                {
+                    this.direction = 1;
+                }
+                else if ((nodes[nextNode].Y < GetPercentPosition(percent).Y))
+                {
+                    this.direction = -1;
+                }
+                else if (nodes[previousNode].Y > GetPercentPosition(percent).Y)
+                {
+                    this.direction = -1;
+                }
+                else if ((nodes[previousNode].Y < GetPercentPosition(percent).Y))
+                {
+                    this.direction = 1;
+                }
+                else
+                {
+                    this.direction = 0;
+                }
+            }
         }
 
         public RailBlock(EntityData data, Vector2 offset, EntityID eid) : this(
