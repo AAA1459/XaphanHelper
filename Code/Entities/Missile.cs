@@ -437,6 +437,20 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     bounceBlock.Bounce(Direction, !SuperMissile);
                 }
             }
+            foreach (BubbleBlock bubbleBlock in Scene.Tracker.GetEntities<BubbleBlock>())
+            {
+                if (CollideCheck(bubbleBlock, Position + dir))
+                {
+                    if (SuperMissile)
+                    {
+                        bubbleBlock.Destroy();
+                    }
+                    else
+                    {
+                        bubbleBlock.OnDashed(Vector2.Zero);
+                    }
+                }
+            }
             if (XaphanModule.useMetroidGameplay)
             {
                 foreach (BubbleDoor bubbleDoor in Scene.Tracker.GetEntities<BubbleDoor>())

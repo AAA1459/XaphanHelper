@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections;
-using System.IO;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
-
+    [Tracked]
     [CustomEntity("XaphanHelper/BubbleBlock")]
     public class BubbleBlock : Solid
     {
@@ -33,7 +32,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             private SineWave sine;
 
-            public RespawnDebris Init(Vector2 from, Vector2 to, float duration, Image image)
+            private bool Reform;
+
+            public RespawnDebris Init(Vector2 from, Vector2 to, float duration, Image image, bool reform = true)
             {
                 Add(sine = new SineWave(0.44f, 0f).Randomize());
                 if (sprite == null)
@@ -53,6 +54,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     noMove = true;
                 }
+                Reform = reform;
                 return this;
             }
 
@@ -61,27 +63,50 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 timer += Engine.DeltaTime;
                 sine.Update();
                 sprite.Position = new Vector2(sine.Value * (percent < 0.5f ? 2f : (percent < 0.75f ? 1f : 0f)), sine.ValueOverTwo * (percent < 0.5f ? 2f : (percent < 0.75f ? 1f : 0f)));
-                if (percent < 0.3f)
+                if (Reform)
                 {
-                    percent += Engine.DeltaTime / duration;
-                    Position = Vector2.Lerp(from, to, Ease.ElasticOut(percent * 2));
-                    alpha = noMove ? 1 - percent * 33 : 1 - percent;
-                    sprite.Color = Color.White * alpha;
-                }
-                else if (percent <= 0.5f)
-                {
-                    percent += Engine.DeltaTime / duration;
-                    currentPos = Position;
+                    if (percent < 0.3f)
+                    {
+                        percent += Engine.DeltaTime / duration;
+                        Position = Vector2.Lerp(from, to, Ease.ElasticOut(percent * 2));
+                        alpha = noMove ? 1 - percent * 33 : 1 - percent;
+                        sprite.Color = Color.White * alpha;
+                    }
+                    else if (percent <= 0.5f)
+                    {
+                        percent += Engine.DeltaTime / duration;
+                        currentPos = Position;
+                    }
+                    else
+                    {
+                        percent += Engine.DeltaTime / duration;
+                        Position = Vector2.Lerp(currentPos, from, Ease.QuintOut(percent - 0.5f));
+                        alpha = noMove ? (percent - 0.5f) * 2 : percent;
+                        sprite.Color = Color.White * alpha;
+                        if (percent >= 1f)
+                        {
+                            RemoveSelf();
+                        }
+                    }
                 }
                 else
                 {
-                    percent += Engine.DeltaTime / duration;
-                    Position = Vector2.Lerp(currentPos, from, Ease.QuintOut(percent - 0.5f));
-                    alpha = noMove ? (percent - 0.5f) * 2 : percent;
-                    sprite.Color = Color.White * alpha;
-                    if (percent >= 1f)
+                    if (percent < 0.3f)
                     {
-                        RemoveSelf();
+                        percent += Engine.DeltaTime / duration;
+                        Position = Vector2.Lerp(from, to, Ease.ElasticOut(percent * 2));
+                        alpha = noMove ? 1 - percent * 33 : 1 - percent;
+                        sprite.Color = Color.White * alpha;
+                    }
+                    else
+                    {
+                        percent += Engine.DeltaTime / duration;
+                        alpha = noMove ? 0 : 1 - percent;
+                        sprite.Color = Color.White * alpha;
+                        if (percent >= 1f)
+                        {
+                            RemoveSelf();
+                        }
                     }
                 }
             }
@@ -191,11 +216,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
             return DashCollisionResults.Ignore;
         }*/
 
-        private void OnDashed(Vector2 vector)
+        public void OnDashed(Vector2 vector)
         {
             if (!breakRoutine.Active)
             {
                 Add(breakRoutine = new Coroutine(Sequence()));
+            }
+        }
+
+        public void Destroy()
+        {
+            if (!breakRoutine.Active)
+            {
+                Add(breakRoutine = new Coroutine(DestroyRoutine()));
             }
         }
 
@@ -252,6 +285,50 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Audio.Play("event:/game/xaphan/bubble_block_reform", Position);
             }
             yield return 0.5f;
+        }
+
+        private IEnumerator DestroyRoutine()
+        {
+            float respawnTimer = 1.5f;
+            for (int i = 0; i < Width; i += 8)
+            {
+                for (int j = 0; j < Height; j += 8)
+                {
+                    Vector2 vector = new Vector2(X + i + 4f, Y + j + 4f);
+                    Vector2 mult = new Vector2(Math.Abs(vector.X - Center.X) / (Width / 2), Math.Abs(vector.Y - Center.Y) / (Height / 2)) + Vector2.One * 1.25f;
+                    Image debrisImage = null;
+                    foreach (Component component in Components)
+                    {
+                        if (component.GetType() == typeof(Image))
+                        {
+                            Image image = (Image)component;
+                            if (image.X == i + (image.Width == 16 ? 8 : 4) && image.Y == j + (image.Height == 16 ? 8 : 4))
+                            {
+                                debrisImage = image;
+                                if (image.Width == 16 && image.Height == 16)
+                                {
+                                    vector += Vector2.One * 4f;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    if (debrisImage != null)
+                    {
+                        Scene.Add(Engine.Pooler.Create<RespawnDebris>().Init(vector, vector + (vector - Center).SafeNormalize() * 16f * mult, respawnTimer, debrisImage, false));
+                    }
+                }
+            }
+            Collidable = Visible = false;
+            DisableStaticMovers();
+            Audio.Play("event:/game/xaphan/bubble_block_break", Position);
+            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+            while (respawnTimer >= 0)
+            {
+                respawnTimer -= Engine.DeltaTime;
+                yield return null;
+            }
+            RemoveSelf();
         }
 
         public override void Render()
