@@ -296,6 +296,20 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
         }
 
+        public static void UpdateTiles(Entity entity)
+        {
+            if (XaphanModule.ModSettings.ShowMiniMap)
+            {
+                MapDisplay mapDisplay = entity.SceneAs<Level>().Tracker.GetEntity<MapDisplay>();
+                if (mapDisplay != null)
+                {
+                    mapDisplay.HeatedRooms.Clear();
+                    mapDisplay.GetHeatedRooms();
+                    mapDisplay.GenerateTiles();
+                }
+            }
+        }
+
         public void SetGrid()
         {
             if (mode == "map" || mode == "worldmap")

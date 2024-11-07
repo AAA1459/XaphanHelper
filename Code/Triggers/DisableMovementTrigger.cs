@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -61,8 +62,6 @@ namespace Celeste.Mod.XaphanHelper.Triggers
             Facings currentFacing = player.Facing;
             if (WalkCenter)
             {
-                Logger.Log(LogLevel.Info, "Xh", "Player at position X : " + player.X);
-                Logger.Log(LogLevel.Info, "Xh", "Player Will walk to : " + (currentFacing == Facings.Left ? Center.X - 4f : Center.X + 4f));
                 yield return player.DummyWalkTo(currentFacing == Facings.Left ? Center.X - 4f : Center.X + 4f);
             }
             if (EndFacing == EndFacings.Left)
@@ -79,6 +78,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                 yield return null;
             }
             player.StateMachine.State = Player.StNormal;
+            MapDisplay.UpdateTiles(this);
             SceneAs<Level>().CanRetry = true;
             RemoveSelf();
         }
