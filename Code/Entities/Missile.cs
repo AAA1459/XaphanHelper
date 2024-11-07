@@ -474,6 +474,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public void CollideImmune(Vector2 dir, float extraXSpeed = 0f)
         {
             Collidable = false;
+            Collider = null;
             Audio.Play("event:/game/xaphan/impact_immune", Position);
             Add(new Coroutine(BounceRoutine(dir, extraXSpeed)));
         }
@@ -486,7 +487,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             missileSprite.Position = new Vector2(Width / 2, Height / 2);
             float RotationVelocity = 20f;
             int bounceDirection = dir.X < 0 ? 1 : -1;
-            while (true)
+            float fadeTimer = dir.Y == 0 ? 1f : 0.5f;
+            while (fadeTimer > 0f)
             {
                 Rotation -= MathHelper.ToRadians(RotationVelocity);
                 missileSprite.Rotation = Rotation;
@@ -495,8 +497,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     Speed.X += 5f * bounceDirection;
                 }
+                missileSprite.Color = Color.White * fadeTimer * (dir.Y == 0 ? 1f : 2f);
+                fadeTimer -= Engine.DeltaTime;
                 yield return null;
             }
+            RemoveSelf();
         }
     }
 }
