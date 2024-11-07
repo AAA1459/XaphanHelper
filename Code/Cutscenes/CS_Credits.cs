@@ -186,6 +186,10 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 {
                     XaphanModule.ReturnToTitleScreen(level);
                 }
+                else
+                {
+                    level.CompleteArea(spotlightWipe: false, skipScreenWipe: true, skipCompleteScreen: true);
+                }
             }
             else
             {
