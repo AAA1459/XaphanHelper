@@ -444,29 +444,32 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     CanShake = false;
                 }
-                if (speed > 0)
+                if (!(percent <= 0 && direction == -1 && !rewind) && !(percent >=1 && direction == 1 && rewind) && direction != 0)
                 {
-                    if (LoopSfx == null)
+                    if (speed > 0)
                     {
-                       LoopSfx = Audio.Play("event:/game/09_core/conveyor_activate", Position, "end", 0f);
+                        if (LoopSfx == null)
+                        {
+                            LoopSfx = Audio.Play("event:/game/09_core/conveyor_activate", Position, "end", 0f);
+                        }
+                        Audio.Position(LoopSfx, Position);
                     }
-                    Audio.Position(LoopSfx, Position);
-                }
-                else
-                {
-                    if (LoopSfx != null)
+                    else
                     {
-                        if (percent > 0 && percent < 1)
+                        if (LoopSfx != null)
                         {
-                            LoopSfx.setParameterValue("end", 1f);
-                            LoopSfx.release();
+                            if (percent > 0 && percent < 1)
+                            {
+                                LoopSfx.setParameterValue("end", 1f);
+                                LoopSfx.release();
+                            }
+                            else
+                            {
+                                Audio.Stop(LoopSfx);
+                                Audio.Play("event:/game/xaphan/zip_mover_impact", Position);
+                            }
+                            LoopSfx = null;
                         }
-                        else
-                        {
-                            Audio.Stop(LoopSfx);
-                            Audio.Play("event:/game/xaphan/zip_mover_impact", Position);
-                        }
-                        LoopSfx = null;
                     }
                 }
                 if (direction == -1 && percent > 0)
