@@ -37,6 +37,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Add(sprite = new Sprite(GFX.Game, "objects/XaphanHelper/liquid/"));
                 sprite.AddLoop("idle", "bubble", 0.08f, 0);
                 sprite.AddLoop("break", "bubble", 0.08f, 1);
+                sprite.Color = Color.White * 0.7f;
                 sprite.Play("idle");
                 liquid = sourceLquid;
                 Add(sine = new SineWave(0.44f, 0f).Randomize());

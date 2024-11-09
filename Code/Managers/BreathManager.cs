@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Reflection;
 using Celeste.Mod.XaphanHelper.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.Cil;
 
 namespace Celeste.Mod.XaphanHelper.Managers
 {
@@ -24,6 +22,8 @@ namespace Celeste.Mod.XaphanHelper.Managers
         public bool isVisible;
 
         private Coroutine AirRoutine = new();
+
+        public static bool forceRechargeAir;
 
         public BreathManager()
         {
@@ -46,7 +46,7 @@ namespace Celeste.Mod.XaphanHelper.Managers
         private static void modPlayerRender(On.Celeste.Player.orig_Render orig, Player self)
         {
             orig(self);
-            if (Flashing && !self.Dead)
+            if (Flashing && !self.Dead && !forceRechargeAir)
             {
                 self.Sprite.Color = Calc.HexToColor("0020BB");
             }
@@ -73,6 +73,17 @@ namespace Celeste.Mod.XaphanHelper.Managers
         {
             Level level = SceneAs<Level>();
             Player player = Scene.Tracker.GetEntity<Player>();
+            if (player != null)
+            {
+                if (player.CollideCheck<AirBubbles>())
+                {
+                    forceRechargeAir = true;
+                }
+                else
+                {
+                    forceRechargeAir = false;
+                }
+            }
             bool playerCurrentlyInLiquid = false;
             foreach (Liquid liquid in level.Tracker.GetEntities<Liquid>())
             {
@@ -106,7 +117,7 @@ namespace Celeste.Mod.XaphanHelper.Managers
                         {
                             Scene.Add(new Liquid.AirBubble(player.Facing == Facings.Left ? player.TopLeft : player.TopRight - new Vector2(4f, 0f), currentLiquid));
                         }
-                        if (GetAirPercent() < (4 * (100f / 15f)) && !XaphanModule.PlayerIsControllingRemoteDrone())
+                        if (GetAirPercent() < (4 * (100f / 15f)) && !XaphanModule.PlayerIsControllingRemoteDrone() && !forceRechargeAir)
                         {
                             if (Scene.OnRawInterval(0.06f))
                             {
@@ -114,20 +125,31 @@ namespace Celeste.Mod.XaphanHelper.Managers
                             }
                         }
                     }
-                    if (AirRoutine.Active)
+                    if (!forceRechargeAir)
                     {
-                        AirRoutine.Cancel();
-                    }
-                    if (player != null && player.CanRetry && !XaphanModule.PlayerIsControllingRemoteDrone())
-                    {
-                        air -= Engine.DeltaTime;
-                    }
-                    if (air <= 0f)
-                    {
-                        air = 0f;
-                        if (!player.Dead)
+                        if (AirRoutine.Active)
                         {
-                            player.Die(Vector2.Zero);
+                            AirRoutine.Cancel();
+                        }
+                        if (player != null && player.CanRetry && !XaphanModule.PlayerIsControllingRemoteDrone())
+                        {
+                            air -= Engine.DeltaTime;
+                        }
+                        if (air <= 0f)
+                        {
+                            air = 0f;
+                            if (!player.Dead)
+                            {
+                                player.Die(Vector2.Zero);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (!AirRoutine.Active)
+                        {
+                            Flashing = false;
+                            Add(AirRoutine = new Coroutine(RechargeAir(false)));
                         }
                     }
                 }
@@ -136,7 +158,6 @@ namespace Celeste.Mod.XaphanHelper.Managers
             {
                 currentLiquid = null;
                 Flashing = false;
-                player.OverrideHairColor = null;
                 if (!AirRoutine.Active)
                 {
                     Add(AirRoutine = new Coroutine(RechargeAir()));
@@ -153,16 +174,20 @@ namespace Celeste.Mod.XaphanHelper.Managers
             return air * 100 / currentMaxAir;
         }
 
-        private IEnumerator RechargeAir()
+        private IEnumerator RechargeAir(bool HideAtEnd = true)
         {
+            Flashing = false;
             while (air < currentMaxAir)
             {
                 air += Engine.DeltaTime * (currentMaxAir / 2f);
                 yield return null;
             }
             air = currentMaxAir;
-            yield return 0.3f;
-            isVisible = false;
+            if (HideAtEnd)
+            {
+                yield return 0.3f;
+                isVisible = false;
+            }
         }
     }
 }
