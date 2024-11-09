@@ -21,6 +21,56 @@ namespace Celeste.Mod.XaphanHelper.Entities
     [CustomEntity("XaphanHelper/Liquid")]
     class Liquid : Entity
     {
+        public class AirBubble : Actor
+        {
+            private Sprite sprite;
+
+            private Liquid liquid;
+
+            private SineWave sine;
+
+            private Collision onCollide;
+
+            public AirBubble(Vector2 position, Liquid sourceLquid) : base(position)
+            {
+                Collider = new Hitbox(4f, 4f);
+                Add(sprite = new Sprite(GFX.Game, "objects/XaphanHelper/liquid/"));
+                sprite.AddLoop("idle", "bubble", 0.08f, 0);
+                sprite.AddLoop("break", "bubble", 0.08f, 1);
+                sprite.Play("idle");
+                liquid = sourceLquid;
+                Add(sine = new SineWave(0.44f, 0f).Randomize());
+                onCollide = OnCollide;
+            }
+
+            public override void Update()
+            {
+                base.Update();
+                sine.Update();
+                if (liquid != null && Top > liquid.Top)
+                {
+                    MoveV(-25f * Engine.DeltaTime, onCollide);
+                }
+                else
+                {
+                    Break();
+                }
+            }
+
+            private void OnCollide(CollisionData data)
+            {
+                Break();
+            }
+            private void Break()
+            {
+                sprite.Play("break");
+                sprite.OnLastFrame = delegate
+                {
+                    RemoveSelf();
+                };
+            }
+        }
+
         public int lowPosition;
 
         private Sprite liquidSprite;

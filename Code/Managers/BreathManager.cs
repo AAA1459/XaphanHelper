@@ -102,9 +102,9 @@ namespace Celeste.Mod.XaphanHelper.Managers
                 {
                     if (player != null && !player.Dead)
                     {
-                        if (Scene.OnInterval(1f))
+                        if (Scene.OnInterval(GetAirPercent() > ((100 / 15) * 4) ? 1.5f : 0.75f))
                         {
-                            // To Do : Add air bubble from player
+                            Scene.Add(new Liquid.AirBubble(player.Facing == Facings.Left ? player.TopLeft : player.TopRight - new Vector2(4f, 0f), currentLiquid));
                         }
                         if (GetAirPercent() < (4 * (100f / 15f)) && !XaphanModule.PlayerIsControllingRemoteDrone())
                         {
