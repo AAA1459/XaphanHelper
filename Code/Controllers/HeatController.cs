@@ -90,13 +90,11 @@ namespace Celeste.Mod.XaphanHelper.Controllers
 
         public static void Load()
         {
-            IL.Celeste.Player.Render += modILPlayerRender;
             On.Celeste.Player.Render += modPlayerRender;
         }
 
         public static void Unload()
         {
-            IL.Celeste.Player.Render -= modILPlayerRender;
             On.Celeste.Player.Render -= modPlayerRender;
         }
 
@@ -109,25 +107,7 @@ namespace Celeste.Mod.XaphanHelper.Controllers
             }
         }
 
-        private static void modILPlayerRender(ILContext il)
-        {
-            ILCursor cursor = new(il);
-
-            if (cursor.TryGotoNext(instr => instr.MatchCallvirt<StateMachine>("get_State"), instr => instr.MatchLdcI4(19)))
-            {
-                cursor.Index++;
-                cursor.EmitDelegate<Func<int, int>>(orig =>
-                {
-                    if (determineifHeatController())
-                    {
-                        return 19;
-                    }
-                    return orig;
-                });
-            }
-        }
-
-        private static bool determineifHeatController()
+        public static bool determineifHeatController()
         {
             if (Engine.Scene is Level)
             {

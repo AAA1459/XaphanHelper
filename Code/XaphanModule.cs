@@ -20,6 +20,7 @@ using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
+using MonoMod.Cil;
 using MonoMod.Utils;
 using static Celeste.Mod.XaphanHelper.XaphanModuleSession;
 
@@ -667,6 +668,7 @@ namespace Celeste.Mod.XaphanHelper
             Everest.Events.Level.OnLoadLevel += onLevelLoad;
             Everest.Events.Level.OnExit += onLevelExit;
             Everest.Events.Level.OnCreatePauseMenuButtons += onCreatePauseMenuButtons;
+            IL.Celeste.Player.Render += modILPlayerRender;
             On.Celeste.AreaData.HasMode += monAreaDataHasMode;
             On.Celeste.Cassette.UnlockedBSide.EaseIn += modCassetteUnlockedBSideEaseIn;
             On.Celeste.Cassette.UnlockedBSide.EaseOut += modCassetteUnlockedBSideEaseOut;
@@ -762,6 +764,8 @@ namespace Celeste.Mod.XaphanHelper
             LightManager.Load();
             ClimbableVine.Load();
             ExplosiveBoulder.Load();
+            BreathDisplay.Load();
+            BreathManager.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -781,6 +785,7 @@ namespace Celeste.Mod.XaphanHelper
             Everest.Events.Level.OnLoadLevel -= onLevelLoad;
             Everest.Events.Level.OnExit -= onLevelExit;
             Everest.Events.Level.OnCreatePauseMenuButtons -= onCreatePauseMenuButtons;
+            IL.Celeste.Player.Render -= modILPlayerRender;
             On.Celeste.AreaData.HasMode -= monAreaDataHasMode;
             On.Celeste.Cassette.UnlockedBSide.EaseIn -= modCassetteUnlockedBSideEaseIn;
             On.Celeste.Cassette.UnlockedBSide.EaseOut -= modCassetteUnlockedBSideEaseOut;
@@ -874,6 +879,8 @@ namespace Celeste.Mod.XaphanHelper
             LightManager.Unload();
             ClimbableVine.Unload();
             ExplosiveBoulder.Unload();
+            BreathDisplay.Unload();
+            BreathManager.Unload();
         }
 
 
@@ -3375,6 +3382,24 @@ namespace Celeste.Mod.XaphanHelper
                 Strawberries = ModSaveData.SavedSessionStrawberries.ContainsKey(level.Session.Area.LevelSet) ? ModSaveData.SavedSessionStrawberries[level.Session.Area.LevelSet] : new HashSet<EntityID>()
             }
             , fromSaveData: false);
+        }
+
+        private static void modILPlayerRender(ILContext il)
+        {
+            ILCursor cursor = new(il);
+
+            if (cursor.TryGotoNext(instr => instr.MatchCallvirt<StateMachine>("get_State"), instr => instr.MatchLdcI4(19)))
+            {
+                cursor.Index++;
+                cursor.EmitDelegate<Func<int, int>>(orig =>
+                {
+                    if (HeatController.determineifHeatController() || BreathManager.determineifBreathManager())
+                    {
+                        return 19;
+                    }
+                    return orig;
+                });
+            }
         }
 
         private IEnumerator modLevelEnterRoutine(On.Celeste.LevelEnter.orig_Routine orig, LevelEnter self)

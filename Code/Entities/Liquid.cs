@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Celeste.Mod.Entities;
 using Celeste.Mod.Helpers;
@@ -116,7 +117,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Tween waveTween;
 
-        private bool visualOnly;
+        public bool visualOnly;
 
         private bool canSwim;
 
@@ -127,6 +128,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public int group;
 
         public bool groupLeader;
+
+        private Liquid leader;
+
+        public bool canDrown;
+
+        public float airTimer;
 
         public Liquid(EntityData data, Vector2 position, EntityID eid) : base(data.Position + position)
         {
@@ -155,6 +162,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             canSwim = data.Bool("canSwim", false);
             upsideDown = data.Bool("upsideDown", false);
             group = data.Int("group", -1);
+            canDrown = data.Bool("canDrown", false);
+            airTimer = data.Float("airTimer", 15f);
             StartPos = Position;
             FinalPos = Position - new Vector2(0, riseDistance);
             if (delay == 0)
@@ -259,6 +268,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public static void Load()
         {
+            On.Celeste.Level.Update += LevelOnUpdate;
             On.Celeste.Player.Update += PlayerOnUpdate;
             IL.Celeste.Player.NormalUpdate += modNormalUpdate;
             IL.Celeste.Player.Jump += modJump;
@@ -274,8 +284,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
             wallJumpHook = new ILHook(typeof(Player).GetMethod("orig_WallJump", BindingFlags.Instance | BindingFlags.NonPublic), modWallJump);
         }
 
+        private static void LevelOnUpdate(On.Celeste.Level.orig_Update orig, Level self)
+        {
+            if (self.Tracker.GetEntities<Liquid>().Count() > 0 && self.Tracker.GetEntities<BreathManager>().Count() == 0)
+            {
+                self.Add(new BreathManager());
+            }
+            orig(self);
+        }
+
         public static void Unload()
         {
+            On.Celeste.Level.Update -= LevelOnUpdate;
             On.Celeste.Player.Update -= PlayerOnUpdate;
             IL.Celeste.Player.NormalUpdate -= modNormalUpdate;
             IL.Celeste.Player.Jump -= modJump;
@@ -655,8 +675,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
             }
         }
-
-        private Liquid leader;
 
         public override void Awake(Scene scene)
         {
