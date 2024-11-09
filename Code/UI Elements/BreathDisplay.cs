@@ -25,8 +25,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private float width;
 
-        private float height;
-
         public BreathDisplay()
         {
             Tag = (Tags.HUD | Tags.Persistent | Tags.PauseUpdate);

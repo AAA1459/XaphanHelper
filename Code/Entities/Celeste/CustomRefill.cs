@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.Managers;
 using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -41,15 +42,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public float respawnTime;
 
-        public CustomRefill(Vector2 position, string type, bool oneUse, float respawnTime) : base(position)
+        public int airSections;
+
+        public CustomRefill(Vector2 position, string type, bool oneUse, float respawnTime, int airSections) : base(position)
         {
             Collider = new Hitbox(16f, 16f, -8f, -8f);
             Add(new PlayerCollider(OnPlayer));
             this.type = type;
-            this.oneUse = oneUse;
+            this.oneUse = type == "Oxygen" ? true : oneUse;
             this.respawnTime = respawnTime;
+            this.airSections = airSections;
             string path;
-            if (oneUse)
+            if (this.oneUse)
             {
                 string spriteStr = "";
                 switch (type)
@@ -66,8 +70,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     case "Super Missiles":
                         spriteStr = "SMissile";
                         break;
+                    case "Oxygen":
+                        spriteStr = "Oxygen";
+                        break;
                 }
-                path = "objects/XaphanHelper/CustomRefill/refill" + spriteStr + "Once/";
+                path = "objects/XaphanHelper/CustomRefill/refill" + spriteStr + (type == "Oxygen" ? "/" : "Once/");
                 p_shatter = new ParticleType(Refill.P_Shatter)
                 {
                     Color = Calc.HexToColor("DAECFA"),
@@ -135,7 +142,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 path = "objects/XaphanHelper/CustomRefill/refill" + spriteStr + "/";
             }
-            if (!oneUse)
+            if (!oneUse && type != "Oxygen")
             {
                 Add(outline = new Sprite(GFX.Game, path + "outline"));
                 outline.AddLoop("idle", "", respawnTime / (type == "Missiles" ? 37f : (type == "Super Missiles" ? 35f : (type == "Two Dashes" ? 25f : 21f))));
@@ -166,7 +173,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Depth = -100;
         }
 
-        public CustomRefill(EntityData data, Vector2 offset) : this(data.Position + offset, data.Attr("type", "Max Dashes"), data.Bool("oneUse"), data.Float("respawnTime"))
+        public CustomRefill(EntityData data, Vector2 offset) : this(data.Position + offset, data.Attr("type", "Max Dashes"), data.Bool("oneUse"), data.Float("respawnTime"), data.Int("airSections", 5))
         {
 
         }
@@ -276,17 +283,27 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
-            if (((type.Contains("Dashes") && player.Dashes < (type == "Two Dashes" ? 2 : player.MaxDashes)) || (type.Contains("Jumps") && SpaceJump.GetJumpBuffer() == 0)) && drone == null || (type.Contains("Missiles") && drone != null) || player.Stamina <= 20)
+            BreathManager manager = SceneAs<Level>().Tracker.GetEntity<BreathManager>();
+            float airRegen = 0;
+            if (manager != null)
+            {
+                airRegen = manager.air + (airSections * manager.currentMaxAir / 15);
+                if (airRegen > manager.currentMaxAir)
+                {
+                    airRegen = manager.currentMaxAir;
+                }
+            }
+            if (((type.Contains("Dashes") && player.Dashes < (type == "Two Dashes" ? 2 : player.MaxDashes)) || (type.Contains("Jumps") && SpaceJump.GetJumpBuffer() == 0)) && drone == null || (type.Contains("Missiles") && drone != null) || (type == "Oxygen" && manager != null && manager.air < manager.currentMaxAir && manager.air != -1) || (type != "Oxygen" && player.Stamina <= 20))
             {
                 Audio.Play(type == "Two Dashes" ? "event:/new_content/game/10_farewell/pinkdiamond_touch" : "event:/game/general/diamond_touch", Position);
                 Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
                 Collidable = false;
-                Add(new Coroutine(RefillRoutine(player, drone, maxMissileCount, maxSuperMissileCount)));
+                Add(new Coroutine(RefillRoutine(player, drone, manager, maxMissileCount, maxSuperMissileCount, airRegen)));
                 respawnTimer = respawnTime;
             }
         }
 
-        private IEnumerator RefillRoutine(Player player, Drone drone, int maxMissileCount, int maxSuperMissileCount)
+        private IEnumerator RefillRoutine(Player player, Drone drone, BreathManager manager, int maxMissileCount, int maxSuperMissileCount, float airRegen)
         {
             Celeste.Freeze(0.05f);
             yield return null;
@@ -329,6 +346,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     drone.CurrentSuperMissiles = maxSuperMissileCount;
                 }
+            }
+            else if (type == "Oxygen")
+            {
+                manager.air = airRegen;
             }
             SlashFx.Burst(Position, num);
             if (oneUse)

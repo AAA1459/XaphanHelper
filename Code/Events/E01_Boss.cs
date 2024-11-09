@@ -82,9 +82,9 @@ namespace Celeste.Mod.XaphanHelper.Events
             jumpThru4 = new JumpthruPlatform(bounds + new Vector2(335f, 152f), 32, "Xaphan/ruins_c", 8);
             jumpThru5 = new JumpthruPlatform(bounds + new Vector2(368f, 152f), 32, "Xaphan/ruins_c", 8);
             jumpThru6 = new JumpthruPlatform(bounds + new Vector2(401f, 152f), 32, "Xaphan/ruins_c", 8);
-            refill1 = new CustomRefill(jumpThru3.Position + new Vector2(47f, -64f), "Max Dashes", false, 2.5f);
-            refill2 = new CustomRefill(jumpThru2.Position + new Vector2(16f, -64f), "Max Jumps", false, 2.5f);
-            refill3 = new CustomRefill(jumpThru5.Position + new Vector2(16f, -64f), "Max Jumps", false, 2.5f);
+            refill1 = new CustomRefill(jumpThru3.Position + new Vector2(47f, -64f), "Max Dashes", false, 2.5f, 5);
+            refill2 = new CustomRefill(jumpThru2.Position + new Vector2(16f, -64f), "Max Jumps", false, 2.5f, 5);
+            refill3 = new CustomRefill(jumpThru5.Position + new Vector2(16f, -64f), "Max Jumps", false, 2.5f, 5);
             arrowDown1 = new Decal("Xaphan/Common/arrow_down00.png", jumpThru3.Position + new Vector2(16f, -16f), new Vector2(1f, 1f), 1);
             arrowDown2 = new Decal("Xaphan/Common/arrow_down00.png", jumpThru4.Position + new Vector2(16f, -16f), new Vector2(1f, 1f), 1);
             warningSign1 = new Decal("Xaphan/Common/warning00.png", jumpThru1.Position + new Vector2(16f, -16f), new Vector2(1f, 1f), 1);
