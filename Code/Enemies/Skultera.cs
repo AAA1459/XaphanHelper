@@ -64,8 +64,6 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
             private Vector2 scale = Vector2.One;
 
-            private Direction direction;
-
             private Vector2 actualSuctionSpeed;
 
             public CollideDetector(Skultera skultera) : base(skultera.Position)
@@ -88,7 +86,6 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                     Offset = new Vector2(4f, 8f);
                 }
                 Position = Skultera.Position + Offset;
-                direction = Direction.Left;
                 Depth = Skultera.Depth + 1;
             }
 
