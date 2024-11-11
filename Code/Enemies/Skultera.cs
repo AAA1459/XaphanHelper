@@ -66,7 +66,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
             private Direction direction;
 
-            private Vector2 actualSuckSpeed;
+            private Vector2 actualSuctionSpeed;
 
             public CollideDetector(Skultera skultera) : base(skultera.Position)
             {
@@ -143,7 +143,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                 Position = Skultera.Position + Offset;
                 bool horizontal = Skultera.direction == Skultera.Direction.Left || Skultera.direction == Skultera.Direction.Right;
                 bool vertical = Skultera.direction == Skultera.Direction.Up || Skultera.direction == Skultera.Direction.Down;
-                actualSuckSpeed = new Vector2(horizontal ? 150f * Skultera.percent * (Skultera.direction == Skultera.Direction.Right ? -1 : 1) : 0f, vertical ? 150f * Skultera.percent * (Skultera.direction == Skultera.Direction.Down ? -1 : 1) : 0f);
+                actualSuctionSpeed = new Vector2(horizontal ? Skultera.suctionStrength * Skultera.percent * (Skultera.direction == Skultera.Direction.Right ? -1 : 1) : 0f, vertical ? Skultera.suctionStrength * Skultera.percent * (Skultera.direction == Skultera.Direction.Down ? -1 : 1) : 0f);
                 if (Skultera.direction == Skultera.Direction.Left)
                 {
                     if (CollideCheck<Solid>() && !CollideCheck<PlayerPlatform>())
@@ -301,7 +301,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                     float percent = particles[i].Percent;
                     float num = 0f;
                     num = ((!(percent < 0.7f)) ? Calc.ClampedMap(percent, 0.7f, 1f, 1f, 0f) : Calc.ClampedMap(percent, 0f, 0.3f));
-                    if (actualSuckSpeed != Vector2.Zero)
+                    if (actualSuctionSpeed != Vector2.Zero)
                     {
                         Vector2 adjust = Vector2.Zero;
                         if (Skultera.direction == Skultera.Direction.Left || Skultera.direction == Skultera.Direction.Right)
@@ -319,19 +319,19 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
             private void PositionParticles()
             {
-                bool num = actualSuckSpeed.Y == 0f;
+                bool num = actualSuctionSpeed.Y == 0f;
                 Vector2 zero = Vector2.Zero;
                 if (num)
                 {
-                    scale.X = Math.Max(1f, Math.Abs(actualSuckSpeed.X) / 40f);
+                    scale.X = Math.Max(1f, Math.Abs(actualSuctionSpeed.X) / 40f);
                     scale.Y = 1f;
-                    zero = new Vector2(actualSuckSpeed.X, 0f);
+                    zero = new Vector2(actualSuctionSpeed.X, 0f);
                 }
                 else
                 {
                     scale.X = 1f;
-                    scale.Y = Math.Max(1f, Math.Abs(actualSuckSpeed.Y) / 40f);
-                    zero = new Vector2(0f, actualSuckSpeed.Y);
+                    scale.Y = Math.Max(1f, Math.Abs(actualSuctionSpeed.Y) / 40f);
+                    zero = new Vector2(0f, actualSuctionSpeed.Y);
                 }
                 for (int i = 0; i < particles.Length; i++)
                 {
@@ -367,12 +367,15 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         public float maxRange;
 
+        public float suctionStrength;
+
         private static float climbJumpGrabCooldown = -1f;
 
         public Skultera(EntityData data, Vector2 offset) : base(data, offset)
         {
             maxRange = data.Float("maxRange", 14f);
             direction = data.Enum("direction", Direction.Left);
+            suctionStrength = data.Float("suctionStrength", 150f);
             Body = new Sprite(GFX.Game, "enemies/Xaphan/Skultera/");
             Body.Add("idle", "idle", 0f);
             Body.Add("activeStart", "active", 0.12f, 0);
@@ -552,7 +555,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                     {
                         if (!attemptToGrabSolid)
                         {
-                            player.MoveH(150f * (direction == Direction.Right ? -1 : 1) * Engine.DeltaTime * Ease.CubeInOut(percent));
+                            player.MoveH(suctionStrength * (direction == Direction.Right ? -1 : 1) * Engine.DeltaTime * Ease.CubeInOut(percent));
                             player.Speed.Y = -15f;
                             player.MoveTowardsY(CollideDetect.Center.Y + 6f, 22.5f * Engine.DeltaTime);
                         }
@@ -561,7 +564,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                     {
                         if (!attemptToGrabSolid)
                         {
-                            player.MoveV(150f * (direction == Direction.Down ? -1 : 1) * Engine.DeltaTime * Ease.CubeInOut(percent));
+                            player.MoveV(suctionStrength * (direction == Direction.Down ? -1 : 1) * Engine.DeltaTime * Ease.CubeInOut(percent));
                             player.Speed.Y = 0f;
                             player.MoveTowardsX(CollideDetect.Center.X, 22.5f * Engine.DeltaTime);
                         }
