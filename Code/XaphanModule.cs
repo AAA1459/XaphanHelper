@@ -11,6 +11,7 @@ using Celeste.Mod.XaphanHelper.Controllers;
 using Celeste.Mod.XaphanHelper.Cutscenes;
 using Celeste.Mod.XaphanHelper.Data;
 using Celeste.Mod.XaphanHelper.Effects;
+using Celeste.Mod.XaphanHelper.Enemies;
 using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.Hooks;
 using Celeste.Mod.XaphanHelper.Managers;
@@ -766,6 +767,7 @@ namespace Celeste.Mod.XaphanHelper
             ExplosiveBoulder.Load();
             BreathDisplay.Load();
             BreathManager.Load();
+            Skultera.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -881,6 +883,7 @@ namespace Celeste.Mod.XaphanHelper
             ExplosiveBoulder.Unload();
             BreathDisplay.Unload();
             BreathManager.Unload();
+            Skultera.Unload();
         }
 
 

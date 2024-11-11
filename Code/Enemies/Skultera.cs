@@ -1,0 +1,585 @@
+﻿using System;
+using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.Entities;
+using Microsoft.Xna.Framework;
+using Mono.Cecil.Cil;
+using Monocle;
+using MonoMod.Cil;
+
+namespace Celeste.Mod.XaphanHelper.Enemies
+{
+    [Tracked(true)]
+    [CustomEntity("XaphanHelper/Skultera")]
+    public class Skultera : Enemy
+    {
+        public class CollideDetector : Entity
+        {
+            private struct Particle
+            {
+                public Vector2 Position;
+
+                public float Percent;
+
+                public float Duration;
+
+                public Vector2 Direction;
+
+                public float Speed;
+
+                public float Spin;
+
+                public int Color;
+            }
+
+            private static readonly Color[] _colors =
+            {
+                Calc.HexToColor("808080"),
+                Calc.HexToColor("545151"),
+                Calc.HexToColor("ada5a5")
+            };
+
+            private enum Direction
+            {
+                Up,
+                Down,
+                Left,
+                Right
+            }
+
+            public Skultera Skultera;
+
+            public Vector2 Offset;
+
+            private float colliderWidth;
+
+            private float colliderHeight;
+
+            private float colliderLeft;
+
+            private float colliderTop;
+
+            public bool DetectedPlayer;
+
+            private Particle[] particles;
+
+            private Vector2 scale = Vector2.One;
+
+            private Direction direction;
+
+            private Vector2 actualSuckSpeed;
+
+            public CollideDetector(Skultera skultera) : base(skultera.Position)
+            {
+                Skultera = skultera;
+                if (Skultera.direction == Skultera.Direction.Left)
+                {
+                    Offset = new Vector2(0f, 4f);
+                }
+                else if (Skultera.direction == Skultera.Direction.Right)
+                {
+                    Offset = new Vector2(10f, 4f);
+                }
+                else if (Skultera.direction == Skultera.Direction.Up)
+                {
+                    Offset = new Vector2(4f, 0f);
+                }
+                else if (Skultera.direction == Skultera.Direction.Down)
+                {
+                    Offset = new Vector2(4f, 8f);
+                }
+                Position = Skultera.Position + Offset;
+                direction = Direction.Left;
+                Depth = Skultera.Depth + 1;
+            }
+
+            private void Reset(int i, float p)
+            {
+                particles[i].Percent = p;
+                particles[i].Position = new Vector2(Calc.Random.Range(0f, Collider.Width), Calc.Random.Range(0f, Collider.Height));
+                particles[i].Speed = Calc.Random.Range(4, 14);
+                particles[i].Spin = Calc.Random.Range(0.25f, (float)Math.PI * 6f);
+                particles[i].Duration = Calc.Random.Range(1f, 4f);
+                particles[i].Direction = Calc.AngleToVector(Calc.Random.NextFloat((float)Math.PI * 2f), 1f);
+                particles[i].Color = Calc.Random.Next(_colors.Length);
+            }
+
+            public override void Added(Scene scene)
+            {
+                base.Added(scene);
+                if (Skultera.direction == Skultera.Direction.Left)
+                {
+                    Collider = new Hitbox(Skultera.maxRange * 8, 24f, -Skultera.maxRange * 8, -5f);
+                }
+                else if (Skultera.direction == Skultera.Direction.Right)
+                {
+                    Collider = new Hitbox(Skultera.maxRange * 8, 24f, -2f, -5f);
+                }
+                else if (Skultera.direction == Skultera.Direction.Up)
+                {
+                    Collider = new Hitbox(24f, Skultera.maxRange * 8, -5f, -Skultera.maxRange * 8);
+                }
+                else if (Skultera.direction == Skultera.Direction.Down)
+                {
+                    Collider = new Hitbox(24f, Skultera.maxRange * 8, -5f, 0f);
+                }
+                int particlecount = (int)Collider.Width * (int)Collider.Height / 150;
+                particles = new Particle[particlecount];
+                for (int i = 0; i < particles.Length; i++)
+                {
+                    Reset(i, Calc.Random.NextFloat(0.7f));
+                }
+
+                PositionParticles();
+            }
+
+            public override void Update()
+            {
+                base.Update();
+                foreach (PlayerPlatform plateform in SceneAs<Level>().Tracker.GetEntities<PlayerPlatform>())
+                {
+                    plateform.Collidable = false;
+                }
+                base.Update();
+                Position = Skultera.Position + Offset;
+                bool horizontal = Skultera.direction == Skultera.Direction.Left || Skultera.direction == Skultera.Direction.Right;
+                bool vertical = Skultera.direction == Skultera.Direction.Up || Skultera.direction == Skultera.Direction.Down;
+                actualSuckSpeed = new Vector2(horizontal ? 150f * Skultera.percent * (Skultera.direction == Skultera.Direction.Right ? -1 : 1) : 0f, vertical ? 150f * Skultera.percent * (Skultera.direction == Skultera.Direction.Down ? -1 : 1) : 0f);
+                if (Skultera.direction == Skultera.Direction.Left)
+                {
+                    if (CollideCheck<Solid>() && !CollideCheck<PlayerPlatform>())
+                    {
+                        while (CollideCheck<Solid>())
+                        {
+                            Collider.Left += 1;
+                            Collider.Width -= 1;
+                            colliderLeft = Collider.Left;
+                            colliderWidth = Collider.Width;
+                        }
+                    }
+                    else
+                    {
+                        if (!CollideCheck<Solid>(Position - Vector2.UnitX))
+                        {
+                            while (!CollideCheck<Solid>(Position - Vector2.UnitX) && Collider.Width < (Skultera.maxRange * 8))
+                            {
+                                Collider.Left -= 1;
+                                Collider.Width += 1;
+                                colliderLeft = Collider.Left;
+                                colliderWidth = Collider.Width;
+                            }
+                        }
+                    }
+                    if (CollideCheck<PlayerPlatform>())
+                    {
+                        Collider.Left = colliderLeft;
+                        Collider.Width = colliderWidth;
+                    }
+                    if (Collider.Width < (Skultera.maxRange * 8))
+                    {
+                        Collider.Left -= 4;
+                        Collider.Width += 4;
+                    }
+                }
+                else if (Skultera.direction == Skultera.Direction.Right)
+                {
+                    if (CollideCheck<Solid>() && !CollideCheck<PlayerPlatform>())
+                    {
+                        while (CollideCheck<Solid>())
+                        {
+                            Collider.Width -= 1;
+                            colliderWidth = Collider.Width;
+                        }
+                    }
+                    else
+                    {
+                        if (!CollideCheck<Solid>(Position + Vector2.UnitX))
+                        {
+                            while (!CollideCheck<Solid>(Position + Vector2.UnitX) && Collider.Width < (Skultera.maxRange * 8))
+                            {
+                                Collider.Width += 1;
+                                colliderWidth = Collider.Width;
+                            }
+                        }
+                    }
+                    if (CollideCheck<PlayerPlatform>())
+                    {
+                        Collider.Width = colliderWidth;
+                    }
+                    if (Collider.Width < (Skultera.maxRange * 8))
+                    {
+                        Collider.Width += 4;
+                    }
+                }
+                else if (Skultera.direction == Skultera.Direction.Up)
+                {
+                    if (CollideCheck<Solid>() && !CollideCheck<PlayerPlatform>())
+                    {
+                        while (CollideCheck<Solid>())
+                        {
+                            Collider.Top += 1;
+                            Collider.Height -= 1;
+                            colliderTop = Collider.Top;
+                            colliderHeight = Collider.Height;
+                        }
+                    }
+                    else
+                    {
+                        if (!CollideCheck<Solid>(Position - Vector2.UnitX))
+                        {
+                            while (!CollideCheck<Solid>(Position - Vector2.UnitX) && Collider.Height < (Skultera.maxRange * 8))
+                            {
+                                Collider.Top -= 1;
+                                Collider.Height += 1;
+                                colliderTop = Collider.Top;
+                                colliderHeight = Collider.Height;
+                            }
+                        }
+                    }
+                    if (CollideCheck<PlayerPlatform>())
+                    {
+                        Collider.Top = colliderTop;
+                        Collider.Height = colliderHeight;
+                    }
+                    if (Collider.Height < (Skultera.maxRange * 8))
+                    {
+                        Collider.Top -= 4;
+                        Collider.Height += 4;
+                    }
+                }
+                else if (Skultera.direction == Skultera.Direction.Down)
+                {
+                    if (CollideCheck<Solid>() && !CollideCheck<PlayerPlatform>())
+                    {
+                        while (CollideCheck<Solid>())
+                        {
+                            Collider.Height -= 1;
+                            colliderHeight = Collider.Height;
+                        }
+                    }
+                    else
+                    {
+                        if (!CollideCheck<Solid>(Position + Vector2.UnitX))
+                        {
+                            while (!CollideCheck<Solid>(Position + Vector2.UnitX) && Collider.Height < (Skultera.maxRange * 8))
+                            {
+                                Collider.Height += 1;
+                                colliderHeight = Collider.Height;
+                            }
+                        }
+                    }
+                    if (CollideCheck<PlayerPlatform>())
+                    {
+                        Collider.Height = colliderHeight;
+                    }
+                    if (Collider.Height < (Skultera.maxRange * 8))
+                    {
+                        Collider.Height += 4;
+                    }
+                }
+
+                PositionParticles();
+                DetectedPlayer = CollideCheck<Player>();
+                foreach (PlayerPlatform plateform in SceneAs<Level>().Tracker.GetEntities<PlayerPlatform>())
+                {
+                    plateform.Collidable = true;
+                }
+            }
+
+            public override void DebugRender(Camera camera)
+            {
+
+            }
+
+            public override void Render()
+            {
+                for (int i = 0; i < particles.Length; i++)
+                {
+                    
+                    Vector2 particlePosition = default(Vector2);
+                    particlePosition.X = mod(particles[i].Position.X, Collider.Width);
+                    particlePosition.Y = mod(particles[i].Position.Y, Collider.Height);
+                    float percent = particles[i].Percent;
+                    float num = 0f;
+                    num = ((!(percent < 0.7f)) ? Calc.ClampedMap(percent, 0.7f, 1f, 1f, 0f) : Calc.ClampedMap(percent, 0f, 0.3f));
+                    if (actualSuckSpeed != Vector2.Zero)
+                    {
+                        Vector2 adjust = Vector2.Zero;
+                        if (Skultera.direction == Skultera.Direction.Left || Skultera.direction == Skultera.Direction.Right)
+                        {
+                            adjust = Skultera.direction == Skultera.Direction.Left ? new Vector2(Collider.Width, 5f) : new Vector2(4f, 5f);
+                        }
+                        else
+                        {
+                            adjust = Skultera.direction == Skultera.Direction.Down ? new Vector2(6f, 3f) : new Vector2(6f, Collider.Height);
+                        }
+                        Draw.Rect(particlePosition + Position - adjust, scale.X, scale.Y, _colors[particles[i].Color] * num);
+                    }
+                }
+            }
+
+            private void PositionParticles()
+            {
+                bool num = actualSuckSpeed.Y == 0f;
+                Vector2 zero = Vector2.Zero;
+                if (num)
+                {
+                    scale.X = Math.Max(1f, Math.Abs(actualSuckSpeed.X) / 40f);
+                    scale.Y = 1f;
+                    zero = new Vector2(actualSuckSpeed.X, 0f);
+                }
+                else
+                {
+                    scale.X = 1f;
+                    scale.Y = Math.Max(1f, Math.Abs(actualSuckSpeed.Y) / 40f);
+                    zero = new Vector2(0f, actualSuckSpeed.Y);
+                }
+                for (int i = 0; i < particles.Length; i++)
+                {
+                    if (particles[i].Percent >= 1f)
+                    {
+                        Reset(i, 0f);
+                    }
+                    particles[i].Percent += Engine.DeltaTime / particles[i].Duration;
+                    particles[i].Position += (particles[i].Direction * particles[i].Speed + zero) * Engine.DeltaTime;
+                    particles[i].Direction.Rotate(particles[i].Spin * Engine.DeltaTime);
+                }
+            }
+
+            private float mod(float x, float m)
+            {
+                return (x % m + m) % m;
+            }
+        }
+
+        private enum Direction
+        {
+            Up,
+            Down,
+            Left,
+            Right
+        }
+
+        private Direction direction;
+
+        public CollideDetector CollideDetect;
+
+        private Sprite Body;
+
+        public float maxRange;
+
+        private static float climbJumpGrabCooldown = -1f;
+
+        public Skultera(EntityData data, Vector2 offset) : base(data, offset)
+        {
+            maxRange = data.Float("maxRange", 14f);
+            direction = data.Enum("direction", Direction.Left);
+            Body = new Sprite(GFX.Game, "enemies/Xaphan/Skultera/");
+            Body.Add("idle", "idle", 0f);
+            Body.Add("activeStart", "active", 0.12f, 0);
+            Body.Add("active", "active", 0.12f, 1, 2);
+            Body.Add("activeStop", "active", 0.12f, 2, 1, 0);
+            Body.Play("idle");
+            Body.CenterOrigin();
+            switch (direction)
+            {
+                case Direction.Left:
+                    Collider = new ColliderList(new Hitbox(3f, 24f, 5f, -8f), new Hitbox(7f, 16f, 1f, -2f));
+                    Body.Position.X = -2f;
+                    break;
+                case Direction.Right:
+                    Collider = new ColliderList(new Hitbox(3f, 24f, 0f, -8f), new Hitbox(7f, 16f, 0f, -2f));
+                    Body.FlipX = true;
+                    Body.Position.X = 2f;
+                    break;
+                case Direction.Up:
+                    Collider = new ColliderList(new Hitbox(24f, 3f, -8f, 5f), new Hitbox(16f, 7f, -2f, 1f));
+                    Body.Rotation = (float)Math.PI / 2;
+                    Body.FlipY = true;
+                    Body.Position.Y = -2f;
+                    break;
+                case Direction.Down:
+                    Collider = new ColliderList(new Hitbox(24f, 3f, -8f, 0f),new Hitbox(16f, 7f, -2f, 0f));
+                    Body.Rotation = -(float)Math.PI / 2;
+                    Body.Position.Y = 2f;
+                    break;
+            }
+            Body.Position += Vector2.One * 4;
+            sprites.Add(Body);
+            foreach (Sprite sprite in sprites)
+            {
+                Add(sprite);
+            }
+        }
+
+        public static void Load()
+        {
+            IL.Celeste.Player.NormalUpdate += modNormalUpdate;
+
+            On.Celeste.Player.Update += modUpdate;
+            On.Celeste.Player.ClimbJump += modClimbJump;
+            Everest.Events.Level.OnExit += onLevelExit;
+        }
+
+        public static void Unload()
+        {
+            IL.Celeste.Player.NormalUpdate -= modNormalUpdate;
+
+            On.Celeste.Player.Update -= modUpdate;
+            On.Celeste.Player.ClimbJump -= modClimbJump;
+            Everest.Events.Level.OnExit -= onLevelExit;
+
+            climbJumpGrabCooldown = -1f;
+        }
+
+        private static void modNormalUpdate(ILContext il)
+        {
+            ILCursor cursor = new ILCursor(il);
+
+            while (cursor.TryGotoNext(
+                instr => instr.OpCode == OpCodes.Ldloc_S,
+                instr => instr.MatchLdcR4(900f)))
+            {
+                cursor.Index++;
+                cursor.Emit(OpCodes.Dup);
+                cursor.Index++;
+                cursor.Emit(OpCodes.Ldarg_0);
+
+                cursor.EmitDelegate<Func<float, float, Player, float>>((target, gravity, player) => {
+                    bool detectedPlayer = false;
+                    if (Engine.Scene is Level)
+                    {
+                        Level level = (Level)Engine.Scene;
+                        foreach (Skultera skultora in level.Tracker.GetEntities<Skultera>())
+                        {
+                            if (skultora.CollideDetect.DetectedPlayer)
+                            {
+                                detectedPlayer = true;
+                                break;
+                            }
+                        }
+                    }
+                    return gravity * (detectedPlayer ? 0 : 1);
+                });
+            }
+
+            cursor.Index = 0;
+
+            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdsfld(typeof(Input), "Grab") || instr.MatchCall(typeof(Input), "get_GrabCheck")) &&
+                cursor.TryGotoNext(MoveType.After,
+                instr => instr.MatchLdarg(0),
+                instr => instr.MatchLdflda<Player>("Speed"),
+                instr => instr.MatchLdfld<Vector2>("Y"),
+                instr => instr.MatchLdcR4(0f),
+                instr => instr.OpCode == OpCodes.Blt_Un || instr.OpCode == OpCodes.Blt_Un_S))
+            {
+
+                Instruction afterCheck = cursor.Next;
+
+                cursor.Index -= 4;
+
+                cursor.Emit(OpCodes.Pop);
+                cursor.EmitDelegate<Func<bool>>(canGrabEvenWhenGoingUp);
+                cursor.Emit(OpCodes.Brtrue, afterCheck);
+                cursor.Emit(OpCodes.Ldarg_0);
+            }
+        }
+
+        private static void modClimbJump(On.Celeste.Player.orig_ClimbJump orig, Player self)
+        {
+            orig(self);
+
+            climbJumpGrabCooldown = 0.25f;
+        }
+
+        private static void modUpdate(On.Celeste.Player.orig_Update orig, Player self)
+        {
+            orig(self);
+
+            if (climbJumpGrabCooldown >= 0f)
+                climbJumpGrabCooldown -= Engine.DeltaTime;
+        }
+
+        private static void onLevelExit(Level level, LevelExit exit, LevelExit.Mode mode, Session session, HiresSnow snow)
+        {
+            climbJumpGrabCooldown = -1f;
+        }
+
+        private static bool canGrabEvenWhenGoingUp()
+        {
+            bool detectedPlayer = false;
+            if (Engine.Scene is Level)
+            {
+                Level level = (Level)Engine.Scene;
+                foreach (Skultera skultora in level.Tracker.GetEntities<Skultera>())
+                {
+                    if (skultora.CollideDetect.DetectedPlayer)
+                    {
+                        detectedPlayer = true;
+                        break;
+                    }
+                }
+            }
+            return detectedPlayer && climbJumpGrabCooldown <= 0f;
+        }
+
+        public override void Added(Scene scene)
+        {
+            base.Added(scene);
+            SceneAs<Level>().Add(CollideDetect = new CollideDetector(this));
+        }
+
+        float percent = 0f;
+
+        public override void Update()
+        {
+            base.Update();
+            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+            if (player != null && CollideDetect.DetectedPlayer)
+            {
+                if (!Body.CurrentAnimationID.Contains("active"))
+                {
+                    Body.Play("activeStart");
+                    Body.OnLastFrame = delegate
+                    {
+                        Body.Play("active");
+                    };
+                }
+                percent = Calc.Approach(percent, 1f, Engine.DeltaTime / 0.5f);
+                if (player.StateMachine.State != Player.StRedDash && player.StateMachine.State != Player.StDash && player.StateMachine.State != Player.StClimb && !player.DashAttacking)
+                {
+                    bool attemptToGrabSolid = (player.Facing == Facings.Left && player.CollideCheck<Solid>(player.Position - Vector2.UnitX * 3) || player.Facing == Facings.Right && player.CollideCheck<Solid>(player.Position + Vector2.UnitX * 3)) && Input.GrabCheck;
+                    if (direction == Direction.Left || direction == Direction.Right)
+                    {
+                        if (!attemptToGrabSolid)
+                        {
+                            player.MoveH(150f * (direction == Direction.Right ? -1 : 1) * Engine.DeltaTime * Ease.CubeInOut(percent));
+                            player.Speed.Y = -15f;
+                            player.MoveTowardsY(CollideDetect.Center.Y + 6f, 22.5f * Engine.DeltaTime);
+                        }
+                    }
+                    else if (direction == Direction.Up || direction == Direction.Down)
+                    {
+                        if (!attemptToGrabSolid)
+                        {
+                            player.MoveV(150f * (direction == Direction.Down ? -1 : 1) * Engine.DeltaTime * Ease.CubeInOut(percent));
+                            player.Speed.Y = 0f;
+                            player.MoveTowardsX(CollideDetect.Center.X, 22.5f * Engine.DeltaTime);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (Body.CurrentAnimationID.Contains("active"))
+                {
+                    Body.Play("activeStop");
+                    Body.OnLastFrame = delegate
+                    {
+                        Body.Play("idle");
+                    };
+                }
+                percent = Calc.Approach(percent, 0f, Engine.DeltaTime / 0.5f);
+            }
+        }
+    }
+}
