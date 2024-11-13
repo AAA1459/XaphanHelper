@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Runtime.CompilerServices;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -128,6 +129,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private int[,] bubbles;
 
+        private bool canPlaySounds;
+
         public BubbleBlock(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, safe: false)
         {
             directory = data.Attr("directory", "objects/XaphanHelper/BubbleBlock");
@@ -192,6 +195,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                     }
                 }
+            }
+            if (SceneAs<Level>().Tracker.GetEntities<BubbleBlock>().Count == 1)
+            {
+                canPlaySounds = true;
             }
         }
 
@@ -266,8 +273,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             Collidable = Visible = false;
             DisableStaticMovers();
-            Audio.Play("event:/game/xaphan/bubble_block_break", Position);
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+            if (player != null && canPlaySounds)
+            {
+                Audio.Play("event:/game/xaphan/bubble_block_break");
+            }
             while (respawnTimer >= 0)
             {
                 respawnTimer -= Engine.DeltaTime;
@@ -276,13 +286,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
             reappearFlash = 1.6f;
             Collidable = Visible = true;
             EnableStaticMovers();
-            if (CollideCheck(player))
+            if (player != null)
             {
-                player.Die(Vector2.Zero);
-            }
-            else
-            {
-                Audio.Play("event:/game/xaphan/bubble_block_reform", Position);
+                if (CollideCheck(player))
+                {
+                    player.Die(Vector2.Zero);
+                }
+                else if (canPlaySounds)
+                {
+                    Audio.Play("event:/game/xaphan/bubble_block_reform");
+                }
             }
             yield return 0.5f;
         }
