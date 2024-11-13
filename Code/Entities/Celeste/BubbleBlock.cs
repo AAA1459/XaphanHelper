@@ -273,8 +273,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             Collidable = Visible = false;
             DisableStaticMovers();
-            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-            if (player != null && canPlaySounds)
+            if (canPlaySounds)
             {
                 Audio.Play("event:/game/xaphan/bubble_block_break");
             }
@@ -286,6 +285,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             reappearFlash = 1.6f;
             Collidable = Visible = true;
             EnableStaticMovers();
+            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
             if (player != null)
             {
                 if (CollideCheck(player))
