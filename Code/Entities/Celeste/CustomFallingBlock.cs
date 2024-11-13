@@ -186,7 +186,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                     if (CollideCheck<Liquid>() && canFloat)
                     {
-                        Liquid liquid = SceneAs<Level>().Tracker.GetNearestEntity<Liquid>(BottomCenter);
+                        Liquid liquid = CollideFirst<Liquid>(BottomCenter);
                         if (liquid != null)
                         {
                             if (liquid.liquidType == "Water")
