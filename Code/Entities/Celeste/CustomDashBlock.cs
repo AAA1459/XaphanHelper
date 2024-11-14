@@ -100,6 +100,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     Scene.Add(Engine.Pooler.Create<Debris>().Init(Position + new Vector2(4 + i * 8, 4 + j * 8), (!string.IsNullOrEmpty(flag) && level.Session.GetFlag(flag)) ? flagTileType : tileType, playDebrisSound).BlastFrom(from));
                 }
             }
+            foreach (CustomFakeWall fakeWall in level.Tracker.GetEntities<CustomFakeWall>())
+            {
+                if (CollideCheck(fakeWall))
+                {
+                    if (permanent)
+                    {
+                        level.Session.DoNotLoad.Add(fakeWall.eid);
+                    }
+                    fakeWall.RemoveSelf();
+                }
+            }
             Collidable = false;
             if (permanent)
             {

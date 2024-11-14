@@ -30,7 +30,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool transitionFade;
 
-        private EntityID eid;
+        public EntityID eid;
 
         private bool playRevealWhenTransitionedInto;
 
