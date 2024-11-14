@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Runtime.CompilerServices;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -113,6 +112,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        private EntityID ID;
+
         private int columns;
 
         private int lines;
@@ -131,8 +132,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool canPlaySounds;
 
-        public BubbleBlock(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, safe: false)
+        public BubbleBlock(EntityData data, Vector2 offset, EntityID ID) : base(data.Position + offset, data.Width, data.Height, safe: false)
         {
+            this.ID = ID;
             directory = data.Attr("directory", "objects/XaphanHelper/BubbleBlock");
             columns = data.Width / 8;
             lines = data.Height / 8;
@@ -196,9 +198,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
-            if (SceneAs<Level>().Tracker.GetEntities<BubbleBlock>().Count == 1)
+            foreach (BubbleBlock bubbleBlock in SceneAs<Level>().Tracker.GetEntities<BubbleBlock>())
             {
-                canPlaySounds = true;
+                if (bubbleBlock.ID.Level == SceneAs<Level>().Session.Level)
+                {
+                    if (bubbleBlock.canPlaySounds)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        bubbleBlock.canPlaySounds = true;
+                    }
+                }
             }
         }
 
@@ -275,6 +287,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             DisableStaticMovers();
             if (canPlaySounds)
             {
+                yield return 0.05f;
                 Audio.Play("event:/game/xaphan/bubble_block_break");
             }
             while (respawnTimer >= 0)
