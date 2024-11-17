@@ -1,4 +1,5 @@
-﻿using Celeste.Mod.Entities;
+﻿using System.Linq;
+using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -30,7 +31,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool CloseSound;
 
-        private int group;
+        public int group;
 
         private string flag;
 
@@ -149,6 +150,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (Collidable)
             {
                 cutout.Alpha = (tiles.Alpha = Calc.Approach(tiles.Alpha, 1f, Engine.DeltaTime));
+                foreach (CustomFakeWall fakeWall in SceneAs<Level>().Tracker.GetEntities<CustomFakeWall>())
+                {
+                    if (fakeWall.group == group)
+                    {
+                        fakeWall.fade = true;
+                        fakeWall.tiles.Alpha = (fakeWall.cutout.Alpha = tiles.Alpha);
+                    }
+                }
             }
             else if (!SceneAs<Level>().Session.GetFlag("Inside_ExitBlock_" + group))
             {

@@ -1,4 +1,5 @@
-﻿using Celeste.Mod.Entities;
+﻿using System.Linq;
+using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -22,9 +23,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public TileGrid tiles;
 
-        private bool fade;
+        public bool fade;
 
-        private EffectCutout cutout;
+        public EffectCutout cutout;
 
         private float transitionStartAlpha;
 
@@ -34,7 +35,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool playRevealWhenTransitionedInto;
 
-        private int group;
+        public int group;
 
         private string flag;
 
@@ -107,7 +108,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
             tiles.Alpha = 0f;
             fade = true;
             cutout.Visible = false;
-            SceneAs<Level>().Session.DoNotLoad.Add(eid);
+            bool noLoad = true;
+            foreach (CustomExitBlock exitBlock in SceneAs<Level>().Tracker.GetEntities<CustomExitBlock>())
+            {
+                if (exitBlock.group == group)
+                {
+                    noLoad = false;
+                    break;
+                }
+            }
+            if (noLoad)
+            {
+                SceneAs<Level>().Session.DoNotLoad.Add(eid);
+            }
         }
 
         private void OnTransitionOutBegin()
@@ -158,11 +171,22 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Update();
             if (fade)
             {
-                tiles.Alpha = Calc.Approach(tiles.Alpha, 0f, 2f * Engine.DeltaTime);
-                cutout.Alpha = tiles.Alpha;
-                if (tiles.Alpha <= 0f)
+                bool overlapExitBlock = false;
+                foreach (CustomExitBlock exitBlock in SceneAs<Level>().Tracker.GetEntities<CustomExitBlock>())
                 {
-                    RemoveSelf();
+                    if (exitBlock.group == group)
+                    {
+                        overlapExitBlock = true;
+                    }
+                }
+                if (!overlapExitBlock)
+                {
+                    tiles.Alpha = Calc.Approach(tiles.Alpha, 0f, 2f * Engine.DeltaTime);
+                    cutout.Alpha = tiles.Alpha;
+                    if (tiles.Alpha <= 0f)
+                    {
+                        RemoveSelf();
+                    }
                 }
                 return;
             }
