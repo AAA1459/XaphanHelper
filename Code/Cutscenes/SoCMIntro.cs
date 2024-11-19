@@ -136,7 +136,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             DrawBlackBg = false;
             for (int i = 0; i <= 85; i++)
             {
-                level.Camera.X -= 0.5f;
+                level.Camera.X -= 1f;
                 yield return 0.01f;
             }
             DrawBlackBg = true;
@@ -155,7 +155,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             DrawBlackBg = false;
             for (int i = 0; i <= 85; i++)
             {
-                level.Camera.X -= 0.5f;
+                level.Camera.X -= 1f;
                 yield return 0.01f;
             }
             DrawBlackBg = true;
@@ -172,7 +172,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             DrawBlackBg = false;
             for (int i = 0; i <= 85; i++)
             {
-                level.Camera.Y += 0.5f;
+                level.Camera.Y += 1f;
                 yield return 0.01f;
             }
             DrawBlackBg = true;
