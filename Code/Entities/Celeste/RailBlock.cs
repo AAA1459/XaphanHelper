@@ -67,6 +67,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private EventInstance LoopSfx;
 
+        private float NoLiftBoostTimer;
+
         public RailBlock(int id, Vector2[] nodes, string directory, string lineColorA, string lineColorB, string particlesColorA, string particlesColorB, int index, float speedMult, bool drawTrack, bool particles, bool canDash, bool playerMomentum, bool noReturn, bool fromFirstLoad = false) : base(nodes[0], 8, 8, false)
         {
             Tag = Tags.TransitionUpdate;
@@ -150,7 +152,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             if (component.GetType() == typeof(StaticMover))
                             {
                                 StaticMover staticMover = (StaticMover)component;
-                                staticMover.Entity.Position.Y -= staticMover.Entity.Center.Y > Center.Y ? 1f : -1f;
+                                if (staticMover.Entity.Right != Left && staticMover.Entity.Left != Right)
+                                {
+                                    staticMover.Entity.Position.Y -= staticMover.Entity.Center.Y > Center.Y ? 1f : -1f;
+                                }
                                 staticMover.Entity.Depth = Depth + 1;
                                 staticMovers.Add(staticMover);
                             }
@@ -195,7 +200,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                     else
                     {
-                        if (!rewind && !WaitingRoutine.Active)
+                        if (percent > 0 && !rewind && !WaitingRoutine.Active)
                         {
                             speed = 0;
                             Add(WaitingRoutine = new Coroutine(Waiting()));
@@ -220,7 +225,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private IEnumerator Waiting()
         {
             Vector2 WaitPos = Position;
-            yield return 1.5f;
+            yield return 2.75f;
             if (Position == WaitPos && Position != nodes[0])
             {
                 rewind = true;
@@ -231,11 +236,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (!rewind)
             {
+                if (direction.Y == 1)
+                {
+                    player.RefillDash();
+                }
                 DetermineMoveDirection(direction);
                 speed = 240f * speedMult / lengths[lengths.Length - 1];
+                NoLiftBoostTimer = 0.2f;
             }
             
-            if (Input.GrabCheck)
+            if (Input.GrabCheck && direction.Y == 0)
             {
                 player.StateMachine.State = Player.StClimb;
             }
@@ -401,7 +411,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Update()
         {
-
+            if (NoLiftBoostTimer > 0f)
+            {
+                NoLiftBoostTimer -=Engine.DeltaTime;
+            }
             alpha += Engine.DeltaTime * 4f;
             if ((Scene as Level).Transitioning)
             {
@@ -481,7 +494,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     percent += speed * Engine.DeltaTime;
                 }
             }
-            MoveTo(GetPercentPosition(percent));
+            if (NoLiftBoostTimer > 0)
+            {
+                MoveTo(GetPercentPosition(percent), Vector2.Zero);
+            }
+            else
+            {
+                MoveTo(GetPercentPosition(percent));
+            }
             PositionTrackSfx();
             if (Scene.OnInterval(0.05f) && index != 0 && particles)
             {
