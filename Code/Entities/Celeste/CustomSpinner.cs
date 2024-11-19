@@ -13,25 +13,32 @@ namespace Celeste.Mod.XaphanHelper.Entities
     {
         private class Border : Entity
         {
-            private Entity[] drawing = new Entity[2];
+            private Entity entity;
 
-            public Border(Entity parent, Entity filler)
+            public Border(Entity parent)
             {
-                drawing[0] = parent;
-                drawing[1] = filler;
-                Depth = parent.Depth + 2;
+                entity = parent;
+                Depth = entity.Depth + 2;
+            }
+
+            public override void Awake(Scene scene)
+            {
+                base.Awake(scene);
+                if (entity != null && entity.GetType() == typeof(Filler))
+                {
+                    Depth = entity.Depth + 2;
+                }
             }
 
             public override void Render()
             {
-                if (drawing[0].Visible)
+                if (entity.Visible)
                 {
-                    DrawBorder(drawing[0]);
-                    DrawBorder(drawing[1]);
+                    DrawBorder();
                 }
             }
 
-            private void DrawBorder(Entity entity)
+            private void DrawBorder()
             {
                 if (entity != null)
                 {
@@ -62,6 +69,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         [Tracked(true)]
         public class Filler : Entity
         {
+            private Border border;
+
             public Filler(Vector2 position) : base(position)
             {
                 Collider = new Circle(4f);
@@ -78,7 +87,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         filler.RemoveSelf();
                     }
                 }
-                //Add(new WeaponCollider(HitByBeam, HitByMissile, Collider));
+                Scene.Add(border = new Border(this));
+                Add(new WeaponCollider(HitByBeam, HitByMissile, Collider));
             }
 
             public override void Awake(Scene scene)
@@ -95,6 +105,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
             private void HitByMissile(Missile missile)
             {
                 missile.CollideImmune(missile.Direction);
+            }
+
+            public override void Removed(Scene scene)
+            {
+                if (border != null && border.Scene == scene)
+                {
+                    border.RemoveSelf();
+                }
+                base.Removed(scene);
             }
 
             public override void DebugRender(Camera camera)
@@ -290,7 +309,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                     }
                 }
-                Scene.Add(border = new Border(this, filler));
+                Scene.Add(border = new Border(this));
                 expanded = true;
                 Calc.PopRandom();
             }
