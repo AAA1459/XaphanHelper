@@ -2999,7 +2999,7 @@ namespace Celeste.Mod.XaphanHelper
 
                     if (returnToMapIndex == -1)
                     {
-                        // Bottm of the menu if "Return to map" is not found
+                        // Bottom of the menu if "Return to map" is not found
                         returnToMapIndex = menu.Items.Count - 1;
                     }
 
@@ -3021,6 +3021,31 @@ namespace Celeste.Mod.XaphanHelper
                     menu.Insert(returnToMapIndex, ReturnToTitleButton);
                 }
 
+                // Remove every other non-vanilla items from the menu
+                List<int> IndexesToRemove = new();
+                foreach (TextMenu.Item item in menu.Items)
+                {
+                    if (item.GetType() == typeof(TextMenu.Button) || !item.GetType().ToString().Contains("Celeste"))
+                    {
+                        TextMenu.Button button = (TextMenu.Button)item;
+                        if(button.Label != Dialog.Clean("MENU_PAUSE_RESUME") &&
+                            button.Label != Dialog.Clean("MENU_PAUSE_SKIP_CUTSCENE") &&
+                            button.Label != Dialog.Clean("MENU_PAUSE_RETRY") &&
+                            button.Label != Dialog.Clean("MENU_PAUSE_ASSIST") &&
+                            button.Label != Dialog.Clean("MENU_PAUSE_VARIANT") &&
+                            button.Label != Dialog.Clean("MENU_PAUSE_OPTIONS") &&
+                            button.Label != Dialog.Clean("MENU_PAUSE_MODOPTIONS") && 
+                            button.Label != Dialog.Clean("Xaphan_0_Pause_Menu_ReturnTitle"))
+                        {
+                            IndexesToRemove.Add(menu.Items.IndexOf(item));
+                        }
+                    }
+                }
+                IndexesToRemove.Sort((a, b) => b.CompareTo(a));
+                foreach (int index in IndexesToRemove)
+                {
+                    menu.Remove(menu.Items[index]);
+                }
             }
         }
 
