@@ -668,7 +668,7 @@ namespace Celeste.Mod.XaphanHelper
             Everest.Events.Level.OnLoadBackdrop += OnLoadBackdrop;
             Everest.Events.Level.OnLoadLevel += onLevelLoad;
             Everest.Events.Level.OnExit += onLevelExit;
-            Everest.Events.Level.OnCreatePauseMenuButtons += onCreatePauseMenuButtons;
+            //Everest.Events.Level.OnCreatePauseMenuButtons += onCreatePauseMenuButtons;
             IL.Celeste.Player.Render += modILPlayerRender;
             On.Celeste.AreaData.HasMode += monAreaDataHasMode;
             On.Celeste.Cassette.UnlockedBSide.EaseIn += modCassetteUnlockedBSideEaseIn;
@@ -786,7 +786,7 @@ namespace Celeste.Mod.XaphanHelper
             Everest.Events.Level.OnLoadBackdrop -= OnLoadBackdrop;
             Everest.Events.Level.OnLoadLevel -= onLevelLoad;
             Everest.Events.Level.OnExit -= onLevelExit;
-            Everest.Events.Level.OnCreatePauseMenuButtons -= onCreatePauseMenuButtons;
+            //Everest.Events.Level.OnCreatePauseMenuButtons -= onCreatePauseMenuButtons;
             IL.Celeste.Player.Render -= modILPlayerRender;
             On.Celeste.AreaData.HasMode -= monAreaDataHasMode;
             On.Celeste.Cassette.UnlockedBSide.EaseIn -= modCassetteUnlockedBSideEaseIn;
@@ -1342,6 +1342,13 @@ namespace Celeste.Mod.XaphanHelper
                 }
             }
             orig(self, startIndex, minimal, quickReset);
+            if (Enumerable.FirstOrDefault(self.Entities.ToAdd, (Entity e) => e is TextMenu) is TextMenu textMenu)
+            {
+                if (!quickReset)
+                {
+                    onCreatePauseMenuButtons(self, textMenu, minimal);
+                }
+            }            
         }
 
         private void onReturnMapHintRender(On.Celeste.ReturnMapHint.orig_Render orig, ReturnMapHint self)
