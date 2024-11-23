@@ -768,6 +768,7 @@ namespace Celeste.Mod.XaphanHelper
             BreathDisplay.Load();
             BreathManager.Load();
             Skultera.Load();
+            //DebugBlocker.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -884,6 +885,7 @@ namespace Celeste.Mod.XaphanHelper
             BreathDisplay.Unload();
             BreathManager.Unload();
             Skultera.Unload();
+            //DebugBlocker.Unload();
         }
 
 
