@@ -170,7 +170,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         break;
                     }
-                    if (Top > (level.Bounds.Bottom + 16) || (Top > (level.Bounds.Bottom - 1) && CollideCheck<Solid>(Position + new Vector2(0f, 1f))))
+                    if (Top > (level.Bounds.Bottom + 16) || (Top > (level.Bounds.Bottom - 1) && CollideCheck<Solid>(Position + Vector2.UnitY)))
                     {
                         Collidable = (Visible = false);
                         yield return 0.2f;
@@ -194,7 +194,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                 Audio.Play("event:/char/madeline/water_in", BottomCenter, "deep", 1);
                                 liquid.PlaySplashIn(new Vector2(BottomCenter.X - 12f, liquid.Top - 21f));
                             }
-                            while ((TopCenter.Y < (liquid.TopCenter.Y - 24f)) && !CollideCheck<SolidTiles>(Position + new Vector2(0f, 1f)))
+                            while ((TopCenter.Y < (liquid.TopCenter.Y - 24f)))
                             {
                                 speed = Calc.Approach(speed, maxSpeed, 500f * Engine.DeltaTime);
                                 if (MoveVCollideSolids(speed * Engine.DeltaTime, thruDashBlocks: true))
@@ -217,17 +217,28 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                 speed = Calc.Approach(speed, -80f, 325f * Engine.DeltaTime);
                                 if (MoveVCollideSolids(speed * Engine.DeltaTime, thruDashBlocks: true))
                                 {
-                                    break;
+                                    speed = 0;
+                                    ImpactSfx();
+                                    Input.Rumble(RumbleStrength.Strong, RumbleLength.Medium);
+                                    SceneAs<Level>().DirectionalShake(Vector2.UnitY, 0.3f);
+                                    StartShaking();
+                                    LandParticles(true);
+                                    yield return 0.2f;
+                                    StopShaking();
+                                    while (CollideCheck<Solid>(Position - Vector2.UnitY))
+                                    {
+                                        yield return null;
+                                    }
                                 }
                                 yield return null;
                             }
                             while (true)
                             {
-                                if ((HasPlayerRider() && !CollideCheck<SolidTiles>(Position + new Vector2(0f, 1f))) || TopCenter.Y > liquid.TopCenter.Y + 8)
+                                if ((HasPlayerRider() && !CollideCheck<Solid>(Position + Vector2.UnitY)) || TopCenter.Y > liquid.TopCenter.Y + 8)
                                 {
                                     MoveTowardsY(liquid.TopCenter.Y + 8, Math.Max(0.3f, Math.Abs(liquid.TopCenter.Y + 8 - TopCenter.Y) / 24f));
                                 }
-                                else if (!HasPlayerRider() && (TopCenter.Y != liquid.TopCenter.Y - 8) && !CollideCheck<SolidTiles>(Position - new Vector2(0f, 1f)))
+                                else if (!HasPlayerRider() && (TopCenter.Y != liquid.TopCenter.Y - 8) && !CollideCheck<Solid>(Position - Vector2.UnitY))
                                 {
                                     MoveTowardsY(liquid.TopCenter.Y - 8, Math.Max(0.3f, Math.Abs(liquid.TopCenter.Y - 8 - TopCenter.Y) / 16f));
                                 }
@@ -244,11 +255,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 LandParticles();
                 yield return 0.2f;
                 StopShaking();
-                if (CollideCheck<SolidTiles>(Position + new Vector2(0f, 1f)))
+                if (CollideCheck<SolidTiles>(Position + Vector2.UnitY))
                 {
                     break;
                 }
-                while (CollideCheck<Platform>(Position + new Vector2(0f, 1f)))
+                while (CollideCheck<Platform>(Position + Vector2.UnitY))
                 {
                     yield return 0.1f;
                 }
@@ -256,15 +267,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
-        private void LandParticles()
+        private void LandParticles(bool top = false)
         {
             for (int i = 2; i <= Width; i += 4)
             {
-                if (Scene.CollideCheck<Solid>(BottomLeft + new Vector2(i, 3f)))
+                if (Scene.CollideCheck<Solid>((top ? TopLeft : BottomLeft) + new Vector2(i, 3f)))
                 {
-                    SceneAs<Level>().ParticlesFG.Emit(FallingBlock.P_FallDustA, 1, new Vector2(X + i, Bottom), Vector2.One * 4f, -(float)Math.PI / 2f);
+                    SceneAs<Level>().ParticlesFG.Emit(FallingBlock.P_FallDustA, 1, new Vector2(X + i, top ? Top : Bottom), Vector2.One * 4f, -(float)Math.PI / 2f);
                     float direction = ((!(i < Width / 2f)) ? 0f : ((float)Math.PI));
-                    SceneAs<Level>().ParticlesFG.Emit(FallingBlock.P_LandDust, 1, new Vector2(X + i, Bottom), Vector2.One * 4f, direction);
+                    if (top)
+                    {
+                        direction = -direction;
+                    }
+                    SceneAs<Level>().ParticlesFG.Emit(FallingBlock.P_LandDust, 1, new Vector2(X + i, top ? Top : Bottom), Vector2.One * 4f, direction);
                 }
             }
         }
