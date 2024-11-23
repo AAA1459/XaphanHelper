@@ -183,7 +183,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 else if (speed > 0 && !rewind)
                 {
-                    speed -= Engine.DeltaTime / lengths[lengths.Length - 1] * 300 * speedMult;
+                    speed -= Engine.DeltaTime / lengths[lengths.Length - 1] * (playerMomentum ? 100 : 300) * speedMult;
                     if (percent >= 1)
                     {
                         percent = 1;
