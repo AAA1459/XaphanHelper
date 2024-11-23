@@ -3042,7 +3042,12 @@ namespace Celeste.Mod.XaphanHelper
                             button.Label != Dialog.Clean("MENU_PAUSE_VARIANT") &&
                             button.Label != Dialog.Clean("MENU_PAUSE_OPTIONS") &&
                             button.Label != Dialog.Clean("MENU_PAUSE_MODOPTIONS") && 
-                            button.Label != Dialog.Clean("Xaphan_0_Pause_Menu_ReturnTitle"))
+                            button.Label != Dialog.Clean("Xaphan_0_Pause_Menu_ReturnTitle") &&
+                            button.Label != Dialog.Clean("XaphanHelper_UI_GiveUpNM") &&
+                            button.Label != Dialog.Clean("XaphanHelper_UI_GiveUpCM") &&
+                            button.Label != Dialog.Clean("XaphanHelper_UI_GiveUpASide") &&
+                            button.Label != Dialog.Clean("XaphanHelper_UI_GiveUpBSide") &&
+                            button.Label != Dialog.Clean("XaphanHelper_UI_GiveUpCSide"))
                         {
                             IndexesToRemove.Add(menu.Items.IndexOf(item));
                         }
