@@ -71,19 +71,19 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                 Skultera = skultera;
                 if (Skultera.direction == Skultera.Direction.Left)
                 {
-                    Offset = new Vector2(0f, 4f);
+                    Offset = new Vector2(0f, 2f);
                 }
-                else if (Skultera.direction == Skultera.Direction.Right)
+                else if(Skultera.direction == Skultera.Direction.Right)
                 {
-                    Offset = new Vector2(10f, 4f);
+                    Offset = new Vector2(10f, 2f);
                 }
                 else if (Skultera.direction == Skultera.Direction.Up)
                 {
-                    Offset = new Vector2(4f, 0f);
+                    Offset = new Vector2(6f, 0f);
                 }
                 else if (Skultera.direction == Skultera.Direction.Down)
                 {
-                    Offset = new Vector2(4f, 8f);
+                    Offset = new Vector2(6f, 8f);
                 }
                 Position = Skultera.Position + Offset;
                 Depth = Skultera.Depth + 1;
@@ -105,19 +105,19 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                 base.Added(scene);
                 if (Skultera.direction == Skultera.Direction.Left)
                 {
-                    Collider = new Hitbox(Skultera.maxRange * 8, 24f, -Skultera.maxRange * 8, -5f);
+                    Collider = new Hitbox(Skultera.maxRange * 8, 16f, -Skultera.maxRange * 8, -5f);
                 }
                 else if (Skultera.direction == Skultera.Direction.Right)
                 {
-                    Collider = new Hitbox(Skultera.maxRange * 8, 24f, -2f, -5f);
+                    Collider = new Hitbox(Skultera.maxRange * 8, 16f, -2f, -5f);
                 }
                 else if (Skultera.direction == Skultera.Direction.Up)
                 {
-                    Collider = new Hitbox(24f, Skultera.maxRange * 8, -5f, -Skultera.maxRange * 8);
+                    Collider = new Hitbox(16f, Skultera.maxRange * 8, -9f, -Skultera.maxRange * 8);
                 }
                 else if (Skultera.direction == Skultera.Direction.Down)
                 {
-                    Collider = new Hitbox(24f, Skultera.maxRange * 8, -5f, 0f);
+                    Collider = new Hitbox(16f, Skultera.maxRange * 8, -9f, 0f);
                 }
                 int particlecount = (int)Collider.Width * (int)Collider.Height / 150;
                 particles = new Particle[particlecount];
@@ -368,6 +368,8 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         private static float climbJumpGrabCooldown = -1f;
 
+        private bool sucking;
+
         public Skultera(EntityData data, Vector2 offset) : base(data, offset)
         {
             maxRange = data.Float("maxRange", 14f);
@@ -375,30 +377,29 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             suctionStrength = data.Float("suctionStrength", 150f);
             Body = new Sprite(GFX.Game, "enemies/Xaphan/Skultera/");
             Body.Add("idle", "idle", 0f);
-            Body.Add("activeStart", "active", 0.12f, 0);
-            Body.Add("active", "active", 0.12f, 1, 2);
+            Body.Add("active", "active", 0.12f);
             Body.Add("activeStop", "active", 0.12f, 2, 1, 0);
             Body.Play("idle");
             Body.CenterOrigin();
             switch (direction)
             {
                 case Direction.Left:
-                    Collider = new ColliderList(new Hitbox(3f, 24f, 5f, -8f), new Hitbox(7f, 16f, 1f, -2f));
+                    Collider = new Hitbox(11f, 22f, -3f, -11f);
                     Body.Position.X = -2f;
                     break;
                 case Direction.Right:
-                    Collider = new ColliderList(new Hitbox(3f, 24f, 0f, -8f), new Hitbox(7f, 16f, 0f, -2f));
+                    Collider = new Hitbox(11f, 22f, 0f, -11f);
                     Body.FlipX = true;
                     Body.Position.X = 2f;
                     break;
                 case Direction.Up:
-                    Collider = new ColliderList(new Hitbox(24f, 3f, -8f, 5f), new Hitbox(16f, 7f, -2f, 1f));
+                    Collider = new Hitbox(22f, 11f, -11f, -3f);
                     Body.Rotation = (float)Math.PI / 2;
                     Body.FlipY = true;
                     Body.Position.Y = -2f;
                     break;
                 case Direction.Down:
-                    Collider = new ColliderList(new Hitbox(24f, 3f, -8f, 0f),new Hitbox(16f, 7f, -2f, 0f));
+                    Collider = new Hitbox(22f, 11f, -11f, 0f);
                     Body.Rotation = -(float)Math.PI / 2;
                     Body.Position.Y = 2f;
                     break;
@@ -536,13 +537,10 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
             if (player != null && CollideDetect.DetectedPlayer)
             {
-                if (!Body.CurrentAnimationID.Contains("active"))
+                if (!Body.CurrentAnimationID.Contains("active") && !sucking)
                 {
-                    Body.Play("activeStart");
-                    Body.OnLastFrame = delegate
-                    {
-                        Body.Play("active");
-                    };
+                    sucking = true;
+                    Body.Play("active");
                 }
                 percent = Calc.Approach(percent, 1f, Engine.DeltaTime / 0.5f);
                 if (player.StateMachine.State != Player.StRedDash && player.StateMachine.State != Player.StDash && player.StateMachine.State != Player.StClimb && !player.DashAttacking)
@@ -552,17 +550,17 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                     {
                         if (!attemptToGrabSolid)
                         {
+                            player.Speed.Y = 0f;
                             player.MoveH(suctionStrength * (direction == Direction.Right ? -1 : 1) * Engine.DeltaTime * Ease.CubeInOut(percent));
-                            player.Speed.Y = -15f;
-                            player.MoveTowardsY(CollideDetect.Center.Y + 6f, 22.5f * Engine.DeltaTime);
+                            player.MoveTowardsY(CollideDetect.Center.Y + 10f, 22.5f * Engine.DeltaTime);
                         }
                     }
                     else if (direction == Direction.Up || direction == Direction.Down)
                     {
                         if (!attemptToGrabSolid)
                         {
-                            player.MoveV(suctionStrength * (direction == Direction.Down ? -1 : 1) * Engine.DeltaTime * Ease.CubeInOut(percent));
                             player.Speed.Y = 0f;
+                            player.MoveV(suctionStrength * (direction == Direction.Down ? -1 : 1) * Engine.DeltaTime * Ease.CubeInOut(percent));
                             player.MoveTowardsX(CollideDetect.Center.X, 22.5f * Engine.DeltaTime);
                         }
                     }
@@ -570,12 +568,13 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             }
             else
             {
-                if (Body.CurrentAnimationID.Contains("active"))
+                if (Body.CurrentAnimationID != "activeStop" && Body.CurrentAnimationID != "idle")
                 {
                     Body.Play("activeStop");
                     Body.OnLastFrame = delegate
                     {
                         Body.Play("idle");
+                        sucking = false;
                     };
                 }
                 percent = Calc.Approach(percent, 0f, Engine.DeltaTime / 0.5f);
