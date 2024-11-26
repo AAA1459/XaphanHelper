@@ -208,6 +208,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                 speed = Calc.Approach(speed, 0, 350f * Engine.DeltaTime);
                                 if (MoveVCollideSolids(speed * Engine.DeltaTime, thruDashBlocks: true))
                                 {
+                                    speed = 0;
+                                    ImpactSfx();
+                                    Input.Rumble(RumbleStrength.Strong, RumbleLength.Medium);
+                                    SceneAs<Level>().DirectionalShake(Vector2.UnitY, 0.3f);
+                                    StartShaking();
+                                    LandParticles();
+                                    StopShaking();
                                     break;
                                 }
                                 yield return null;
@@ -215,7 +222,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             while (TopCenter.Y > (HasPlayerRider() ? liquid.TopCenter.Y + 8 : liquid.TopCenter.Y - 8))
                             {
                                 speed = Calc.Approach(speed, -80f, 325f * Engine.DeltaTime);
-                                if (MoveVCollideSolids(speed * Engine.DeltaTime, thruDashBlocks: true))
+                                if (MoveVCollideSolids(speed * Engine.DeltaTime, thruDashBlocks: true) && speed < 0)
                                 {
                                     speed = 0;
                                     ImpactSfx();
