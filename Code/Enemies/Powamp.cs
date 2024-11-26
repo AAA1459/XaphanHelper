@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using Celeste.Mod.Entities;
-using Celeste.Mod.XaphanHelper.Triggers;
+using Celeste.Mod.XaphanHelper.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -64,7 +64,8 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             UpdatePosition();
             if (SceneAs<Level>().CollideCheck<Actor>(new Rectangle((int)Position.X - 6, (int)Position.Y - 6, 12, 12)))
             {
-                if (!ReactionRoutine.Active && !Grown)
+                Actor actor = CollideFirst<Actor>();
+                if (actor != null && !ReactionRoutine.Active && !Grown && actor.GetType() != typeof(Liquid.AirBubble))
                 {
                     Add(ReactionRoutine = new Coroutine(GrowSpikes()));
                 }
