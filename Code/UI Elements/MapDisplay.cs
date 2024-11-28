@@ -596,7 +596,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 foreach (EntityData entity in level.Entities)
                 {
-                    if (entity.Name == "XaphanHelper/HeatController" && !this.level.Session.GetFlag(entity.Attr("inactiveFlag")))
+                    if (entity.Name == "XaphanHelper/HeatController" && ((!string.IsNullOrEmpty(entity.Attr("inactiveFlag")) && !this.level.Session.GetFlag(entity.Attr("inactiveFlag"))) || string.IsNullOrEmpty(entity.Attr("inactiveFlag"))))
                     {
                         HeatedRooms.Add(level.Name);
                         break;

@@ -41,7 +41,7 @@ namespace Celeste.Mod.XaphanHelper.Managers
             base.Update();
             Level level = SceneAs<Level>();
             Player player = Scene.Tracker.GetEntity<Player>();
-            if (!XaphanModule.UIOpened && !level.Session.GetFlag(inactiveFlag))
+            if (!XaphanModule.UIOpened && (string.IsNullOrEmpty(inactiveFlag) || (!string.IsNullOrEmpty(inactiveFlag) && !level.Session.GetFlag(inactiveFlag))))
             {
                 if (!XaphanModule.useMetroidGameplay)
                 {

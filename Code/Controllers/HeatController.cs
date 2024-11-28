@@ -130,7 +130,7 @@ namespace Celeste.Mod.XaphanHelper.Controllers
             Player player = Scene.Tracker.GetEntity<Player>();
             if (player != null && !player.Dead)
             {
-                if (!VariaJacket.Active(SceneAs<Level>()) && !SceneAs<Level>().Session.GetFlag(inactiveFlag) && !XaphanModule.PlayerIsControllingRemoteDrone())
+                if (!VariaJacket.Active(SceneAs<Level>()) && (string.IsNullOrEmpty(inactiveFlag) || (!string.IsNullOrEmpty(inactiveFlag) && !SceneAs<Level>().Session.GetFlag(inactiveFlag))) && !XaphanModule.PlayerIsControllingRemoteDrone())
                 {
                     if (Scene.OnRawInterval(0.06f))
                     {
@@ -145,7 +145,7 @@ namespace Celeste.Mod.XaphanHelper.Controllers
                         FlashingRed = false;
                     }
                 }
-                if (VariaJacket.Active(SceneAs<Level>()) || SceneAs<Level>().Session.GetFlag(inactiveFlag) || XaphanModule.PlayerIsControllingRemoteDrone())
+                if (VariaJacket.Active(SceneAs<Level>()) || (!string.IsNullOrEmpty(inactiveFlag) && SceneAs<Level>().Session.GetFlag(inactiveFlag)) || XaphanModule.PlayerIsControllingRemoteDrone())
                 {
                     if (player.Sprite.Color == Color.Red)
                     {

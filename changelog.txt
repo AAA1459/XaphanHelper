@@ -23,6 +23,7 @@ Version 1.0.64 :
 - Fixed a bug that could prevent Arrow Hints on the In-Game map to point to the correct direction when more than one is in the same chapter
 - Fixed a bug that displayed secret rooms on the In-game map before the player enter them when the "Reveal Unexplored Rooms" attribute of the In-Game map Controller was set to true
 - Fixed a bug that allowed Bombs to be used in liquids
+- Fixed a bug that could prevent Heat Controllers with an empty Inactive Flag to work correctly
 - Fixed a crash when using the retry option in the pause menu while holding the drone
 - Fixed a crash when closing the Binoculars from the Binoculars ability at the same time the player died
 
