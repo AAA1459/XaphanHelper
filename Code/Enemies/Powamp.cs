@@ -27,6 +27,8 @@ namespace Celeste.Mod.XaphanHelper.Enemies
 
         private bool Grown;
 
+        private Vector2 LastSinePosition;
+
         public Powamp(EntityData data, Vector2 offset) : base(data, offset)
         {
             Collider = new Circle(6f);
@@ -34,8 +36,10 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             GrownDelay = data.Float("grownDelay", 0.5f);
             GrownTime = data.Float("grownTime", 0f);
             Collidable = false;
-            anchor = Position;
             Add(sine = new SineWave(0.44f, 0f).Randomize());
+            anchor = Position;
+            Position += new Vector2(sine.Value, sine.ValueOverTwo);
+            LastSinePosition = Position;
             Body = new Sprite(GFX.Game, "enemies/Xaphan/Powamp/");
             Body.Add("idle", "idle", 0f);
             Body.Add("spiked", "spiked", 0.1f);
@@ -46,7 +50,6 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             {
                 Add(sprite);
             }
-            UpdatePosition();
             Add(Light = new VertexLight(new Vector2(0f, 6f), Color.White, 1f, 16, 24));
             Add(scaleWiggler = Wiggler.Create(0.5f, 4f, delegate (float f)
             {
@@ -55,7 +58,14 @@ namespace Celeste.Mod.XaphanHelper.Enemies
         }
         private void UpdatePosition()
         {
-            Position = new Vector2((float)(anchor.X + (double)sine.Value), (float)(anchor.Y + (double)sine.ValueOverTwo));
+            if (Position != LastSinePosition)
+            {
+                anchor += Position - LastSinePosition;
+            }
+            Vector2 vector = anchor + new Vector2(sine.Value, sine.ValueOverTwo);
+            MoveToX(vector.X);
+            MoveToY(vector.Y);
+            LastSinePosition = Position;
         }
 
         public override void Update()
@@ -95,7 +105,6 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                 Body.Play("idle");
                 Grown = false;
             }
-
         }
     }
 }
