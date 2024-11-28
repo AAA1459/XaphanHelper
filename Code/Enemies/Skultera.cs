@@ -550,7 +550,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                     {
                         if (!attemptToGrabSolid)
                         {
-                            player.Speed.Y = 0f;
+                            player.Speed = Vector2.Zero;
                             player.MoveH(suctionStrength * (direction == Direction.Right ? -1 : 1) * Engine.DeltaTime * Ease.CubeInOut(percent));
                             player.MoveTowardsY(CollideDetect.Center.Y + 10f, 22.5f * Engine.DeltaTime);
                         }
@@ -559,7 +559,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
                     {
                         if (!attemptToGrabSolid)
                         {
-                            player.Speed.Y = 0f;
+                            player.Speed = Vector2.Zero;
                             player.MoveV(suctionStrength * (direction == Direction.Down ? -1 : 1) * Engine.DeltaTime * Ease.CubeInOut(percent));
                             player.MoveTowardsX(CollideDetect.Center.X, 22.5f * Engine.DeltaTime);
                         }
