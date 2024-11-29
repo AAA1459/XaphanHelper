@@ -134,15 +134,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             player.Speed = vector * 220f;
 
-            if (Math.Abs(player.Speed.X) < 100f)
+            if (Math.Abs(player.Speed.X) < 50f)
             {
                 if (player.Speed.X == 0f)
                 {
-                    player.Speed.X = (0 - player.Facing) * 100f;
+                    player.Speed.X = (0 - player.Facing) * 50f;
                 }
                 else
                 {
-                    player.Speed.X = Math.Sign(player.Speed.X) * 100f;
+                    player.Speed.X = Math.Sign(player.Speed.X) * 50f;
                 }
             }
         }
