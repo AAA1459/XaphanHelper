@@ -179,7 +179,7 @@ namespace Celeste.Mod.XaphanHelper.Managers
             Flashing = false;
             while (air < currentMaxAir)
             {
-                air += Engine.DeltaTime * (currentMaxAir / 2f);
+                air += Engine.DeltaTime * currentMaxAir;
                 yield return null;
             }
             air = currentMaxAir;
