@@ -124,6 +124,10 @@ namespace Celeste.Mod.XaphanHelper.Managers
                                 Flashing = !Flashing;
                             }
                         }
+                        else
+                        {
+                            Flashing = false;
+                        }
                     }
                     if (!forceRechargeAir)
                     {
