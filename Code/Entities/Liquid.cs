@@ -1014,7 +1014,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             {
                                 Audio.Play("event:/char/madeline/water_dash_out", bounds.Center.ToVector2(), "deep", num);
                             }
-                            else
+                            else if (!SceneAs<Level>().Transitioning && player != null && player.Bottom >= Top)
                             {
                                 Audio.Play("event:/char/madeline/water_out", bounds.Center.ToVector2(), "deep", num);
                             }
@@ -1026,7 +1026,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             {
                                 Audio.Play("event:/char/madeline/water_dash_in", bounds.Center.ToVector2(), "deep", num);
                             }
-                            else
+                            else if (!SceneAs<Level>().Transitioning && player != null && player.Top < Top)
                             {
                                 Audio.Play("event:/char/madeline/water_in", bounds.Center.ToVector2(), "deep", num);
                             }
