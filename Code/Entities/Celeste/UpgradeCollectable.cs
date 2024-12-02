@@ -320,11 +320,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (hasOtherMiscUpgrade)
                     {
                         select = true;
-                        inputActionA = "XaphanHelper_ThenHold";
+                        inputActionA = "XaphanHelper_ThenPress";
                     }
                     else
                     {
-                        inputActionA = "XaphanHelper_Hold";
+                        inputActionA = "XaphanHelper_Press";
                     }
                     break;
                 case "PortableStation":
@@ -332,11 +332,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (hasOtherMiscUpgrade)
                     {
                         select = true;
-                        inputActionA = "XaphanHelper_ThenHold";
+                        inputActionA = "XaphanHelper_ThenPress";
                     }
                     else
                     {
-                        inputActionA = "XaphanHelper_Hold";
+                        inputActionA = "XaphanHelper_Press";
                     }
                     break;
                 case "PulseRadar":
@@ -344,11 +344,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (hasOtherMiscUpgrade)
                     {
                         select = true;
-                        inputActionA = "XaphanHelper_ThenHold";
+                        inputActionA = "XaphanHelper_ThenPress";
                     }
                     else
                     {
-                        inputActionA = "XaphanHelper_Hold";
+                        inputActionA = "XaphanHelper_Press";
                     }
                     break;
                 case "JumpBoost":

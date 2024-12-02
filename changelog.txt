@@ -1,7 +1,7 @@
 Version 1.0.64 :
 - Added "Force Inactive Flag" attribute to Drone Gates and Flag Dash Switches
 - Added "Cell Offset X" and "Cell Offset Y" attributes to Cell Locks
-- Added "can Drown", "Air Timer", "Inside Transparency" and "Appear Flags" attributes to Liquids
+- Added "Group", "Can Drown", "Air Timer", "Inside Transparency" and "Appear Flags" attributes to Liquids
 - Added ""Animation Speed", Particles Color", "Light Color", "Wiggle", "Loop Sound", "Loop Burst" and "Static Time" attributes to Custom Collectable
 - Added "Hide On World Map" attribute to In-game Map Hint Controllers
 - Break Blocks Indicators now also apear if the player touch them in the Dash Attacking state. This make it more lenient to reveal the indicator in cases where the player dash end just before the block
@@ -9,14 +9,15 @@ Version 1.0.64 :
 - Golden strawberries in campaigns using a Merge Chapter Controller now reset entities that should not reload anymore when grabbed, and resture them back (+ any new entity that got added with the berry) on death or berry collection
 - Achievements popups in Secret of Celeste Mountain can no longer appear while the player is in dummy state or for the first 0.1s after entering a room, to prevent them appearing while the player is teleported
 - Arrows on the warp menu disapear correctly when there is more than 10 warps in the menu and the player select the "Stay Here" option
-- If the player die after using the Remote drone but before the drone can be controlled, the player will now respawn at their current spawn point to prevent an infitire respawn softlock
+- If the player die after using the Remote drone but before the drone can be controlled, the player will now respawn at their current spawn point to prevent an infinite respawn softlock
 - The Remote Drone can no longer be deployed by pressing down while holding it. Madeline will now attempt to throw it instead
 - The Remote Drone is now correctly affected by liquids physics while in a liquid set to lava
 - The Varia Jacket ability no longer allows the player to enter lava
 - Bombs now disapear shortly after entering water, without exploding
 - Bag and Misc upgrades now only tell the player to select the upgrade to use it if the player already have another upgrade using the same slot
-- Campaigns using a Merge Chapters Controller now always display the total amount of strawberries in a chapter on the journal once the player entred the chapter at least once
+- Campaigns using a Merge Chapters Controller now always display the total amount of strawberries in a chapter on the journal once the player entered the chapter at least once
 - Rooms will no longer appear as heated on the In-Game map if the inactive flag of their Heat Controller is true
+- Fixed the text appearing when collecting the Binoculars, Portable Station and Pulse Radar abilities telling the player to hold a button instead of pressing it
 - Fixed a bug that prevented the "Golden Start With X" attributes to work correctly, removing abilities on room transition when holding a golden strawberry
 - Fixed a bug that prevented Flag On Interact Triggers to work if their "Req Flags" attribute was left empty
 - Fixed a bug that killed both Madeline and the Remote Drone at the same time if the player died while holding the drone
