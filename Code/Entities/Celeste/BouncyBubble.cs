@@ -176,6 +176,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (respawnTime > 0)
                 {
+                    if (refill != null)
+                    {
+                        while (refill.Collidable)
+                        {
+                            yield return null;
+                        }
+                    }
                     yield return respawnTime;
 
                     Collidable = Visible = true;
