@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections;
+using System.Reflection;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using MonoMod.Utils;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
     [CustomEntity("XaphanHelper/BouncyBubble")]
     class BouncyBubble : Entity
     {
+        private MethodInfo StrawberrySeed_onPlayer = typeof(StrawberrySeed).GetMethod("OnPlayer", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private MethodInfo StrawberrySeed_onLoseLeader = typeof(StrawberrySeed).GetMethod("OnLoseLeader", BindingFlags.Instance | BindingFlags.NonPublic);
+
         private Wiggler scaleWiggler;
 
         private Sprite Sprite;
@@ -19,7 +25,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private CustomRefill refill;
 
+        private StrawberrySeed seed;
+
         private ParticleType P_Break;
+
+        private Coroutine BreakRoutine = new();
 
         public BouncyBubble(EntityData data, Vector2 position) : base(data.Position + position)
         {
@@ -62,10 +72,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Awake(scene);
             if (CollideCheck<CustomRefill>())
             {
-                CustomRefill refill = CollideFirst<CustomRefill>();
-                this.refill = refill;
+                refill = CollideFirst<CustomRefill>();
                 sine = refill.sine;
                 respawnTime = refill.oneUse ? 0 : refill.respawnTime;
+                UpdateY();
+            }
+            if (CollideCheck<StrawberrySeed>())
+            {
+                seed = CollideFirst<StrawberrySeed>();
+                seed.Collidable = false;
+                sine = (SineWave)DynamicData.For(seed).Get("sine");
                 UpdateY();
             }
             if (sine == null)
@@ -101,9 +117,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void OnBounce(Player player)
         {
-            if ((player.StateMachine.State == Player.StDash || player.DashAttacking) && Collidable)
+            if ((player.StateMachine.State == Player.StDash || player.DashAttacking) && Collidable && !BreakRoutine.Active)
             {
-                Add(new Coroutine(Break(player)));
+                Add(BreakRoutine = new Coroutine(Break(player)));
             }
             else
             {
@@ -156,19 +172,45 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 SceneAs<Level>().ParticlesFG.Emit(P_Break, 15, Position, Vector2.One * 6f);
             }
             SlashFx.Burst(Position, direction);
-
-            if (respawnTime > 0)
+            if (seed == null)
             {
-                yield return respawnTime;
-
-                Collidable = Visible = true;
-                scaleWiggler.Start();
-                if (refill != null)
+                if (respawnTime > 0)
                 {
-                    refill.wiggler.Start();
+                    yield return respawnTime;
+
+                    Collidable = Visible = true;
+                    scaleWiggler.Start();
+                    if (refill != null)
+                    {
+                        refill.wiggler.Start();
+                    }
                 }
             }
+            else
+            {
+                seed.Collidable = true;
+                Vector2 seedPosition = seed.Position;
+                DynData<StrawberrySeed> StrawberrySeedData = new(seed);
+                StrawberrySeed_onPlayer.Invoke(seed, [player]);
+                while (!StrawberrySeedData.Get<bool>("Collidable"))
+                {
+                    yield return null;
+                }
+                Collidable = Visible = true;
+                scaleWiggler.Start();
+                Follower follower = StrawberrySeedData.Get<Follower>("follower");
+                follower.OnLoseLeader = delegate
+                {
+                    return;
+                };
+                player.Leader.LoseFollower(follower);
+                follower.OnLoseLeader = delegate
+                {
+                    StrawberrySeed_onLoseLeader.Invoke(seed, []);
+                };
+                seed.Position = seedPosition;
+                seed.Collidable = false;
+            }
         }
-
     }
 }
