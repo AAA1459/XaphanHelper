@@ -82,7 +82,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 foreach (Entity entity in Scene.Tracker.GetEntities<Filler>())
                 {
                     Filler filler = (Filler)entity;
-                    if (CollideCheck(filler) && filler != this)
+                    if (filler.Position == Position && filler != this)
                     {
                         filler.RemoveSelf();
                     }
@@ -126,7 +126,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool AttachToSolid;
 
-        public Filler filler;
+        public List<Filler> fillers = new();
 
         private Border border;
 
@@ -253,9 +253,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
-            if (filler != null)
+            if (fillers.Count > 0)
             {
-                filler.Visible = !Hidden;
+                foreach (Filler filler in fillers)
+                {
+                    filler.Visible = !Hidden;
+                }
             }
         }
 
@@ -321,8 +324,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Image image = new(Calc.Random.Choose(atlasSubtextures));
             image.Rotation = Calc.Random.Choose(0, 1, 2, 3) * ((float)Math.PI / 2f);
             image.CenterOrigin();
-            Scene.Add(filler = new Filler(Position + offset));
+            Filler filler = new Filler(Position + offset);
             filler.Add(image);
+            Scene.Add(filler);
+            fillers.Add(filler);
         }
 
         private bool SolidCheck(Vector2 position)
@@ -344,11 +349,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void ClearSprites()
         {
-            if (filler != null)
+            if (fillers.Count > 0)
             {
-                filler.RemoveSelf();
+                foreach (Filler filler in fillers)
+                {
+                    filler.RemoveSelf();
+                }
             }
-            filler = null;
+            fillers.Clear();
             if (border != null)
             {
                 border.RemoveSelf();
@@ -407,9 +415,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Removed(Scene scene)
         {
-            if (filler != null && filler.Scene == scene)
+            if (fillers.Count > 0)
             {
-                filler.RemoveSelf();
+                foreach (Filler filler in fillers)
+                {
+                    if (filler.Scene == scene)
+                    {
+                        filler.RemoveSelf();
+                    }
+                }
             }
             if (border != null && border.Scene == scene)
             {
