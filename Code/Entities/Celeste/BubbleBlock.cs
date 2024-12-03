@@ -155,7 +155,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (bubbles[j, i] == 0)
                     {
                         bool bigBubble = false;
-                        if (j < lines - 1 && i < columns - 1)
+                        if (j < lines - 1 && i < columns - 1 && (columns == 2 ? lines > 2 : true) && (lines == 2 ? columns > 2 : true))
                         {
                             if (bubbles[j + 1, i] == 0 && bubbles[j, i + 1] == 0)
                             {
