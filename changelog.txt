@@ -18,6 +18,7 @@ Version 1.0.64 :
 - Campaigns using a Merge Chapters Controller now always display the total amount of strawberries in a chapter on the journal once the player entered the chapter at least once
 - Rooms will no longer appear as heated on the In-Game map if the inactive flag of their Heat Controller is true
 - Fixed the text appearing when collecting the Binoculars, Portable Station and Pulse Radar abilities telling the player to hold a button instead of pressing it
+- Campaign using a Merge Chapter Controller with Mode set to Rooms now save the game each time the player enter a room
 - Fixed a bug that prevented the "Golden Start With X" attributes to work correctly, removing abilities on room transition when holding a golden strawberry
 - Fixed a bug that prevented Flag On Interact Triggers to work if their "Req Flags" attribute was left empty
 - Fixed a bug that killed both Madeline and the Remote Drone at the same time if the player died while holding the drone

@@ -134,6 +134,8 @@ namespace Celeste.Mod.XaphanHelper
 
         public static bool refillJumps;
 
+        public bool SaveIconVisible = true;
+
         public enum Upgrades
         {
             // Celeste Upgrades
@@ -707,6 +709,8 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.PlayerSprite.CreateFramesMetadata += PlayerSpriteMetadataHook;
             On.Celeste.ReturnMapHint.Render += onReturnMapHintRender;
             On.Celeste.SaveData.FoundAnyCheckpoints += modSaveDataFoundAnyCheckpoints;
+            On.Celeste.SaveLoadIcon.Render += onSaveLoadIconRender;
+            On.Celeste.SaveLoadIcon.Routine += onSaveLoadIconRoutine;
             On.Celeste.Session.Restart += onSessionRestart;
             On.Celeste.SpeedrunTimerDisplay.DrawTime += onSpeedrunTimerDisplayDrawTime;
             On.Celeste.Strawberry.OnPlayer += modStrawberryOnPlayer;
@@ -824,6 +828,8 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.PlayerSprite.CreateFramesMetadata -= PlayerSpriteMetadataHook;
             On.Celeste.ReturnMapHint.Render -= onReturnMapHintRender;
             On.Celeste.SaveData.FoundAnyCheckpoints -= modSaveDataFoundAnyCheckpoints;
+            On.Celeste.SaveLoadIcon.Render -= onSaveLoadIconRender;
+            On.Celeste.SaveLoadIcon.Routine -= onSaveLoadIconRoutine;
             On.Celeste.Session.Restart -= onSessionRestart;
             On.Celeste.SpeedrunTimerDisplay.DrawTime -= onSpeedrunTimerDisplayDrawTime;
             On.Celeste.Strawberry.OnPlayer -= modStrawberryOnPlayer;
@@ -1388,6 +1394,38 @@ namespace Celeste.Mod.XaphanHelper
             }
             return orig(self, area);
         }
+
+        private IEnumerator onSaveLoadIconRoutine(On.Celeste.SaveLoadIcon.orig_Routine orig, SaveLoadIcon self)
+        {
+            if (useMergeChaptersController && !SaveIconVisible)
+            {
+                self.Add(new Coroutine(SwitchBackSaveLoadIconVisibility(self)));
+            }
+            yield return new SwapImmediately(orig(self));
+        }
+
+        private IEnumerator SwitchBackSaveLoadIconVisibility(SaveLoadIcon icon)
+        {
+            DynData<SaveLoadIcon> SaveLoadIconData = new(icon);
+            Sprite iconSprite = SaveLoadIconData.Get<Sprite>("icon");
+            while (iconSprite.CurrentAnimationID != "end")
+            {
+                yield return null;
+            }
+            yield return 0.5f;
+            SaveIconVisible = true;
+        }
+
+        private void onSaveLoadIconRender(On.Celeste.SaveLoadIcon.orig_Render orig, SaveLoadIcon self)
+        {
+            if (useMergeChaptersController && !SaveIconVisible)
+            {
+                return;
+            }
+            orig(self);
+        }
+
+
 
         private int modOuiChapterPanelGetModeHeight(On.Celeste.OuiChapterPanel.orig_GetModeHeight orig, OuiChapterPanel self)
         {
@@ -1959,6 +1997,13 @@ namespace Celeste.Mod.XaphanHelper
 
         private void onLevelLoad(Level level, Player.IntroTypes playerIntro, bool isFromLoader)
         {
+            // Save the game on room entry when using a Merge Chapters Controller
+            if (useMergeChaptersController && MergeChaptersControllerMode == "Rooms")
+            {
+                SaveIconVisible = false;
+                level.AutoSave();
+            }
+
             isInLevel = true;
             string room = level.Session.Level;
             string Prefix = level.Session.Area.LevelSet;
