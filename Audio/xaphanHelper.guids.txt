@@ -488,6 +488,7 @@
 {7c01de41-a31a-43c3-9c0f-9ae85ad94c68} event:/game/general/wall_break_ice
 {92f75010-4e90-428e-834c-1315ddbd9460} event:/game/general/wall_break_stone
 {634bdd66-3f53-4679-8ced-fadfc60d412f} event:/game/general/wall_break_wood
+{3877a952-c5a9-415a-af37-d7bcfdb70827} event:/game/xaphan/air_bubbles
 {ba1305aa-e36c-4302-a87e-1428ade3c4ed} event:/game/xaphan/alarm
 {de707240-39c0-425f-aea2-e31846247f04} event:/game/xaphan/block_break
 {c1dddab5-7156-4356-900e-4332e8576f9e} event:/game/xaphan/bomb_explode
@@ -573,8 +574,8 @@
 {7dacc2a9-765e-4d26-bd05-1607af7024f4} event:/game/xaphan/warp
 {9ff88ba6-9e26-4644-8ff4-f990704e2fae} event:/game/xaphan/wave_beam_fire
 {15ee171d-a571-4f88-ac1a-2210a9cc4940} event:/game/xaphan/zip_mover_end
-{ed2dc90f-5028-4598-9cf0-a30c99795626} event:/game/xaphan/zip_mover_start
 {42a8bf1e-4d0f-450c-9dbe-9bc319a2f62f} event:/game/xaphan/zip_mover_impact
+{ed2dc90f-5028-4598-9cf0-a30c99795626} event:/game/xaphan/zip_mover_start
 {51873fdd-604e-4810-9db1-8c6e5a6049b5} event:/music/cassette/01_forsaken_city
 {e44a2aa5-f96e-4d75-8018-8bee278017ad} event:/music/cassette/02_old_site
 {bb2ac8fc-6353-4127-bc7b-7439262508da} event:/music/cassette/03_resort
