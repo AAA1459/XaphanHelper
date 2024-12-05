@@ -193,8 +193,6 @@
 	ModOptions_XaphanModule_80= 80%
 	ModOptions_XaphanModule_90= 90%
 	ModOptions_XaphanModule_100= 100%
-	ModOptions_XaphanModule_ShowHeatLevel= Afficher le niveau de chaleur
-	ModOptions_XaphanModule_ShowHeatLevel_Desc= Affiche le temps restant avant de mourrir dans les salles chauffées
 	ModOptions_XaphanModule_SpaceJumpIndicator= Indicateur du Saut Spacial
 	ModOptions_XaphanModule_SpaceJumpIndicator_None= Aucun
 	ModOptions_XaphanModule_SpaceJumpIndicator_Small= Petit

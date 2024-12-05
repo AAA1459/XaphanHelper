@@ -15,10 +15,6 @@ namespace Celeste.Mod.XaphanHelper
 
         public int MiniMapOpacity { get; set; } = 10;
 
-        [SettingName("ModOptions_XaphanModule_ShowHeatLevel")]
-        [SettingSubText("ModOptions_XaphanModule_ShowHeatLevel_Desc")]
-        public bool ShowHeatLevel { get; set; } = true;
-
         [SettingName("ModOptions_XaphanModule_SpaceJumpIndicator")]
         public JumpIndicatorSize SpaceJumpIndicator { get; set; } = JumpIndicatorSize.Large;
 
