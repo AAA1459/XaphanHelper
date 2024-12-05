@@ -137,7 +137,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         {
                             display.Visible = true;
                         }
-                        WorldMapProgressDisplay.Visible = true;
+                        if (WorldMapProgressDisplay != null)
+                        {
+                            WorldMapProgressDisplay.Visible = true;
+                        }
                         CalcMoves(WorldMapOffset.X > 0 ? (int)WorldMapOffset.X / 40 : 0, WorldMapOffset.X < 0 ? Math.Abs((int)WorldMapOffset.X / 40) : 0, WorldMapOffset.Y > 0 ? (int)WorldMapOffset.Y / 40 : 0, WorldMapOffset.Y < 0 ? Math.Abs((int)WorldMapOffset.Y / 40) : 0);
                     }
                     else
@@ -150,7 +153,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         {
                             display.Visible = false;
                         }
-                        WorldMapProgressDisplay.Visible = false;
+                        if (WorldMapProgressDisplay != null)
+                        {
+                            WorldMapProgressDisplay.Visible = false;
+                        }
                         CalcMoves(MapOffset.X > 0 ? (int)MapOffset.X / 40 : 0, MapOffset.X < 0 ? Math.Abs((int)MapOffset.X / 40) : 0, MapOffset.Y > 0 ? (int)MapOffset.Y / 40 : 0, MapOffset.Y < 0 ? Math.Abs((int)MapOffset.Y / 40) : 0);
                     }
                 }
@@ -624,6 +630,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
             int currentChapter = level.Session.Area.ChapterIndex == -1 ? 0 : level.Session.Area.ChapterIndex;
             AreaKey area = level.Session.Area;
+            List<MapDisplay> ConnectionTilesDisplays = new();
+            List<MapDisplay> MainTilesDisplays = new();
             for (int chapter = !hasInterlude ? 1 : 0; chapter < maxChapters; chapter++)
             {
                 bool hasController = false;
@@ -641,22 +649,34 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 if (hasController)
                 {
-                    worldMapMapDisplays.Add(new MapDisplay(level, "worldmap", chapter, true, chapter == currentChapter ? false : true) { Visible = false });
+                    ConnectionTilesDisplays.Add(new MapDisplay(level, "worldmap", chapter, true, chapter == currentChapter ? false : true) { Visible = false, ConnectionTilesOnly = true });
+                    MainTilesDisplays.Add(new MapDisplay(level, "worldmap", chapter, true, chapter == currentChapter ? false : true) { Visible = false });
                 }
             }
-            if (worldMapMapDisplays.Count > 1)
+            foreach (MapDisplay mapDisplay in ConnectionTilesDisplays)
+            {
+                worldMapMapDisplays.Add(mapDisplay);
+            }
+            foreach (MapDisplay mapDisplay in MainTilesDisplays)
+            {
+                worldMapMapDisplays.Add(mapDisplay);
+            }
+            if (worldMapMapDisplays.Count > 2)
             {
                 HasWorldMap = true;
                 foreach (MapDisplay display in worldMapMapDisplays)
                 {
                     Scene.Add(display);
-                    yield return display.GenerateMap();
+                    yield return display.GenerateMap(display.ConnectionTilesOnly);
                 }
                 Vector2 ProgressPosition = new(worldMapMapDisplays[0].Grid.X + 18f, worldMapMapDisplays[0].Grid.Y);
                 List<InGameMapControllerData> InGameMapControllerDatas = new();
                 foreach (MapDisplay display in worldMapMapDisplays)
                 {
-                    InGameMapControllerDatas.Add(display.InGameMapControllerData);
+                    if (!display.ConnectionTilesOnly)
+                    {
+                        InGameMapControllerDatas.Add(display.InGameMapControllerData);
+                    }
                 }
                 string WorldMapShowProgress = "Always";
                 bool WorldMapHideMapProgress = false;
@@ -722,10 +742,13 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 List<InGameMapEntitiesData> WorldMapInGameMapEntitiesData = new();
                 foreach (MapDisplay display in worldMapMapDisplays)
                 {
-                    WorldMapInGameMapSubAreaControllerData.AddRange(display.SubAreaControllerData);
-                    WorldMapInGameMapRoomControllerData.AddRange(display.RoomControllerData);
-                    WorldMapInGameMapTilesControllerData.AddRange(display.TilesControllerData);
-                    WorldMapInGameMapEntitiesData.AddRange(display.EntitiesData);
+                    if (!display.ConnectionTilesOnly)
+                    {
+                        WorldMapInGameMapSubAreaControllerData.AddRange(display.SubAreaControllerData);
+                        WorldMapInGameMapRoomControllerData.AddRange(display.RoomControllerData);
+                        WorldMapInGameMapTilesControllerData.AddRange(display.TilesControllerData);
+                        WorldMapInGameMapEntitiesData.AddRange(display.EntitiesData);
+                    }
                 }
                 WorldMapInGameMapSubAreaControllerData.Distinct().ToList();
                 WorldMapInGameMapRoomControllerData.Distinct().ToList();

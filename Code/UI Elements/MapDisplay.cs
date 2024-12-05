@@ -168,6 +168,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public bool NoGrid;
 
+        public bool ConnectionTilesOnly;
+
         public MapDisplay(Level level, string mode, int chapter = -1, bool noGrid = false, bool noIndicator = false)
         {
             NoGrid = noGrid;
@@ -1227,10 +1229,208 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             return mapShards;
         }
 
+        public void GenerateConnectionTiles()
+        {
+            TilesImage.Clear();
+            List<int> mapShards = GetUnlockedMapShards();
+            foreach (LevelData level in MapData.Levels)
+            {
+                getMapColors(level.Name);
+                if (XaphanModule.ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + level.Name) || (ExtraUnexploredRooms.Contains("Ch" + chapterIndex + "/" + level.Name)) || (InGameMapControllerData.RevealUnexploredRooms && !roomIsSecret(level.Name)) || ForceRevealUnexploredRooms)
+                {
+                    List<InGameMapTilesData> ToDelete = new();
+                    List<string> TilesTypes = GetTilesType(level.Name);
+                    List<Vector2> TilesPosition = GetTilesPosition(level.Name);
+                    Color color = Color.Transparent;
+                    for (int i = 0; i <= TilesTypes.Count - 1; i++)
+                    {
+                        if (XaphanModule.ModSaveData.VisitedRoomsTiles.Contains(Prefix + "/Ch" + chapterIndex + "/" + level.Name + "-" + TilesPosition[i].X + "-" + TilesPosition[i].Y) || ForceRevealUnexploredRooms)
+                        {
+                            if (HeatedRooms.Contains(level.Name))
+                            {
+                                color = HeatedRoomColor;
+                            }
+                            else
+                            {
+                                if (roomIsSecret(level.Name))
+                                {
+                                    color = SecretRoomColor;
+                                }
+                                else
+                                {
+                                    color = ExploredRoomColor;
+                                }
+                            }
+                        }
+                        else if (ExtraUnexploredRooms.Contains("Ch" + chapterIndex + "/" + level.Name))
+                        {
+                            color = UnexploredRoomColor;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                        if (roomHasAdjustController(level.Name))
+                        {
+                            bool hideTile = false;
+                            string[] tiles = GetHiddenTiles(level.Name).Split(',');
+                            foreach (string tile in tiles)
+                            {
+                                if (!string.IsNullOrEmpty(tile))
+                                {
+                                    string[] str = tile.Split('-');
+                                    int tileX = int.Parse(str[0]);
+                                    int tileY = int.Parse(str[1]);
+                                    if (tileX == TilesPosition[i].X && tileY == TilesPosition[i].Y)
+                                    {
+                                        if (color == UnexploredRoomColor)
+                                        {
+                                            hideTile = true;
+                                        }
+                                        else
+                                        {
+                                            color = SecretRoomColor;
+                                        }
+                                    }
+                                }
+                            }
+                            if (hideTile)
+                            {
+                                continue;
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(TilesTypes[i]) && TilesTypes[i] != "None")
+                        {
+                            string BG_Pattern = null;
+                            Color BG_Color = Color.Transparent;
+                            string Elevator_BG = null;
+                            Color Elevator_Color = Color.Transparent;
+                            if (TilesTypes[i] == "ElevatorShaft")
+                            {
+                                Elevator_BG = TilesTypes[i];
+                                Elevator_Color = ElevatorColor;
+                            }
+                            foreach (InGameMapTilesData tile in TilesImage)
+                            {
+                                if (tile.Room == level.Name && tile.Position == Vector2.One + TilesPosition[i] * 40)
+                                {
+                                    if (tile.BackgroundColor != color)
+                                    {
+                                        ToDelete.Add(tile);
+                                    }
+                                }
+                            }
+                            foreach (InGameMapTilesData tile in ToDelete)
+                            {
+                                TilesImage.Remove(tile);
+                            }
+                            if (TilesTypes.Contains("HorizontalAreaConnection") || TilesTypes.Contains("VerticalAreaConnection") || TilesTypes.Contains("ElevatorShaft"))
+                            {
+                                TilesImage.Add(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i]]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color));
+                            }
+                        }
+                    }
+                }
+                foreach (int mapShard in mapShards)
+                {
+                    if ((UnexploredRooms.Contains("Ch" + chapterIndex + "/" + level.Name + ":" + mapShard) && (MapCollected || RevealUnexploredRooms())))
+                    {
+                        List<InGameMapTilesData> ToDelete = new();
+                        List<string> TilesTypes = GetTilesType(level.Name);
+                        List<Vector2> TilesPosition = GetTilesPosition(level.Name);
+                        Color color = Color.Transparent;
+                        for (int i = 0; i <= TilesTypes.Count - 1; i++)
+                        {
+                            if (!XaphanModule.ModSaveData.VisitedRoomsTiles.Contains(Prefix + "/Ch" + chapterIndex + "/" + level.Name + "-" + TilesPosition[i].X + "-" + TilesPosition[i].Y))
+                            {
+                                if (UnexploredRooms.Contains("Ch" + chapterIndex + "/" + level.Name + ":" + mapShard))
+                                {
+                                    if (MapCollected || RevealUnexploredRooms())
+                                    {
+                                        color = UnexploredRoomColor;
+                                    }
+                                    else
+                                    {
+                                        continue;
+                                    }
+                                }
+                                else
+                                {
+                                    continue;
+                                }
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                            if (roomHasAdjustController(level.Name))
+                            {
+                                bool hideTile = false;
+                                string[] tiles = GetHiddenTiles(level.Name).Split(',');
+                                foreach (string tile in tiles)
+                                {
+                                    if (!string.IsNullOrEmpty(tile))
+                                    {
+                                        string[] str = tile.Split('-');
+                                        int tileX = int.Parse(str[0]);
+                                        int tileY = int.Parse(str[1]);
+                                        if (tileX == TilesPosition[i].X && tileY == TilesPosition[i].Y)
+                                        {
+                                            if (color == UnexploredRoomColor)
+                                            {
+                                                hideTile = true;
+                                            }
+                                            else
+                                            {
+                                                color = SecretRoomColor;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (hideTile)
+                                {
+                                    continue;
+                                }
+                            }
+                            if (!string.IsNullOrEmpty(TilesTypes[i]) && TilesTypes[i] != "None")
+                            {
+                                string BG_Pattern = null;
+                                Color BG_Color = Color.Transparent;
+                                string Elevator_BG = null;
+                                Color Elevator_Color = Color.Transparent;
+                                if (TilesTypes[i] == "ElevatorShaft")
+                                {
+                                    Elevator_BG = TilesTypes[i];
+                                    Elevator_Color = ElevatorColor;
+                                }
+                                foreach (InGameMapTilesData tile in TilesImage)
+                                {
+                                    if (tile.Room == level.Name && tile.Position == Vector2.One + TilesPosition[i] * 40)
+                                    {
+                                        if (tile.BackgroundColor != color)
+                                        {
+                                            ToDelete.Add(tile);
+                                        }
+                                    }
+                                }
+                                foreach (InGameMapTilesData tile in ToDelete)
+                                {
+                                    TilesImage.Remove(tile);
+                                }
+                                if (TilesTypes.Contains("HorizontalAreaConnection") || TilesTypes.Contains("VerticalAreaConnection") || TilesTypes.Contains("ElevatorShaft"))
+                                {
+                                    TilesImage.Add(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i]]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         public void GenerateTiles()
         {
             TilesImage.Clear();
-            List<InGameMapTilesData> ConnectionTiles = new();
             List<int> mapShards = GetUnlockedMapShards();
             foreach (LevelData level in MapData.Levels)
             {
@@ -1326,7 +1526,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 Elevator_BG = "Elevator";
                                 Elevator_Color = ElevatorColor;
                             }
-                            else if (TilesTypes[i] == "UpArrow" || TilesTypes[i] == "DownArrow" || TilesTypes[i] == "LeftArrow" || TilesTypes[i] == "RightArrow" || TilesTypes[i] == "HorizontalAreaConnection" || TilesTypes[i] == "VerticalAreaConnection")
+                            else if (TilesTypes[i] == "UpArrow" || TilesTypes[i] == "DownArrow" || TilesTypes[i] == "LeftArrow" || TilesTypes[i] == "RightArrow")
                             {
                                 BG_Pattern = null;
                                 BG_Color = Color.Transparent;
@@ -1376,13 +1576,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             {
                                 TilesImage.Remove(tile);
                             }
-                            if (TilesTypes.Contains("HorizontalAreaConnection") || TilesTypes.Contains("VerticalAreaConnection"))
+                            if (!TilesTypes.Contains("HorizontalAreaConnection") && !TilesTypes.Contains("VerticalAreaConnection"))
                             {
-                                ConnectionTiles.Add(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color));
-                            }
-                            else if (!TilesImage.Contains(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color)))
-                            {
-                                TilesImage.Add(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color));
+                                if (!TilesImage.Contains(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color)))
+                                {
+                                    TilesImage.Add(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color));
+                                }
                             }
                         }
                     }
@@ -1476,7 +1675,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                     Elevator_BG = "Elevator";
                                     Elevator_Color = ElevatorColor;
                                 }
-                                else if (TilesTypes[i] == "UpArrow" || TilesTypes[i] == "DownArrow" || TilesTypes[i] == "LeftArrow" || TilesTypes[i] == "RightArrow" || TilesTypes[i] == "HorizontalAreaConnection" || TilesTypes[i] == "VerticalAreaConnection")
+                                else if (TilesTypes[i] == "UpArrow" || TilesTypes[i] == "DownArrow" || TilesTypes[i] == "LeftArrow" || TilesTypes[i] == "RightArrow")
                                 {
                                     BG_Pattern = null;
                                     BG_Color = Color.Transparent;
@@ -1526,21 +1725,18 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 {
                                     TilesImage.Remove(tile);
                                 }
-                                if (TilesTypes.Contains("HorizontalAreaConnection") || TilesTypes.Contains("VerticalAreaConnection"))
+                                if (!TilesTypes.Contains("HorizontalAreaConnection") && !TilesTypes.Contains("VerticalAreaConnection"))
                                 {
-                                    ConnectionTiles.Add(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color));
-                                }
-                                else if (!TilesImage.Contains(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color)))
-                                {
-                                    TilesImage.Add(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color));
+                                    if (!TilesImage.Contains(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color)))
+                                    {
+                                        TilesImage.Add(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color));
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-            ConnectionTiles.AddRange(TilesImage);
-            TilesImage = ConnectionTiles;
         }
 
         public void GenerateEntrances() // Only if not using a TilesController
@@ -1858,7 +2054,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
         }
 
-        public IEnumerator GenerateMap()
+        public IEnumerator GenerateMap(bool connectionTiles = false)
         {
             if (mode == "map" || mode == "worldmap")
             {
@@ -1869,9 +2065,16 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 SetCurrentRoomCoordinates(Vector2.Zero);
             }
-            GenerateTiles();
-            GenerateEntrances();
-            GenerateIcons();
+            if (connectionTiles)
+            {
+                GenerateConnectionTiles();
+            }
+            else
+            {
+                GenerateTiles();
+                GenerateEntrances();
+                GenerateIcons();
+            }
             yield return null;
             Display = true;
         }
