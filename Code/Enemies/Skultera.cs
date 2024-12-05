@@ -539,6 +539,7 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             {
                 if (!Body.CurrentAnimationID.Contains("active") && !sucking)
                 {
+                    Audio.Play("event:/game/05_mirror_temple/seeker_aggro", Position);
                     sucking = true;
                     Body.Play("active");
                 }
