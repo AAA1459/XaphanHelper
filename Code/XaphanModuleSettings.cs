@@ -194,5 +194,8 @@ namespace Celeste.Mod.XaphanHelper
 
         [SettingIgnore]
         public bool AutoSkipCutscenes { get; set; } = false;
+
+        [SettingIgnore]
+        public bool AllowDebug { get; set; } = false;
     }
 }

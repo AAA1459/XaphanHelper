@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Monocle;
 using MonoMod.Utils;
 
@@ -29,7 +30,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
         private static void onCommandsE(On.Celeste.Commands.orig_CmdE orig, int index, int mode)
         {
             AreaKey area = new AreaKey(index, (AreaMode)mode);
-            if (area.LevelSet != "Xaphan/0")
+            if (area.LevelSet != "Xaphan/0" || (area.LevelSet == "Xaphan/0" && XaphanModule.SoCMVersion >= new Version(3, 0, 0) && XaphanModule.ModSettings.AllowDebug))
             {
                 orig(index, mode);
             }
@@ -39,7 +40,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
         {
             orig(self, area, reloadMapData);
             DynData<Editor.MapEditor> mapEditorData = new(self);
-            if (area.LevelSet == "Xaphan/0")
+            if (area.LevelSet == "Xaphan/0" && XaphanModule.SoCMVersion >= new Version(3, 0, 0) && !XaphanModule.ModSettings.AllowDebug)
             {
                 List<Editor.LevelTemplate> levels = mapEditorData.Get<List<Editor.LevelTemplate>>("levels");
                 MapData mapdata = mapEditorData.Get<MapData>("mapData");
@@ -63,7 +64,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
             DynData<Editor.MapEditor> mapEditorData = new(self);
             AreaKey areaKey = mapEditorData.Get<AreaKey>("area");
             Session session = mapEditorData.Get<Session>("CurrentSession");
-            if (areaKey.LevelSet != "Xaphan/0")
+            if (areaKey.LevelSet != "Xaphan/0" || (areaKey.LevelSet == "Xaphan/0" && XaphanModule.SoCMVersion >= new Version(3, 0, 0) && XaphanModule.ModSettings.AllowDebug))
             {
                 orig(self);
             }
@@ -77,7 +78,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
         {
             DynData<Editor.MapEditor> mapEditorData = new(self);
             AreaKey areaKey = mapEditorData.Get<AreaKey>("area");
-            if (areaKey.LevelSet != "Xaphan/0")
+            if (areaKey.LevelSet != "Xaphan/0" || (areaKey.LevelSet == "Xaphan/0" && XaphanModule.SoCMVersion >= new Version(3, 0, 0) && XaphanModule.ModSettings.AllowDebug))
             {
                 orig(self);
             }
@@ -85,7 +86,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
 
         private static void onMonocleEntityListDebugRender(On.Monocle.EntityList.orig_DebugRender orig, EntityList self, Camera camera)
         {
-            if (SaveData.Instance.LevelSetStats.Name != "Xaphan/0") // Conditions that must be true for hitboxes to show
+            if (SaveData.Instance.LevelSetStats.Name != "Xaphan/0" || (SaveData.Instance.LevelSetStats.Name == "Xaphan/0" && XaphanModule.SoCMVersion >= new Version(3, 0, 0) && XaphanModule.ModSettings.AllowDebug)) // Conditions that must be true for hitboxes to show
             {
                 orig(self, camera);
             }
@@ -94,7 +95,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
         private static void onLevelUpdate(On.Celeste.Level.orig_Update orig, Level self)
         {
             orig(self);
-            if (self.Session.Area.LevelSet == "Xaphan/0")
+            if (self.Session.Area.LevelSet == "Xaphan/0" && XaphanModule.SoCMVersion >= new Version(3, 0, 0) && !XaphanModule.ModSettings.AllowDebug)
             {
                 Engine.Commands.Enabled = false;
             }

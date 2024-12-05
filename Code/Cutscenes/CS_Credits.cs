@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections;
-using Celeste.Mod.XaphanHelper.Hooks;
-using System.Collections.Generic;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -184,6 +182,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 Audio.SetMusicParam("fade", 0);
                 if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
                 {
+                    XaphanModule.ModSettings.AllowDebug = true;
                     XaphanModule.ReturnToTitleScreen(level);
                 }
                 else
