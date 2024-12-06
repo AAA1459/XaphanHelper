@@ -153,6 +153,12 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                             Scene.Add(new CS02_Gem(player));
                         }
                         break;
+                    case "Ch5 - Start":
+                        if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch5_Start"))
+                        {
+                            Scene.Add(new CS05_Start(player));
+                        }
+                        break;
                 }
             }
         }
