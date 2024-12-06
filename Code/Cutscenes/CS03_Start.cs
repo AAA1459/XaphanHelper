@@ -37,8 +37,8 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                     badeline.RemoveSelf();
                 }
             }
-            XaphanModule.ModSaveData.WatchedCutscenes.Add("Xaphan/0_Ch4_Start");
-            level.Session.SetFlag("CS_Ch4_Start");
+            XaphanModule.ModSaveData.WatchedCutscenes.Add("Xaphan/0_Ch3_Start");
+            level.Session.SetFlag("CS_Ch3_Start");
             player.StateMachine.Locked = false;
             player.StateMachine.State = 0;
         }
