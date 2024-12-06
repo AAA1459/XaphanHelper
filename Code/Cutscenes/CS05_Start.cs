@@ -10,8 +10,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         private BadelineDummy badeline;
 
-        private Vector2 badelinEndPosition;
-
         public CS05_Start(Player player)
         {
             this.player = player;
@@ -45,31 +43,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             player.StateMachine.State = 0;
         }
 
-        public void badelineMerge(BadelineDummy badeline)
-        {
-            Audio.Play("event:/new_content/char/badeline/maddy_join_quick", badeline.Position);
-            Level.Displacement.AddBurst(badeline.Center, 0.5f, 8f, 32f, 0.5f);
-            badeline.RemoveSelf();
-        }
-
-        public void badelineFloat(int x, int y, BadelineDummy badeline, int? turnAtEndTo, bool faceDirection, bool fadeLight, bool quickEnd)
-        {
-            badelinEndPosition = new Vector2(badeline.Position.X + x, badeline.Position.Y + y);
-            Add(new Coroutine(badeline.FloatTo(badelinEndPosition, turnAtEndTo, faceDirection, fadeLight, quickEnd)));
-        }
-
-        public void badelineFloatToPlayer(BadelineDummy badeline)
-        {
-            Add(new Coroutine(badeline.FloatTo(player.Position, null, true, false, true)));
-        }
-
-        public void badelineSplit(BadelineDummy badeline)
-        {
-            Audio.Play("event:/char/badeline/maddy_split", player.Position);
-            Level.Add(badeline);
-            Level.Displacement.AddBurst(badeline.Center, 0.5f, 8f, 32f, 0.5f);
-        }
-
         public IEnumerator Cutscene(Level level)
         {
             player.StateMachine.State = 11;
@@ -86,13 +59,8 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             yield return player.DummyWalkTo(player.Position.X + 40f, false, 0.75f);
             yield return 0.4f;
             yield return Textbox.Say("Xaphan_Ch5_A_Start_b");
-            badeline = new BadelineDummy(player.Position);
-            badelineSplit(badeline);
-            badelineFloat(-30, -18, badeline, 1, true, false, true);
-            while (badeline.Position != badelinEndPosition)
-            {
-                yield return 0.1f;
-            }
+            badeline = CutscenesHelper.BadelineSplit(Level, player);
+            yield return CutscenesHelper.BadelineFloat(this, -30, -18, badeline, 1, true, false, true);
             yield return Textbox.Say("Xaphan_Ch5_A_Start_c");
             player.Facing = Facings.Left;
             yield return Textbox.Say("Xaphan_Ch5_A_Start_d");
@@ -105,19 +73,14 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 yield return null;
             }
             yield return Textbox.Say("Xaphan_Ch5_A_Start_f");
-            badelineFloatToPlayer(badeline);
-            while (badeline.Position != player.Position)
-            {
-                yield return 0.1f;
-            }
-            badelineMerge(badeline);
+            yield return CutscenesHelper.BadelineMerge(Level, player, badeline);
             yield return Level.ZoomBack(0.5f);
             EndCutscene(Level);
         }
 
         public IEnumerator BadelineStopMadeline(BadelineDummy badeline)
         {
-            badelineFloat(-33, 16, badeline, 1, false, true, true);
+            yield return CutscenesHelper.BadelineFloat(this, -33, 16, badeline, 1, false, true, true);
             yield return Textbox.Say("Xaphan_Ch5_A_Start_e");
         }
     }
