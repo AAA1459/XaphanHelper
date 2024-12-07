@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Celeste.Mod.XaphanHelper.Cutscenes;
 using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.Triggers;
 using Celeste.Mod.XaphanHelper.UI_Elements;
@@ -28,8 +29,6 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         public override void OnBegin(Level level)
         {
-            level.InCutscene = false;
-            level.CancelCutscene();
             Add(new Coroutine(Cutscene(level)));
         }
 
@@ -37,6 +36,18 @@ namespace Celeste.Mod.XaphanHelper.Events
         {
             if (!level.Session.GetFlag("Ch4_Escape_Complete"))
             {
+                if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch5_Gem"))
+                {
+                    Scene.Add(new CS05_Gem(player));
+                    yield return 0.1f;
+                    while (player.StateMachine.State != 0)
+                    {
+                        yield return null;
+                    }
+                }
+                
+                level.InCutscene = false;
+                level.CancelCutscene();
                 while (!level.Session.GetFlag("reactor_glass_broken") || !playerHasMoved)
                 {
                     if (player != null && player.Speed != Vector2.Zero)
@@ -127,6 +138,11 @@ namespace Celeste.Mod.XaphanHelper.Events
                         yield return null;
                     }
                 }
+            }
+            else
+            {
+                level.InCutscene = false;
+                level.CancelCutscene();
             }
         }
 
