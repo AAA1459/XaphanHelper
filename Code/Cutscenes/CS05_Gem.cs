@@ -52,7 +52,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             player.AutoJump = true;
             player.AutoJumpTimer = 1f;
             yield return player.DummyWalkTo(player.Position.X - 56f, false, 1f);
-            yield return Level.ZoomTo(new Vector2(165f, 95f), 1.5f, 1f);
+            yield return Level.ZoomTo(new Vector2(195f, 100f), 1.5f, 1f);
             badeline = CutscenesHelper.BadelineSplit(Level, player);
             yield return CutscenesHelper.BadelineFloat(this, 30, -18, badeline, -1, true, false, true);
             if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch5_W-Lore-00_46"))
