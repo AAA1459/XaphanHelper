@@ -52,6 +52,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool VisibleWhenDisabled;
 
+        public bool ForceDetachPlayer;
+
         public MagneticCeiling(Vector2 position, Vector2 offset, EntityID eid, float width, string directory, float animationSpeed, bool canJump, bool noStaminaDrain) : base(position + offset)
         {
             Tag = Tags.TransitionUpdate;
@@ -221,13 +223,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             JumpGracePeriod = false;
         }
 
-        private void DetachPlayer(Player player)
+        public void DetachPlayer(Player player)
         {
             PlayerPose = "";
             SceneAs<Level>().Session.SetFlag("Xaphan_Helper_Ceiling", false);
             SceneAs<Level>().Session.SetFlag("Xaphan_Helper_Ceiling_Can_Jump", false);
             playSfx = true;
-            playerWasAttached = false;
+            playerWasAttached = ForceDetachPlayer = false;
         }
 
         private void OnCollide(Player player)
@@ -235,7 +237,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             PlayerPose = "";
             if (player.Holding == null && !player.DashAttacking && player.StateMachine.State != Player.StClimb)
             {
-                if (player.CollideCheck(this, player.Position - Vector2.UnitY) && (SpiderMagnet.Active(SceneAs<Level>()) || !XaphanModule.useUpgrades) && !XaphanModule.PlayerIsControllingRemoteDrone())
+                if (player.CollideCheck(this, player.Position - Vector2.UnitY) && (SpiderMagnet.Active(SceneAs<Level>()) || !XaphanModule.useUpgrades) && !XaphanModule.PlayerIsControllingRemoteDrone() && !ForceDetachPlayer)
                 {
                     if (Input.GrabCheck && (!CanJump || player.Speed.Y >= 0) && player.Left > Left - 6 && player.Right < Right + 6 && player.Top > Top && player.Stamina > 0 && !player.Dead && !player.CollideCheck<Spikes>())
                     {

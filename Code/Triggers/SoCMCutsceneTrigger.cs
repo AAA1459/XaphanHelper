@@ -183,6 +183,12 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                             Scene.Add(new CS04_Warp(player));
                         }
                         break;
+                    case "Ch4 - Water":
+                        if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch4_Water"))
+                        {
+                            Scene.Add(new CS04_Water(player));
+                        }
+                        break;
                     case "Ch5 - Start":
                         if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch5_Start"))
                         {
