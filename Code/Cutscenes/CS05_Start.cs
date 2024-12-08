@@ -47,15 +47,15 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
         {
             player.StateMachine.State = 11;
             player.StateMachine.Locked = true;
-            yield return Level.ZoomTo(new Vector2(160f, 110f), 1.5f, 1f);
-            yield return 0.2f;
+            yield return 1f;
             yield return Textbox.Say("Xaphan_Ch5_A_Start");
             yield return player.DummyWalkTo(player.Position.X - 8f, false, 1f);
             player.Jump();
             player.AutoJump = true;
             player.AutoJumpTimer = 0.2f;
             yield return player.DummyWalkTo(player.Position.X - 76f, false, 1f);
-            yield return 1f;
+            yield return Level.ZoomTo(new Vector2(160f, 110f), 1.5f, 1f);
+            yield return 1.2f;
             yield return player.DummyWalkTo(player.Position.X + 40f, false, 0.75f);
             yield return 0.4f;
             yield return Textbox.Say("Xaphan_Ch5_A_Start_b");
