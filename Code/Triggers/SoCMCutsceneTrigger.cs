@@ -195,6 +195,12 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                             Scene.Add(new CS05_Start(player));
                         }
                         break;
+                    case "Ch5 - After Water":
+                        if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch5_After_Water"))
+                        {
+                            Scene.Add(new CS05_AfterWater(player));
+                        }
+                        break;
                 }
             }
         }
