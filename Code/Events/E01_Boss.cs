@@ -323,15 +323,22 @@ namespace Celeste.Mod.XaphanHelper.Events
                         refill3.RemoveSelf();
                     }
                     string Prefix = level.Session.Area.LevelSet;
-                    if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch1_Boss_Defeated"))
+                    if (!HasGolden() && !level.Session.GetFlag("boss_Normal_Mode") && !level.Session.GetFlag("boss_Challenge_Mode"))
                     {
-                        XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch1_Boss_Defeated");
+                        Scene.Add(new CS01_BossDefeated(player, boss));
                     }
-                    if (XaphanModule.PlayerHasGolden)
+                    else
                     {
-                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch1_Boss_Defeated_GoldenStrawberry"))
+                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch1_Boss_Defeated"))
                         {
-                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch1_Boss_Defeated_GoldenStrawberry");
+                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch1_Boss_Defeated");
+                        }
+                        if (XaphanModule.PlayerHasGolden)
+                        {
+                            if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch1_Boss_Defeated_GoldenStrawberry"))
+                            {
+                                XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch1_Boss_Defeated_GoldenStrawberry");
+                            }
                         }
                     }
                     if (level.Session.GetFlag("boss_Challenge_Mode"))
