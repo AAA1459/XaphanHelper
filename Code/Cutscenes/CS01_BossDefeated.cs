@@ -71,20 +71,20 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             }
             yield return 1f;
             yield return Level.ZoomTo(new Vector2(160f, 110f), 1.5f, 1f);
-            if (player.Facing == Facings.Right)
+            player.Facing = Facings.Left;
+            yield return Textbox.Say("Xaphan_Ch1_A_Boss_Defeated");
+            badeline = CutscenesHelper.BadelineSplit(Level, player);
+            yield return CutscenesHelper.BadelineFloat(this, -30, -18, badeline, 1, true, false, true);
+            string Prefix = level.Session.Area.LevelSet;
+            if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch4_Boss_Defeated"))
             {
-                yield return Textbox.Say("Xaphan_Ch1_A_Boss_Defeated");
-                badeline = CutscenesHelper.BadelineSplit(Level, player);
-                yield return CutscenesHelper.BadelineFloat(this, 30, -18, badeline, -1, true, false, true);
-                yield return Textbox.Say("Xaphan_Ch1_A_Boss_Defeated_b");
+                yield return Textbox.Say("Xaphan_Ch1_A_Boss_Defeated_b_Defeated_Alt_Boss");
             }
             else
             {
-                yield return Textbox.Say("Xaphan_Ch1_A_Boss_Defeated_Face_Left");
-                badeline = CutscenesHelper.BadelineSplit(Level, player);
-                yield return CutscenesHelper.BadelineFloat(this, -30, -18, badeline, 1, true, false, true);
-                yield return Textbox.Say("Xaphan_Ch1_A_Boss_Defeated_Face_Left_b");
+                yield return Textbox.Say("Xaphan_Ch1_A_Boss_Defeated_b");
             }
+            yield return Textbox.Say("Xaphan_Ch1_A_Boss_Defeated_c");
             yield return CutscenesHelper.BadelineMerge(Level, player, badeline);
             yield return Level.ZoomBack(0.5f);
             EndCutscene(Level);
