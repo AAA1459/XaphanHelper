@@ -177,6 +177,12 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                             Scene.Add(new CS04_AfterEscape(player));
                         }
                         break;
+                    case "Ch4 - Lava":
+                        if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch4_Lava"))
+                        {
+                            Scene.Add(new CS04_Lava(player));
+                        }
+                        break;
                     case "Ch4 - Warp":
                         if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch4_Warp"))
                         {
