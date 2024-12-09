@@ -133,7 +133,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (SceneAs<Level>().Session.GetFlag("Ch4_Main_Power_Off"))
                 {
-                    talk.Enabled = true;
+                    talk.Enabled = SceneAs<Level>().Session.GetFlag("CS_Ch5_Generator_P1");
                     if (!ActivationRoutine.Active)
                     {
                         Sprite.Play("off");
