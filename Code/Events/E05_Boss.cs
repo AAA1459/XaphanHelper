@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Celeste.Mod.XaphanHelper.Cutscenes;
 using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
@@ -227,17 +228,24 @@ namespace Celeste.Mod.XaphanHelper.Events
                     refill3.RemoveSelf();
                     liquid.ReturnToOrigPosition();
                     string Prefix = level.Session.Area.LevelSet;
-                    if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch5_Boss_Defeated"))
+                    //if (!HasGolden() && !level.Session.GetFlag("boss_Normal_Mode") && !level.Session.GetFlag("boss_Challenge_Mode"))
                     {
-                        XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch5_Boss_Defeated");
+                        Scene.Add(new CS05_BossDefeated(player, boss));
                     }
-                    if (XaphanModule.PlayerHasGolden)
+                    /*else
                     {
-                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch5_Boss_Defeated_GoldenStrawberry"))
+                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch5_Boss_Defeated"))
                         {
-                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch5_Boss_Defeated_GoldenStrawberry");
+                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch5_Boss_Defeated");
                         }
-                    }
+                        if (XaphanModule.PlayerHasGolden)
+                        {
+                            if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch5_Boss_Defeated_GoldenStrawberry"))
+                            {
+                                XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch5_Boss_Defeated_GoldenStrawberry");
+                            }
+                        }
+                    }*/
                     if (level.Session.GetFlag("boss_Challenge_Mode"))
                     {
                         level.Session.SetFlag("Boss_Defeated_CM", true);
