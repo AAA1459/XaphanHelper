@@ -228,11 +228,11 @@ namespace Celeste.Mod.XaphanHelper.Events
                     refill3.RemoveSelf();
                     liquid.ReturnToOrigPosition();
                     string Prefix = level.Session.Area.LevelSet;
-                    //if (!HasGolden() && !level.Session.GetFlag("boss_Normal_Mode") && !level.Session.GetFlag("boss_Challenge_Mode"))
+                    if (!HasGolden() && !level.Session.GetFlag("boss_Normal_Mode") && !level.Session.GetFlag("boss_Challenge_Mode"))
                     {
                         Scene.Add(new CS05_BossDefeated(player, boss));
                     }
-                    /*else
+                    else
                     {
                         if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch5_Boss_Defeated"))
                         {
@@ -245,7 +245,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                                 XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch5_Boss_Defeated_GoldenStrawberry");
                             }
                         }
-                    }*/
+                    }
                     if (level.Session.GetFlag("boss_Challenge_Mode"))
                     {
                         level.Session.SetFlag("Boss_Defeated_CM", true);
