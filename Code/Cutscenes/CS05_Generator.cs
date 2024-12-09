@@ -37,8 +37,8 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                     badeline.RemoveSelf();
                 }
             }
-            /*XaphanModule.ModSaveData.WatchedCutscenes.Add("Xaphan/0_Ch5_Generator");
-            level.Session.SetFlag("CS_Ch5_Generator");*/
+            XaphanModule.ModSaveData.WatchedCutscenes.Add("Xaphan/0_Ch5_Generator");
+            level.Session.SetFlag("CS_Ch5_Generator");
             player.StateMachine.Locked = false;
             player.StateMachine.State = 0;
         }
