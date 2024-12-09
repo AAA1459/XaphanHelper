@@ -54,7 +54,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             {
                 if (ceiling.playerWasAttached)
                 {
-                    Logger.Log(LogLevel.Info, "XH", "Detach PLayer");
                     ceiling.ForceDetachPlayer = true;
                 }
             }

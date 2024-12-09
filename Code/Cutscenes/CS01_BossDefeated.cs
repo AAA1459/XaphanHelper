@@ -75,8 +75,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             yield return Textbox.Say("Xaphan_Ch1_A_Boss_Defeated");
             badeline = CutscenesHelper.BadelineSplit(Level, player);
             yield return CutscenesHelper.BadelineFloat(this, -30, -18, badeline, 1, true, false, true);
-            string Prefix = level.Session.Area.LevelSet;
-            if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch4_Boss_Defeated"))
+            if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch4_Boss_Defeated"))
             {
                 yield return Textbox.Say("Xaphan_Ch1_A_Boss_Defeated_b_Defeated_Alt_Boss");
             }
