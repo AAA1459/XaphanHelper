@@ -401,7 +401,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     XaphanModule.ModSettings.Bombs = true;
                     level.Session.SetFlag("Upgrade_HadBombs", false);
                 }
-                if (level.Session.GetFlag("Upgrade_HadSpaceJump"))
+                if (level.Session.GetFlag("Upgrade_HadSpiderMagnet"))
                 {
                     level.Session.SetFlag("Upgrade_SpiderMagnet", true);
                     XaphanModule.ModSettings.SpiderMagnet = true;
