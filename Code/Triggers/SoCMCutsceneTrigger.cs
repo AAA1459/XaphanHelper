@@ -166,7 +166,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                         }
                         break;
                     case "Ch4 - Start":
-                        //if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch4_Start"))
+                        if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch4_Start"))
                         {
                             Scene.Add(new CS04_Start(player));
                         }
