@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using Celeste.Mod.XaphanHelper.Cutscenes;
 using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.Triggers;
@@ -20,6 +21,16 @@ namespace Celeste.Mod.XaphanHelper.Events
         private Point ReactorCenter;
 
         public EventInstance alarmSfx;
+
+        private FieldInfo MiniTextboxRoutine = typeof(MiniTextbox).GetField("routine", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private FieldInfo MiniTextboxClosing = typeof(MiniTextbox).GetField("closing", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private FieldInfo MiniTextboxEase = typeof(MiniTextbox).GetField("ease", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private FieldInfo MiniTextboxText = typeof(MiniTextbox).GetField("text", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private FieldInfo MiniTextboxIndex = typeof(MiniTextbox).GetField("index", BindingFlags.Instance | BindingFlags.NonPublic);
 
         public E05_EscapeStart(Player player, Level level)
         {
@@ -87,7 +98,18 @@ namespace Celeste.Mod.XaphanHelper.Events
                         level.Session.DoNotLoad.Remove(id);
                     }
                     alarmSfx = Audio.Play("event:/game/xaphan/alarm");
+                    level.Session.SetFlag("Lab_Escape", true);
                     ReactorCenter = level.Bounds.Center;
+                    if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch5_EscapeStart"))
+                    {
+                        MiniTextbox textBox = null;
+                        level.Add(textBox = new MiniTextbox("Xaphan_Ch5_A_Gem_c"));
+                        yield return CloseTextbox(textBox, 0.5f);
+                        level.Add(textBox = new MiniTextbox("Xaphan_Ch5_A_Gem_d"));
+                        yield return CloseTextbox(textBox, 1f);
+                        XaphanModule.ModSaveData.WatchedCutscenes.Add("Xaphan/0_Ch5_EscapeStart");
+                        level.Session.SetFlag("CS_Ch5_EscapeStart");
+                    }
                     StartCountdownTrigger trigger = level.Tracker.GetEntity<StartCountdownTrigger>();
                     Vector2 triggerStartPosition = trigger.Position;
                     trigger.Position = player.Position - new Vector2(trigger.Width / 2, trigger.Height / 2);
@@ -95,7 +117,6 @@ namespace Celeste.Mod.XaphanHelper.Events
                     level.Session.RespawnPoint = level.Session.GetSpawnPoint(trigger.Center);
                     yield return 0.01f;
                     XaphanModule.ModSaveData.SavedSpawn[level.Session.Area.LevelSet] = (Vector2)level.Session.RespawnPoint - new Vector2(level.Bounds.Left, level.Bounds.Top);
-                    level.Session.SetFlag("Lab_Escape", true);
                     trigger.Position = triggerStartPosition;
                     float timer = 2f;
                     bool countdownStarted = false;
@@ -105,6 +126,8 @@ namespace Celeste.Mod.XaphanHelper.Events
                         yield return null;
                         if (level.Tracker.GetEntity<CountdownDisplay>() != null)
                         {
+                            CountdownDisplay countdownDisplay = level.Tracker.GetEntity<CountdownDisplay>();
+                            countdownDisplay.Immediate = true;
                             countdownStarted = true;
                         }
                     }
@@ -169,9 +192,34 @@ namespace Celeste.Mod.XaphanHelper.Events
             }
         }
 
+        private IEnumerator CloseTextbox(MiniTextbox textBox, float timer)
+        {
+            FancyText.Text textBoxtext = (FancyText.Text)MiniTextboxText.GetValue(textBox);
+            while ((int)MiniTextboxIndex.GetValue(textBox) != textBoxtext.Count)
+            {
+                yield return null;
+            }
+            yield return timer;
+            Coroutine TextBoxRoutine = (Coroutine)MiniTextboxRoutine.GetValue(textBox);
+            TextBoxRoutine = (Coroutine)MiniTextboxRoutine.GetValue(textBox);
+            TextBoxRoutine.Cancel();
+            if (!(bool)MiniTextboxClosing.GetValue(textBox))
+            {
+                MiniTextboxClosing.SetValue(textBox, true);
+                float ease = (float)MiniTextboxEase.GetValue(textBox);
+                while ((ease -= Engine.DeltaTime * 4f) > 0f)
+                {
+                    MiniTextboxEase.SetValue(textBox, ease);
+                    yield return null;
+                }
+
+                MiniTextboxEase.SetValue(textBox, 0f);
+                textBox.RemoveSelf();
+            }
+        }
+
         public override void OnEnd(Level level)
         {
-
         }
     }
 }
