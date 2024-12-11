@@ -152,7 +152,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 cutout.Alpha = (tiles.Alpha = Calc.Approach(tiles.Alpha, 1f, Engine.DeltaTime));
                 foreach (CustomFakeWall fakeWall in SceneAs<Level>().Tracker.GetEntities<CustomFakeWall>())
                 {
-                    if (fakeWall.group == group)
+                    if (fakeWall.group == group && CollideCheck(fakeWall))
                     {
                         fakeWall.fade = true;
                         fakeWall.tiles.Alpha = (fakeWall.cutout.Alpha = tiles.Alpha);

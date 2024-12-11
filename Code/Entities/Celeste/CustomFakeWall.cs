@@ -174,7 +174,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 bool overlapExitBlock = false;
                 foreach (CustomExitBlock exitBlock in SceneAs<Level>().Tracker.GetEntities<CustomExitBlock>())
                 {
-                    if (exitBlock.group == group)
+                    if (exitBlock.group == group && CollideCheck(exitBlock))
                     {
                         overlapExitBlock = true;
                     }
