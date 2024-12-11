@@ -421,6 +421,16 @@ namespace Celeste.Mod.XaphanHelper.Events
                 level.Session.SetFlag("AncientGuardian_Defeated", true);
                 level.Session.SetFlag("Boss_Defeated", true);
                 level.Session.SetFlag("AncientGuardian_Start", false);
+                if (XaphanModule.ModSettings.SoCMShowMiniMap)
+                {
+                    MapDisplay mapDisplay = SceneAs<Level>().Tracker.GetEntity<MapDisplay>();
+                    if (mapDisplay != null)
+                    {
+                        AreaKey area = SceneAs<Level>().Session.Area;
+                        int chapterIndex = area.ChapterIndex == -1 ? 0 : area.ChapterIndex;
+                        mapDisplay.GenerateIcons();
+                    }
+                }
             }
 
             // Do nothing anymore unless boss hits got reset

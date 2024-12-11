@@ -55,7 +55,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private float GetMapOpacity()
         {
-            return XaphanModule.ModSettings.MiniMapOpacity / 10f;
+            return (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMMiniMapOpacity : XaphanModule.ModSettings.MiniMapOpacity) / 10f;
         }
 
         public override void Update()

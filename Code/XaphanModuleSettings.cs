@@ -7,53 +7,51 @@ namespace Celeste.Mod.XaphanHelper
     {
         // Mods Options Settings
 
-        public enum JumpIndicatorSize { None, Small, Large };
-
         [SettingName("ModOptions_XaphanModule_ShowMiniMap")]
         [SettingSubText("ModOptions_XaphanModule_ShowMiniMap_Desc")]
         public bool ShowMiniMap { get; set; } = true;
 
         public int MiniMapOpacity { get; set; } = 10;
 
-        [SettingName("ModOptions_XaphanModule_SpaceJumpIndicator")]
-        public JumpIndicatorSize SpaceJumpIndicator { get; set; } = JumpIndicatorSize.Large;
-
-        [SettingName("ModOptions_XaphanModule_ShowCompleteSlopesHitboxes")]
-        [SettingSubText("ModOptions_XaphanModule_ShowCompleteSlopesHitboxes_Desc")]
-        public static bool ShowCompleteSlopesHitboxes { get; set; } = false;
-
         public void CreateMiniMapOpacityEntry(TextMenu menu, bool inGame)
         {
-            menu.Add(new TextMenu.Slider(Dialog.Clean("ModOptions_XaphanModule_MiniMapOpacity"), delegate (int i)
+            menu.Add(new TextMenu.Slider(Dialog.Clean("ModOptions_XaphanModule_MiniMapOpacity"), (int i) => i switch
             {
-                switch (i)
-                {
-                    default:
-                        return Dialog.Clean("ModOptions_XaphanModule_100");
-                    case 9:
-                        return Dialog.Clean("ModOptions_XaphanModule_90");
-                    case 8:
-                        return Dialog.Clean("ModOptions_XaphanModule_80");
-                    case 7:
-                        return Dialog.Clean("ModOptions_XaphanModule_70");
-                    case 6:
-                        return Dialog.Clean("ModOptions_XaphanModule_60");
-                    case 5:
-                        return Dialog.Clean("ModOptions_XaphanModule_50");
-                    case 4:
-                        return Dialog.Clean("ModOptions_XaphanModule_40");
-                    case 3:
-                        return Dialog.Clean("ModOptions_XaphanModule_30");
-                    case 2:
-                        return Dialog.Clean("ModOptions_XaphanModule_20");
-                    case 1:
-                        return Dialog.Clean("ModOptions_XaphanModule_10");
-                }
+                1 => Dialog.Clean("ModOptions_XaphanModule_10"),
+                2 => Dialog.Clean("ModOptions_XaphanModule_20"),
+                3 => Dialog.Clean("ModOptions_XaphanModule_30"),
+                4 => Dialog.Clean("ModOptions_XaphanModule_40"),
+                5 => Dialog.Clean("ModOptions_XaphanModule_50"),
+                6 => Dialog.Clean("ModOptions_XaphanModule_60"),
+                7 => Dialog.Clean("ModOptions_XaphanModule_70"),
+                8 => Dialog.Clean("ModOptions_XaphanModule_80"),
+                9 => Dialog.Clean("ModOptions_XaphanModule_90"),
+                _ => Dialog.Clean("ModOptions_XaphanModule_100"),
             }, 1, 10, MiniMapOpacity).Change(delegate (int i)
             {
                 MiniMapOpacity = i;
             }));
         }
+
+        public int SpaceJumpIndicator { get; set; } = 2;
+
+        public void CreateSpaceJumpIndicatorEntry(TextMenu menu, bool inGame)
+        {
+            menu.Add(new TextMenu.Slider(Dialog.Clean("ModOptions_XaphanModule_SpaceJumpIndicator"), (int i) => i switch
+            {
+                0 => Dialog.Clean("ModOptions_XaphanModule_SpaceJumpIndicator_None"),
+                1 => Dialog.Clean("ModOptions_XaphanModule_SpaceJumpIndicator_Small"),
+                _ => Dialog.Clean("ModOptions_XaphanModule_SpaceJumpIndicator_Large"),
+            }, 0, 2, SpaceJumpIndicator).Change(delegate (int i)
+            {
+                SpaceJumpIndicator = i;
+            }));
+        }
+
+        [SettingName("ModOptions_XaphanModule_ShowCompleteSlopesHitboxes")]
+        [SettingSubText("ModOptions_XaphanModule_ShowCompleteSlopesHitboxes_Desc")]
+        public static bool ShowCompleteSlopesHitboxes { get; set; } = false;
+
 
         // Bindings
 
@@ -183,6 +181,15 @@ namespace Celeste.Mod.XaphanHelper
         // SoCM only settings
 
         [SettingIgnore]
+        public bool SoCMShowMiniMap { get; set; } = true;
+
+        [SettingIgnore]
+        public int SoCMMiniMapOpacity { get; set; } = 10;
+
+        [SettingIgnore]
+        public int SoCMSpaceJumpIndicator { get; set; } = 2;
+
+        [SettingIgnore]
         public bool ShowAchievementsPopups { get; set; } = true;
 
         [SettingIgnore]
@@ -190,6 +197,9 @@ namespace Celeste.Mod.XaphanHelper
 
         [SettingIgnore]
         public bool AutoSkipCutscenes { get; set; } = false;
+
+        [SettingIgnore]
+        public bool WatchedCredits { get; set; } = false;
 
         [SettingIgnore]
         public bool AllowDebug { get; set; } = false;

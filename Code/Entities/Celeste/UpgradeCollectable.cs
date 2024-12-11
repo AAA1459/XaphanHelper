@@ -483,7 +483,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private void EndCutscene()
         {
             Level level = Scene as Level;
-            if (XaphanModule.ModSettings.ShowMiniMap)
+            if (level.Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMShowMiniMap : XaphanModule.ModSettings.ShowMiniMap)
             {
                 MapDisplay mapDisplay = level.Tracker.GetEntity<MapDisplay>();
                 if (mapDisplay != null)

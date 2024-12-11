@@ -18,6 +18,7 @@ using Celeste.Mod.XaphanHelper.Managers;
 using Celeste.Mod.XaphanHelper.Triggers;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Celeste.Mod.XaphanHelper.Upgrades;
+using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
@@ -512,6 +513,19 @@ namespace Celeste.Mod.XaphanHelper
         public static bool startedGame;
 
         private bool onMapListOrSearch;
+
+        public override void CreateModMenuSection(TextMenu menu, bool inGame, EventInstance pauseSnapshot)
+        {
+            bool isPlayingSoCM = false;
+            if (Engine.Scene is Level)
+            {
+                isPlayingSoCM = ((Level)Engine.Scene).Session.Area.LevelSet == "Xaphan/0";
+            }
+            if (!isPlayingSoCM)
+            {
+                base.CreateModMenuSection(menu, inGame, pauseSnapshot);
+            }
+        }
 
         public XaphanModule()
         {
@@ -3613,7 +3627,7 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     minimapEnabled = false;
                 }
-                if (allRoomsUseTileController && ModSettings.ShowMiniMap && ModSaveData.SavedFlags.Contains(self.Session.Area.LevelSet + "_Can_Open_Map") && !minimapEnabled)
+                if (allRoomsUseTileController && (self.Session.Area.LevelSet == "Xaphan/0" ? ModSettings.SoCMShowMiniMap : ModSettings.ShowMiniMap) && ModSaveData.SavedFlags.Contains(self.Session.Area.LevelSet + "_Can_Open_Map") && !minimapEnabled)
                 {
                     if (self.Tracker.GetEntity<MiniMap>() == null)
                     {
@@ -3623,7 +3637,7 @@ namespace Celeste.Mod.XaphanHelper
                 }
                 else
                 {
-                    if (!ModSettings.ShowMiniMap)
+                    if (self.Session.Area.LevelSet == "Xaphan/0" ? !ModSettings.SoCMShowMiniMap : !ModSettings.ShowMiniMap)
                     {
                         MiniMap minimap = self.Tracker.GetEntity<MiniMap>();
                         if (minimap != null)
@@ -4119,7 +4133,7 @@ namespace Celeste.Mod.XaphanHelper
                                 }
                             }
                         }
-                        if (ModSettings.ShowMiniMap)
+                        if (self.Session.Area.LevelSet == "Xaphan/0" ? ModSettings.SoCMShowMiniMap : ModSettings.ShowMiniMap)
                         {
                             MapDisplay mapDisplay = self.Tracker.GetEntity<MapDisplay>();
                             if (mapDisplay != null)

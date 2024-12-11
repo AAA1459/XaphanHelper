@@ -19,6 +19,8 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         private Coroutine TitleScreenCoroutine;
 
+        private Coroutine LogoCoroutine;
+
         private bool skipedIntro;
 
         private IntroText message;
@@ -63,6 +65,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             }
             logo.CenterOrigin();
             logo.Position = new Vector2(Engine.Width / 2, 250);
+            Depth = 1000;
         }
 
         public override void OnBegin(Level level)
@@ -104,7 +107,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 yield return null;
             }
             Add(TitleScreenCoroutine = new Coroutine(TitleScreen(level)));
-            Add(new Coroutine(FadeLogo()));
+            Add(LogoCoroutine = new Coroutine(FadeLogo()));
             while (TitleScreenCoroutine.Active)
             {
                 yield return null;
@@ -268,6 +271,11 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             }));
             while (!StartCampaign)
             {
+                logo.Visible = optionsMenu != null ? !optionsMenu.Visible : true;
+                if (!XaphanModule.ModSettings.WatchedCredits)
+                {
+                    XaphanModule.ModSettings.AllowDebug = false;
+                }
                 yield return null;
             }
             mainMenu.Focused = false;
@@ -308,8 +316,38 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             BackToMainMenu = false;
             mainMenu.Focused = mainMenu.Visible = false;
             SceneAs<Level>().Add(optionsMenu = new TextMenu());
-            optionsMenu.AutoScroll = false;
-            optionsMenu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f + 150f);
+            optionsMenu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f);
+            optionsMenu.Add(new TextMenu.Header(Dialog.Clean("Xaphan_0_0_intro_vignette_Settings").ToUpper()));
+            optionsMenu.Add(new TextMenu.SubHeader(Dialog.Clean("Xaphan_0_Options_UI")));
+            optionsMenu.Add(new TextMenu.OnOff(Dialog.Clean("ModOptions_XaphanModule_ShowMiniMap"), XaphanModule.ModSettings.SoCMShowMiniMap).Change(delegate (bool b)
+            {
+                XaphanModule.ModSettings.SoCMShowMiniMap = b;
+            }));
+            optionsMenu.Add(new TextMenu.Slider(Dialog.Clean("ModOptions_XaphanModule_MiniMapOpacity"), (int i) => i switch
+            {
+                1 => Dialog.Clean("ModOptions_XaphanModule_10"),
+                2 => Dialog.Clean("ModOptions_XaphanModule_20"),
+                3 => Dialog.Clean("ModOptions_XaphanModule_30"),
+                4 => Dialog.Clean("ModOptions_XaphanModule_40"),
+                5 => Dialog.Clean("ModOptions_XaphanModule_50"),
+                6 => Dialog.Clean("ModOptions_XaphanModule_60"),
+                7 => Dialog.Clean("ModOptions_XaphanModule_70"),
+                8 => Dialog.Clean("ModOptions_XaphanModule_80"),
+                9 => Dialog.Clean("ModOptions_XaphanModule_90"),
+                _ => Dialog.Clean("ModOptions_XaphanModule_100"),
+            }, 1, 10, XaphanModule.ModSettings.SoCMMiniMapOpacity).Change(delegate (int i)
+            {
+                XaphanModule.ModSettings.SoCMMiniMapOpacity = i;
+            }));
+            optionsMenu.Add(new TextMenu.Slider(Dialog.Clean("ModOptions_XaphanModule_SpaceJumpIndicator"), (int i) => i switch
+            {
+                0 => Dialog.Clean("ModOptions_XaphanModule_SpaceJumpIndicator_None"),
+                1 => Dialog.Clean("ModOptions_XaphanModule_SpaceJumpIndicator_Small"),
+                _ => Dialog.Clean("ModOptions_XaphanModule_SpaceJumpIndicator_Large"),
+            }, 0, 2, XaphanModule.ModSettings.SoCMSpaceJumpIndicator).Change(delegate (int i)
+            {
+                XaphanModule.ModSettings.SoCMSpaceJumpIndicator = i;
+            }));
             optionsMenu.Add(new TextMenu.SubHeader(Dialog.Clean("Xaphan_0_Options_Popups")));
             optionsMenu.Add(new TextMenu.OnOff(Dialog.Clean("Xaphan_0_Options_Popups_ShowAchievementsPopups"), XaphanModule.ModSettings.ShowAchievementsPopups).Change(delegate (bool b)
             {
@@ -334,6 +372,13 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 optionsMenu.Focused = false;
                 Engine.Scene.Add(CreateButtonConfigUI(optionsMenu));
                 Engine.Scene.OnEndOfFrame += () => Engine.Scene.Entities.UpdateLists();
+            }));
+            optionsMenu.Add(new TextMenu.SubHeader(Dialog.Clean("Xaphan_0_Options_Others")));
+            TextMenu.OnOff DebugSetting = new TextMenu.OnOff(Dialog.Clean("Xaphan_0_Options_Others_Debug"), XaphanModule.ModSettings.AllowDebug);
+            DebugSetting.Disabled = !XaphanModule.ModSettings.WatchedCredits;
+            optionsMenu.Add(DebugSetting.Change(delegate (bool b)
+            {
+                XaphanModule.ModSettings.AllowDebug = b;
             }));
             optionsMenu.OnCancel = ReturnToMainmenu;
             while (!BackToMainMenu)
@@ -365,10 +410,12 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             mainMenu.Focused = mainMenu.Visible = true;
             if (optionsMenu != null)
             {
+                optionsMenu.Focused = optionsMenu.Visible = false;
                 optionsMenu.RemoveSelf();
             }
             if (infoMenu != null)
             {
+                infoMenu.Focused = infoMenu.Visible = false;
                 infoMenu.RemoveSelf();
             }
             if (progressDisplay != null)
@@ -427,7 +474,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 }
                 IntroCoroutine.Cancel();
             }
-            if (mainMenu != null)
+            if (mainMenu != null && LogoCoroutine.Active)
             {
                 foreach (TextMenu.Item item in mainMenu.Items)
                 {
@@ -448,7 +495,10 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 Draw.Rect(-10f, -10f, 1940f, 1100f, Color.Black);
             }
             logo.Color = Color.White * logoAlpha;
-            logo.Render();
+            if (logo.Visible)
+            {
+                logo.Render();
+            }
         }
     }
 }

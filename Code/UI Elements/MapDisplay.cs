@@ -288,7 +288,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public static void UpdateIcons(Entity entity)
         {
-            if (XaphanModule.ModSettings.ShowMiniMap)
+            if (entity.SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMShowMiniMap : XaphanModule.ModSettings.ShowMiniMap)
             {
                 MapDisplay mapDisplay = entity.SceneAs<Level>().Tracker.GetEntity<MapDisplay>();
                 if (mapDisplay != null)
@@ -300,7 +300,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public static void UpdateTiles(Entity entity)
         {
-            if (XaphanModule.ModSettings.ShowMiniMap)
+            if (entity.SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMShowMiniMap : XaphanModule.ModSettings.ShowMiniMap)
             {
                 MapDisplay mapDisplay = entity.SceneAs<Level>().Tracker.GetEntity<MapDisplay>();
                 if (mapDisplay != null)

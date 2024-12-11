@@ -1055,7 +1055,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             Sprite.Rate = 2f;
             Speed.X = 150f * FleeDir;
-            if (Health <= 3)
+            if (Health <= 4)
             {
                 while (FleeDir == -1 ? Center.X > player.Center.X - 80f : Center.X < player.Center.X + 80f)
                 {

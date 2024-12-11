@@ -36,7 +36,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public override void Render()
         {
             base.Render();
-            if (Visible && XaphanModule.ModSettings.SpaceJumpIndicator != JumpIndicatorSize.None)
+            if (Visible && (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMSpaceJumpIndicator : XaphanModule.ModSettings.SpaceJumpIndicator) != 0)
             {
                 Player player = Scene.Tracker.GetEntity<Player>();
                 ScrewAttackManager manager = SceneAs<Level>().Tracker.GetEntity<ScrewAttackManager>();
@@ -48,11 +48,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 if (player != null && (player.Sprite.Visible || !player.Sprite.Visible && (SceneAs<Level>().Session.GetFlag("Xaphan_Helper_Ceiling") || startedScrewAttack)) && !XaphanModule.PlayerIsControllingRemoteDrone())
                 {
                     string size = "";
-                    if (XaphanModule.ModSettings.SpaceJumpIndicator == JumpIndicatorSize.Large)
+                    if ((SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMSpaceJumpIndicator : XaphanModule.ModSettings.SpaceJumpIndicator) == 2)
                     {
                         size = "large";
                     }
-                    else if (XaphanModule.ModSettings.SpaceJumpIndicator == JumpIndicatorSize.Small)
+                    else if ((SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMSpaceJumpIndicator : XaphanModule.ModSettings.SpaceJumpIndicator) == 1)
                     {
                         size = "small";
                     }

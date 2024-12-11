@@ -578,7 +578,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                 }
                 level.Session.SetFlag("boss_Normal_Mode_Given_Up", false);
                 level.Session.SetFlag("boss_Challenge_Mode_Given_Up", false);
-                if (XaphanModule.ModSettings.ShowMiniMap)
+                if (XaphanModule.ModSettings.SoCMShowMiniMap)
                 {
                     MapDisplay mapDisplay = SceneAs<Level>().Tracker.GetEntity<MapDisplay>();
                     if (mapDisplay != null)

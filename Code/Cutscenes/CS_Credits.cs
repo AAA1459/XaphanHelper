@@ -182,7 +182,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 Audio.SetMusicParam("fade", 0);
                 if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
                 {
-                    XaphanModule.ModSettings.AllowDebug = true;
+                    XaphanModule.ModSettings.WatchedCredits = true;
                     XaphanModule.ReturnToTitleScreen(level);
                 }
                 else
