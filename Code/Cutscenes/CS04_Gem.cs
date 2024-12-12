@@ -47,7 +47,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
         {
             level.InCutscene = false;
             level.CancelCutscene();
-            while (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch4_Gem_Sloted" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
+            while (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch4_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
             {
                 yield return null;
             }
