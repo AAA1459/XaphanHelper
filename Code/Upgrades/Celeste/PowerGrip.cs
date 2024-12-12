@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
@@ -33,6 +34,13 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             On.Celeste.Level.Update += modLevelUpdate;
             On.Celeste.Player.ClimbBoundsCheck += PlayerOnClimbBoundsCheck;
             IL.Celeste.Player.ClimbUpdate += onPlayerClimbUpdate;
+            On.Celeste.Level.LoadLevel += modLoadLevel;
+            if (Engine.Scene is Level)
+            {
+                Level level = (Level)Engine.Scene;
+                level.Add(new StaminaIndicator());
+                level.Entities.UpdateLists();
+            }
         }
 
         public override void Unload()
@@ -40,6 +48,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             On.Celeste.Level.Update -= modLevelUpdate;
             On.Celeste.Player.ClimbBoundsCheck -= PlayerOnClimbBoundsCheck;
             IL.Celeste.Player.ClimbUpdate -= onPlayerClimbUpdate;
+            On.Celeste.Level.LoadLevel -= modLoadLevel;
         }
 
         public bool Active(Level level)
@@ -64,6 +73,21 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 {
                     isActive = false;
                 }
+            }
+        }
+
+        private void modLoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader)
+        {
+            orig(self, playerIntro, isFromLoader);
+            if (!self.Entities.Any(entity => entity is StaminaIndicator))
+            {
+                // add the entity showing the stamina
+                self.Add(new StaminaIndicator());
+                //self.Entities.UpdateLists();
+            }
+            if (XaphanModule.useUpgrades && !XaphanModule.useMetroidGameplay)
+            {
+                StaminaIndicator.getStaminaData(self);
             }
         }
 

@@ -383,7 +383,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public override void Render()
         {
             base.Render();
-            if (ShowStaminaBar && PowerGrip.isActive && !ShowAmmo)
+            if (ShowStaminaBar && PowerGrip.isActive && !ShowAmmo && (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMStaminaIndicator : XaphanModule.ModSettings.StaminaIndicator) != 1)
             {
                 Draw.Rect(Position + new Vector2(2), width, 42f, Color.Black * 0.85f * Opacity);
                 string name = Dialog.Clean("Xaphanhelper_UI_Stamina");

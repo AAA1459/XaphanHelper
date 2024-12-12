@@ -2,7 +2,6 @@
 using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
 using Monocle;
-using static Celeste.Mod.XaphanHelper.XaphanModuleSettings;
 
 namespace Celeste.Mod.XaphanHelper.UI_Elements
 {

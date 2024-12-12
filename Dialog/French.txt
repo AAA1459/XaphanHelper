@@ -197,6 +197,10 @@
 	ModOptions_XaphanModule_SpaceJumpIndicator_None= Aucun
 	ModOptions_XaphanModule_SpaceJumpIndicator_Small= Petit
 	ModOptions_XaphanModule_SpaceJumpIndicator_Large= Grand
+	ModOptions_XaphanModule_StaminaIndicator= Indicateur d'endurance
+	ModOptions_XaphanModule_StaminaIndicator_UI_Only= Haut de l'écran
+	ModOptions_XaphanModule_StaminaIndicator_Player_Only= Près du joueur
+	ModOptions_XaphanModule_StaminaIndicator_Both= Les deux
 	ModOptions_XaphanModule_ShowCompleteSlopesHitboxes= Afficher la collision complète des pentes
 	ModOptions_XaphanModule_ShowCompleteSlopesHitboxes_Desc= Affiche la zone de collision des platformes invisibles utilisées par les pentes{n}pour déplacer le joueur - Peux être utile pour les TAS
 

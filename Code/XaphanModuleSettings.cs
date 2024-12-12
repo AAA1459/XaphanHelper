@@ -48,6 +48,21 @@ namespace Celeste.Mod.XaphanHelper
             }));
         }
 
+        public int StaminaIndicator { get; set; } = 0;
+
+        public void CreateStaminaIndicatorEntry(TextMenu menu, bool inGame)
+        {
+            menu.Add(new TextMenu.Slider(Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator"), (int i) => i switch
+            {
+                0 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_UI_Only"),
+                1 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Player_Only"),
+                _ => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Both"),
+            }, 0, 2, StaminaIndicator).Change(delegate (int i)
+            {
+                StaminaIndicator = i;
+            }));
+        }
+
         [SettingName("ModOptions_XaphanModule_ShowCompleteSlopesHitboxes")]
         [SettingSubText("ModOptions_XaphanModule_ShowCompleteSlopesHitboxes_Desc")]
         public static bool ShowCompleteSlopesHitboxes { get; set; } = false;
@@ -188,6 +203,9 @@ namespace Celeste.Mod.XaphanHelper
 
         [SettingIgnore]
         public int SoCMSpaceJumpIndicator { get; set; } = 2;
+
+        [SettingIgnore]
+        public int SoCMStaminaIndicator { get; set; } = 0;
 
         [SettingIgnore]
         public bool ShowAchievementsPopups { get; set; } = true;

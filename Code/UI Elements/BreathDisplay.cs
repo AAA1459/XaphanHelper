@@ -83,7 +83,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public void SetYPosition()
         {
             Position.Y = 26f;
-            if (XaphanModule.useUpgrades && PowerGrip.isActive)
+            if (XaphanModule.useUpgrades && PowerGrip.isActive && (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMStaminaIndicator : XaphanModule.ModSettings.StaminaIndicator) != 1)
             {
                 Position.Y = 80f;
             }
