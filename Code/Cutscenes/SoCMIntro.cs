@@ -322,6 +322,14 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             optionsMenu.Add(new TextMenu.OnOff(Dialog.Clean("ModOptions_XaphanModule_ShowMiniMap"), XaphanModule.ModSettings.SoCMShowMiniMap).Change(delegate (bool b)
             {
                 XaphanModule.ModSettings.SoCMShowMiniMap = b;
+                foreach (var item in optionsMenu.Items)
+                {
+                    if (item.GetType() == typeof(TextMenu.Slider) && ((TextMenu.Slider)item).Label == Dialog.Clean("ModOptions_XaphanModule_MiniMapOpacity"))
+                    {
+                        item.Disabled = !b;
+                        break;
+                    }
+                }
             }));
             optionsMenu.Add(new TextMenu.Slider(Dialog.Clean("ModOptions_XaphanModule_MiniMapOpacity"), (int i) => i switch
             {
