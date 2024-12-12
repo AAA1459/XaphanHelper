@@ -20,6 +20,8 @@ Version 1.0.64 :
 - Fixed the text appearing when collecting the Binoculars, Portable Station and Pulse Radar abilities telling the player to hold a button instead of pressing it
 - Campaign using a Merge Chapter Controller with Mode set to Rooms now save the game each time the player enter a room
 - The "Show Heat Level" setting is no longer used and has been removed
+- Added a setting to show the stamina meter near the player instead or in addition to the one at the top of the screen when using abilities
+- Added a setting to show a breath meter near the player instead or in addition to the one at the top of the screen when the player is inside liquids with an Air timer
 - Fixed a bug that prevented the "Golden Start With X" attributes to work correctly, removing abilities on room transition when holding a golden strawberry
 - Fixed a bug that prevented Flag On Interact Triggers to work if their "Req Flags" attribute was left empty
 - Fixed a bug that killed both Madeline and the Remote Drone at the same time if the player died while holding the drone
