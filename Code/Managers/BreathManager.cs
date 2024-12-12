@@ -1,6 +1,8 @@
 ﻿using System.Collections;
+using System.Linq;
 using System.Reflection;
 using Celeste.Mod.XaphanHelper.Entities;
+using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -36,11 +38,19 @@ namespace Celeste.Mod.XaphanHelper.Managers
         public static void Load()
         {
             On.Celeste.Player.Render += modPlayerRender;
+            On.Celeste.Level.LoadLevel += modLoadLevel;
+            if (Engine.Scene is Level)
+            {
+                Level level = (Level)Engine.Scene;
+                level.Add(new StaminaIndicator());
+                level.Entities.UpdateLists();
+            }
         }
 
         public static void Unload()
         {
             On.Celeste.Player.Render -= modPlayerRender;
+            On.Celeste.Level.LoadLevel -= modLoadLevel;
         }
 
         private static void modPlayerRender(On.Celeste.Player.orig_Render orig, Player self)
@@ -49,6 +59,17 @@ namespace Celeste.Mod.XaphanHelper.Managers
             if (Flashing && !self.Dead && !forceRechargeAir)
             {
                 self.Sprite.Color = Calc.HexToColor("0020BB");
+            }
+        }
+
+        private static void modLoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader)
+        {
+            orig(self, playerIntro, isFromLoader);
+            if (!self.Entities.Any(entity => entity is OxygenIndicator))
+            {
+                // add the entity showing the oxygen
+                self.Add(new OxygenIndicator());
+                //self.Entities.UpdateLists();
             }
         }
 
@@ -189,7 +210,7 @@ namespace Celeste.Mod.XaphanHelper.Managers
             air = currentMaxAir;
             if (HideAtEnd)
             {
-                yield return 0.3f;
+                yield return 1.5f;
                 isVisible = false;
             }
         }

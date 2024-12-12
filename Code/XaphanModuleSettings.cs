@@ -63,6 +63,21 @@ namespace Celeste.Mod.XaphanHelper
             }));
         }
 
+        public int OxygenIndicator { get; set; } = 0;
+
+        public void CreateOxygenIndicatorEntry(TextMenu menu, bool inGame)
+        {
+            menu.Add(new TextMenu.Slider(Dialog.Clean("ModOptions_XaphanModule_OxygenIndicator"), (int i) => i switch
+            {
+                0 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_UI_Only"),
+                1 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Player_Only"),
+                _ => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Both"),
+            }, 0, 2, OxygenIndicator).Change(delegate (int i)
+            {
+                OxygenIndicator = i;
+            }));
+        }
+
         [SettingName("ModOptions_XaphanModule_ShowCompleteSlopesHitboxes")]
         [SettingSubText("ModOptions_XaphanModule_ShowCompleteSlopesHitboxes_Desc")]
         public static bool ShowCompleteSlopesHitboxes { get; set; } = false;
@@ -206,6 +221,9 @@ namespace Celeste.Mod.XaphanHelper
 
         [SettingIgnore]
         public int SoCMStaminaIndicator { get; set; } = 0;
+
+        [SettingIgnore]
+        public int SoCMOxygenIndicator { get; set; } = 0;
 
         [SettingIgnore]
         public bool ShowAchievementsPopups { get; set; } = true;

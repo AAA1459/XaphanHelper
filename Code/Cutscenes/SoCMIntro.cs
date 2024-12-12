@@ -357,6 +357,15 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             {
                 XaphanModule.ModSettings.SoCMStaminaIndicator = i;
             }));
+            optionsMenu.Add(new TextMenu.Slider(Dialog.Clean("ModOptions_XaphanModule_OxygenIndicator"), (int i) => i switch
+            {
+                0 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_UI_Only"),
+                1 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Player_Only"),
+                _ => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Both"),
+            }, 0, 2, XaphanModule.ModSettings.SoCMOxygenIndicator).Change(delegate (int i)
+            {
+                XaphanModule.ModSettings.SoCMOxygenIndicator = i;
+            }));
             optionsMenu.Add(new TextMenu.SubHeader(Dialog.Clean("Xaphan_0_Options_Popups")));
             optionsMenu.Add(new TextMenu.OnOff(Dialog.Clean("Xaphan_0_Options_Popups_ShowAchievementsPopups"), XaphanModule.ModSettings.ShowAchievementsPopups).Change(delegate (bool b)
             {

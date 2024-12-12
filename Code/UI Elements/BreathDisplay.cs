@@ -156,26 +156,29 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public override void Render()
         {
             base.Render();
-            Draw.Rect(Position + new Vector2(2), width, 42f, Color.Black * 0.85f * Opacity);
-            string name = Dialog.Clean("Xaphanhelper_UI_Breath");
-            ActiveFont.DrawOutline(name, Position + new Vector2((width + 4f) / 2f, 0f), new Vector2(0.5f, 0.5f), Vector2.One * 0.3f, Color.Yellow * Opacity, 2f, Color.Black * Opacity);
-            float nameLenght = ActiveFont.Measure(name).X * 0.3f;
-
-            Draw.Rect(Position, (width + 4f) / 2f - nameLenght / 2 - 10f, 2f, borderColor * Opacity);
-            Draw.Rect(Position + new Vector2((width + 4f) / 2f, 0f) + new Vector2(nameLenght / 2 + 11f, 0), (width + 4f) / 2f - nameLenght / 2 - 10f, 2f, borderColor * Opacity);
-            Draw.Rect(Position + new Vector2(0f, 2f), 2f, 42f, borderColor * Opacity);
-            Draw.Rect(Position + new Vector2(width + 2f, 2f), 2f, 42f, borderColor * Opacity);
-            Draw.Rect(Position + new Vector2(0f, 42f + 2f), width + 4f, 2f, borderColor * Opacity);
-
-            int OffsetX = 0;
-            int Col = 1;
-            foreach (Image section in Sections)
+            if ((SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMOxygenIndicator : XaphanModule.ModSettings.OxygenIndicator) != 1)
             {
-                section.Position = Position + new Vector2(13f) + Vector2.UnitX * OffsetX;
-                section.Color = Color.White * Opacity;
-                section.Render();
-                OffsetX += ((int)section.Width + sectionSpacing);
-                Col++;
+                Draw.Rect(Position + new Vector2(2), width, 42f, Color.Black * 0.85f * Opacity);
+                string name = Dialog.Clean("Xaphanhelper_UI_Breath");
+                ActiveFont.DrawOutline(name, Position + new Vector2((width + 4f) / 2f, 0f), new Vector2(0.5f, 0.5f), Vector2.One * 0.3f, Color.Yellow * Opacity, 2f, Color.Black * Opacity);
+                float nameLenght = ActiveFont.Measure(name).X * 0.3f;
+
+                Draw.Rect(Position, (width + 4f) / 2f - nameLenght / 2 - 10f, 2f, borderColor * Opacity);
+                Draw.Rect(Position + new Vector2((width + 4f) / 2f, 0f) + new Vector2(nameLenght / 2 + 11f, 0), (width + 4f) / 2f - nameLenght / 2 - 10f, 2f, borderColor * Opacity);
+                Draw.Rect(Position + new Vector2(0f, 2f), 2f, 42f, borderColor * Opacity);
+                Draw.Rect(Position + new Vector2(width + 2f, 2f), 2f, 42f, borderColor * Opacity);
+                Draw.Rect(Position + new Vector2(0f, 42f + 2f), width + 4f, 2f, borderColor * Opacity);
+
+                int OffsetX = 0;
+                int Col = 1;
+                foreach (Image section in Sections)
+                {
+                    section.Position = Position + new Vector2(13f) + Vector2.UnitX * OffsetX;
+                    section.Color = Color.White * Opacity;
+                    section.Render();
+                    OffsetX += ((int)section.Width + sectionSpacing);
+                    Col++;
+                }
             }
         }
     }
