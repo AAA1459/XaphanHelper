@@ -1108,7 +1108,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 FleeDir = 0;
             }
-            if (Health <= 3)
+            if (Health <= 4)
             {
                 yield return LeapRoutine();
             }
