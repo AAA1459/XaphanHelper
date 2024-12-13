@@ -210,9 +210,8 @@
 	ModOptions_XaphanModule_SelectItem= Select Equiped Ability
 	ModOptions_XaphanModule_UseBagItemSlot= Use Equiped Ability in Bag Slot
 	ModOptions_XaphanModule_UseMiscItemSlot= Use Equiped Ability in Misc Slot
-	ModOptions_XaphanModule_MapScreenShowProgressDisplay= Map Screen - Select Progress Display
 	ModOptions_XaphanModule_MapScreenShowMapOrWorldMap= Map Screen - Switch between Area Map and World Map
-	ModOptions_XaphanModule_MapScreenShowHints= Map Screen - Show / Hide Hints
+	ModOptions_XaphanModule_MapScreenDisplayOptions= Map Screen - Customise Display Options
 
 #UI
 	XaphanHelper_UI_ActiveCM_title= READY FOR A CHALLENGE?
@@ -243,14 +242,13 @@
 	XaphanHelper_UI_abilities= Abilities
 	XaphanHelper_UI_activate= Activate
 	XaphanHelper_UI_deactivate= Deactivate
+	XaphanHelper_UI_displayOptions= Display Options
 	XaphanHelper_UI_showhints= Show Hints
-	XaphanHelper_UI_hidehints= Hide Hints
-	XaphanHelper_UI_showProgress= Show Progress Display
-	XaphanHelper_UI_changeProgress= Change Progress Display
-	XaphanHelper_UI_hideProgress= Hide Progress Display
-	XaphanHelper_UI_progress_allareas= Progress: All Areas
-	XaphanHelper_UI_progress_area= Progress: Current Area
-	XaphanHelper_UI_progress_subarea= Progress: Current Sub Area
+	XaphanHelper_UI_progress= Progress Display
+	XaphanHelper_UI_progres_display= Display:
+	XaphanHelper_UI_progress_allareas= All Areas
+	XaphanHelper_UI_progress_area= Current Area
+	XaphanHelper_UI_progress_subarea= Current Sub Area
 	XaphanHelper_UI_showWorldMap= Show World Map
 	XaphanHelper_UI_showAreaMap= Show Area Map
 	XaphanHelper_UI_confirm= Confirm

@@ -1121,7 +1121,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 BeforeHintsMostTopRoomY = MostTopRoomY;
                 BeforeHintsMostRightRoomX = MostRightRoomX;
                 BeforeHintsMostBottomRoomY = MostBottomRoomY;
-                if (ShowHints)
+                if (ShowHints && !ConnectionTilesOnly)
                 {
                     foreach (InGameMapHintControllerData hint in HintControllerData)
                     {
@@ -2552,17 +2552,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 Opacity = 1;
             }
-            else
-            {
-                if (useHints && XaphanModule.ModSaveData.ShowHints[Prefix])
-                {
-                    ShowHints = true;
-                }
-                else
-                {
-                    ShowHints = false;
-                }
-            }
             Player player = level.Tracker.GetEntity<Player>();
             if (player != null)
             {
@@ -2852,7 +2841,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
                 // Hints
 
-                if (ShowHints)
+                if (ShowHints && !ConnectionTilesOnly)
                 {
                     foreach (InGameMapHintControllerData hint in HintControllerData)
                     {

@@ -4,6 +4,8 @@ Version 1.0.64 :
 - Added "Group", "Can Drown", "Air Timer", "Inside Transparency" and "Appear Flags" attributes to Liquids
 - Added ""Animation Speed", Particles Color", "Light Color", "Wiggle", "Loop Sound", "Loop Burst" and "Static Time" attributes to Custom Collectable
 - Added "Hide On World Map" attribute to In-game Map Hint Controllers
+- Moved the "Show Hints" and "Progress Display" options from the bottom of the In-Game map screen to a new menu accessible with a single button while the In-Game map is open
+- The progress display setting of the In-Game map is now shared between the area map and the world map, instead of having differents display settings for each one
 - Break Blocks Indicators now also apear if the player touch them in the Dash Attacking state. This make it more lenient to reveal the indicator in cases where the player dash end just before the block
 - Golden strawberries in campaigns using a Merge Chapter Controller now reset the current timer to 0 when grabbed, and restore it back (+ the time spent with the berry) on death or berry collection
 - Golden strawberries in campaigns using a Merge Chapter Controller now reset entities that should not reload anymore when grabbed, and resture them back (+ any new entity that got added with the berry) on death or berry collection

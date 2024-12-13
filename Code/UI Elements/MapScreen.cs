@@ -39,15 +39,15 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public SwitchUIPrompt prompt;
 
+        public TextMenu displayMenu;
+
         public bool promptChoice;
 
         private Wiggler statusWiggle;
 
         private Wiggler closeWiggle;
 
-        private Wiggler hintWiggle;
-
-        private Wiggler progressWiggle;
+        private Wiggler displayWiggle;
 
         private Wiggler worldMapWiggle;
 
@@ -55,9 +55,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private float closeWiggleDelay;
 
-        private float hintWiggleDelay;
-
-        private float progressWiggleDelay;
+        private float displayWiggleDelay;
 
         private float worldMapWiggleDelay;
 
@@ -92,8 +90,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Tag = Tags.HUD;
             Add(statusWiggle = Wiggler.Create(0.4f, 4f));
             Add(closeWiggle = Wiggler.Create(0.4f, 4f));
-            Add(hintWiggle = Wiggler.Create(0.4f, 4f));
-            Add(progressWiggle = Wiggler.Create(0.4f, 4f));
+            Add(displayWiggle = Wiggler.Create(0.4f, 4f));
             Add(worldMapWiggle = Wiggler.Create(0.4f, 4f));
             mode = "map";
             Depth = -10003;
@@ -160,15 +157,13 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         CalcMoves(MapOffset.X > 0 ? (int)MapOffset.X / 40 : 0, MapOffset.X < 0 ? Math.Abs((int)MapOffset.X / 40) : 0, MapOffset.Y > 0 ? (int)MapOffset.Y / 40 : 0, MapOffset.Y < 0 ? Math.Abs((int)MapOffset.Y / 40) : 0);
                     }
                 }
-                if (XaphanSettings.MapScreenShowHints.Pressed && mapDisplay != null)
+                if (mapDisplay != null)
                 {
                     if (mapDisplay.useHints)
                     {
-                        mapDisplay.ShowHints = !mapDisplay.ShowHints;
-                        if (XaphanModule.ModSaveData.ShowHints[mapDisplay.Prefix])
+                        if (XaphanModule.ModSaveData.ShowHints[mapDisplay.Prefix] && !mapDisplay.ShowHints)
                         {
-                            Audio.Play("event:/ui/main/button_back");
-                            XaphanModule.ModSaveData.ShowHints[mapDisplay.Prefix] = false;
+                            mapDisplay.ShowHints = true;
                             mapDisplay.MapWidth = mapDisplay.BeforeHintsMapWidth;
                             mapDisplay.MapHeight = mapDisplay.BeforeHintsMapHeight;
                             mapDisplay.MostLeftRoomX = mapDisplay.BeforeHintsMostLeftRoomX;
@@ -182,11 +177,17 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             {
                                 CalcMoves();
                             }
+                            foreach (MapDisplay display in worldMapMapDisplays)
+                            {
+                                if (display.useHints && !display.ConnectionTilesOnly)
+                                {
+                                    display.ShowHints = true;
+                                }
+                            }
                         }
-                        else
+                        else if (!XaphanModule.ModSaveData.ShowHints[mapDisplay.Prefix] && mapDisplay.ShowHints)
                         {
-                            Audio.Play("event:/ui/main/message_confirm");
-                            XaphanModule.ModSaveData.ShowHints[mapDisplay.Prefix] = true;
+                            mapDisplay.ShowHints = false;
                             mapDisplay.MapWidth = mapDisplay.AfterHintsMapWidth;
                             mapDisplay.MapHeight = mapDisplay.AfterHintsMapHeight;
                             mapDisplay.MostLeftRoomX = mapDisplay.AfterHintsMostLeftRoomX;
@@ -201,17 +202,17 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             {
                                 CalcMoves();
                             }
-                        }
-                    }
-                    foreach (MapDisplay display in worldMapMapDisplays)
-                    {
-                        if (display.useHints)
-                        {
-                            display.ShowHints = !display.ShowHints;
+                            foreach (MapDisplay display in worldMapMapDisplays)
+                            {
+                                if (display.useHints && !display.ConnectionTilesOnly)
+                                {
+                                    display.ShowHints = false;
+                                }
+                            }
                         }
                     }
                 }
-                if (XaphanModule.useUpgrades && !XaphanModule.PlayerIsControllingRemoteDrone())
+                if (XaphanModule.useUpgrades && !XaphanModule.PlayerIsControllingRemoteDrone() && displayMenu == null)
                 {
                     if (Input.Pause.Pressed && statusWiggleDelay <= 0f && switchTimer <= 0)
                     {
@@ -219,20 +220,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         statusWiggleDelay = 0.5f;
                     }
                 }
-                if (mapDisplay != null && mapDisplay.useHints)
+                if (mapDisplay != null && mapDisplay.useHints && displayMenu == null)
                 {
-                    if (XaphanSettings.MapScreenShowHints.Pressed && hintWiggleDelay <= 0f)
+                    if (XaphanSettings.MapScreenDisplayOptions.Pressed && displayWiggleDelay <= 0f)
                     {
-                        hintWiggle.Start();
-                        hintWiggleDelay = 0.5f;
-                    }
-                }
-                if (mapDisplay != null && MapProgressDisplay != null)
-                {
-                    if (XaphanSettings.MapScreenShowProgressDisplay.Pressed && progressWiggleDelay <= 0f)
-                    {
-                        progressWiggle.Start();
-                        progressWiggleDelay = 0.5f;
+                        displayWiggle.Start();
+                        displayWiggleDelay = 0.5f;
                     }
                 }
                 if (XaphanSettings.MapScreenShowMapOrWorldMap.Pressed && worldMapWiggleDelay <= 0f)
@@ -241,11 +234,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     worldMapWiggleDelay = 0.5f;
                 }
                 statusWiggleDelay -= Engine.DeltaTime;
-                hintWiggleDelay -= Engine.DeltaTime;
-                progressWiggleDelay -= Engine.DeltaTime;
+                displayWiggleDelay -= Engine.DeltaTime;
                 worldMapWiggleDelay -= Engine.DeltaTime;
             }
-            if (Input.MenuCancel.Pressed && closeWiggleDelay <= 0f)
+            if (Input.MenuCancel.Pressed && closeWiggleDelay <= 0f && displayMenu == null)
             {
                 closeWiggle.Start();
                 closeWiggleDelay = 0.5f;
@@ -842,7 +834,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 yield return null;
             }
-            while (!Input.ESC.Pressed && !Input.MenuCancel.Pressed && !XaphanSettings.OpenMap.Pressed && player != null)
+            while (!Input.ESC.Pressed && (!Input.MenuCancel.Pressed || (Input.MenuCancel.Pressed && displayMenu != null)) && !XaphanSettings.OpenMap.Pressed && player != null)
             {
                 if (prompt != null)
                 {
@@ -880,77 +872,80 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         }
                     }
                 }
-                else if (mode == "map")
+                else if (displayMenu == null)
                 {
-                    if (mapDisplay.MapWidth / 8 > 1640)
+                    if (mode == "map")
                     {
-                        if (Input.MenuLeft.Pressed && LeftMoves > 0)
+                        if (mapDisplay.MapWidth / 8 > 1640)
                         {
-                            int direction = 40;
-                            MoveMapX(direction);
-                            LeftMoves -= 1;
-                            RightMoves += 1;
+                            if (Input.MenuLeft.Pressed && LeftMoves > 0)
+                            {
+                                int direction = 40;
+                                MoveMapX(direction);
+                                LeftMoves -= 1;
+                                RightMoves += 1;
+                            }
+                            if (Input.MenuRight.Pressed && RightMoves > 0)
+                            {
+                                int direction = -40;
+                                MoveMapX(direction);
+                                LeftMoves += 1;
+                                RightMoves -= 1;
+                            }
                         }
-                        if (Input.MenuRight.Pressed && RightMoves > 0)
+                        if (mapDisplay.MapHeight / 8 > 437)
                         {
-                            int direction = -40;
-                            MoveMapX(direction);
-                            LeftMoves += 1;
-                            RightMoves -= 1;
+                            if (Input.MenuUp.Pressed && UpMoves > 0)
+                            {
+                                int direction = 40;
+                                MoveMapY(direction);
+                                UpMoves -= 1;
+                                DownMoves += 1;
+                            }
+                            if (Input.MenuDown.Pressed && DownMoves > 0)
+                            {
+                                int direction = -40;
+                                MoveMapY(direction);
+                                UpMoves += 1;
+                                DownMoves -= 1;
+                            }
                         }
                     }
-                    if (mapDisplay.MapHeight / 8 > 437)
+                    else
                     {
-                        if (Input.MenuUp.Pressed && UpMoves > 0)
+                        if (worldMapWidth > 1640)
                         {
-                            int direction = 40;
-                            MoveMapY(direction);
-                            UpMoves -= 1;
-                            DownMoves += 1;
+                            if (Input.MenuLeft.Pressed && LeftMoves > 0)
+                            {
+                                int direction = 40;
+                                MoveMapX(direction, true);
+                                LeftMoves -= 1;
+                                RightMoves += 1;
+                            }
+                            if (Input.MenuRight.Pressed && RightMoves > 0)
+                            {
+                                int direction = -40;
+                                MoveMapX(direction, true);
+                                LeftMoves += 1;
+                                RightMoves -= 1;
+                            }
                         }
-                        if (Input.MenuDown.Pressed && DownMoves > 0)
+                        if (worldMapHeight > 760)
                         {
-                            int direction = -40;
-                            MoveMapY(direction);
-                            UpMoves += 1;
-                            DownMoves -= 1;
-                        }
-                    }
-                }
-                else
-                {
-                    if (worldMapWidth > 1640)
-                    {
-                        if (Input.MenuLeft.Pressed && LeftMoves > 0)
-                        {
-                            int direction = 40;
-                            MoveMapX(direction, true);
-                            LeftMoves -= 1;
-                            RightMoves += 1;
-                        }
-                        if (Input.MenuRight.Pressed && RightMoves > 0)
-                        {
-                            int direction = -40;
-                            MoveMapX(direction, true);
-                            LeftMoves += 1;
-                            RightMoves -= 1;
-                        }
-                    }
-                    if (worldMapHeight > 760)
-                    {
-                        if (Input.MenuUp.Pressed && UpMoves > 0)
-                        {
-                            int direction = 40;
-                            MoveMapY(direction, true);
-                            UpMoves -= 1;
-                            DownMoves += 1;
-                        }
-                        if (Input.MenuDown.Pressed && DownMoves > 0)
-                        {
-                            int direction = -40;
-                            MoveMapY(direction, true);
-                            UpMoves += 1;
-                            DownMoves -= 1;
+                            if (Input.MenuUp.Pressed && UpMoves > 0)
+                            {
+                                int direction = 40;
+                                MoveMapY(direction, true);
+                                UpMoves -= 1;
+                                DownMoves += 1;
+                            }
+                            if (Input.MenuDown.Pressed && DownMoves > 0)
+                            {
+                                int direction = -40;
+                                MoveMapY(direction, true);
+                                UpMoves += 1;
+                                DownMoves -= 1;
+                            }
                         }
                     }
                 }
@@ -958,7 +953,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     if (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0")
                     {
-                        if (prompt == null)
+                        if (prompt == null && displayMenu == null)
                         {
                             Scene.Add(prompt = new SwitchUIPrompt(Vector2.Zero, 1));
                         }
@@ -968,10 +963,54 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         Add(new Coroutine(TransitionToStatusScreen()));
                     }
                 }
+                if (XaphanSettings.MapScreenDisplayOptions.Pressed)
+                {
+                    if (prompt == null && displayMenu == null)
+                    {
+                        Audio.Play("event:/ui/main/message_confirm");
+                        Scene.Add(displayMenu = new TextMenu());
+                        displayMenu.Depth = -10003;
+                        displayMenu.AutoScroll = false;
+                        displayMenu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f);
+                        displayMenu.Add(new TextMenu.Header(Dialog.Clean("XaphanHelper_UI_displayOptions").ToUpper()));
+                        displayMenu.Add(new TextMenu.Slider(Dialog.Clean("XaphanHelper_UI_progress"), (int i) => i switch
+                        {
+                            0 => Dialog.Clean("OPTIONS_OFF"),
+                            1 => Dialog.Clean("XaphanHelper_UI_progress_subarea"),
+                            _ => Dialog.Clean("XaphanHelper_UI_progress_area"),
+                        }, 0, 2, XaphanModule.ModSaveData.ProgressMode[mapDisplay.Prefix]).Change(delegate (int i)
+                        {
+                            XaphanModule.ModSaveData.ProgressMode[mapDisplay.Prefix] = i;
+                        }));
+                        if (mapDisplay.useHints)
+                        {
+                            displayMenu.Add(new TextMenu.OnOff(Dialog.Clean("XaphanHelper_UI_showhints"), XaphanModule.ModSaveData.ShowHints[mapDisplay.Prefix]).Change(delegate (bool b)
+                            {
+                                XaphanModule.ModSaveData.ShowHints[mapDisplay.Prefix] = b;
+                            }));
+                        }
+                        displayMenu.OnCancel = displayMenu.OnClose = CloseDisplaymenu;
+                        while (!displayMenu.Visible)
+                        {
+                            yield return null;
+                        }
+                    }
+                }
                 yield return null;
             }
             Audio.Play("event:/ui/game/unpause");
             Add(new Coroutine(TransitionToGame()));
+        }
+
+        private void CloseDisplaymenu()
+        {
+            if (displayMenu != null)
+            {
+                Audio.Play("event:/ui/main/button_back");
+                displayMenu.Focused = displayMenu.Visible = false;
+                displayMenu.RemoveSelf();
+                displayMenu = null;
+            }
         }
 
         public void MoveMapX(int direction, bool worldmap = false, bool silence = false)
@@ -1022,6 +1061,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Player player = Scene.Tracker.GetEntity<Player>();
             level.Remove(BigTitle);
             level.Remove(prompt);
+            level.Remove(displayMenu);
             if (SubAreaName != null)
             {
                 level.Remove(SubAreaName);
@@ -1063,26 +1103,33 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 Draw.Rect(new Vector2(-10, 172), 100, 856, Color.Black);
                 Draw.Rect(new Vector2(1830, 172), 100, 856, Color.Black);
                 Draw.Rect(new Vector2(-10, 1028), 1940, 62, Color.Black);
+                if (displayMenu != null)
+                {
+                    Draw.Rect(new Vector2(-10, -10), 1940, 1100, Color.Black * 0.75f);
+                }
                 Draw.Rect(new Vector2(90, 172), 1740, 8, Color.White);
                 Draw.Rect(new Vector2(90, 180), 10, 840, Color.White);
                 Draw.Rect(new Vector2(1820, 180), 10, 840, Color.White);
                 Draw.Rect(new Vector2(90, 1020), 1740, 8, Color.White);
                 MTexture mTexture = GFX.Gui["towerarrow"];
-                if (UpMoves > 0)
+                if (displayMenu == null)
                 {
-                    mTexture.DrawCentered(new Vector2(960f, 175f), Color.White, 1f, (float)Math.PI / 2f);
-                }
-                if (DownMoves > 0)
-                {
-                    mTexture.DrawCentered(new Vector2(960f, 1024f), Color.White, 1f, 4.712389f);
-                }
-                if (LeftMoves > 0)
-                {
-                    mTexture.DrawCentered(new Vector2(94f, 600f), Color.White);
-                }
-                if (RightMoves > 0)
-                {
-                    mTexture.DrawCentered(new Vector2(1824f, 600f), Color.White, 1f, (float)Math.PI);
+                    if (UpMoves > 0)
+                    {
+                        mTexture.DrawCentered(new Vector2(960f, 175f), Color.White, 1f, (float)Math.PI / 2f);
+                    }
+                    if (DownMoves > 0)
+                    {
+                        mTexture.DrawCentered(new Vector2(960f, 1024f), Color.White, 1f, 4.712389f);
+                    }
+                    if (LeftMoves > 0)
+                    {
+                        mTexture.DrawCentered(new Vector2(94f, 600f), Color.White);
+                    }
+                    if (RightMoves > 0)
+                    {
+                        mTexture.DrawCentered(new Vector2(1824f, 600f), Color.White, 1f, (float)Math.PI);
+                    }
                 }
                 float inputEase = 0f;
                 inputEase = Calc.Approach(inputEase, 1, Engine.DeltaTime * 4f);
@@ -1091,21 +1138,17 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     float scale = 0.5f;
                     string label = Dialog.Clean("XaphanHelper_UI_close");
                     string label2 = SceneAs<Level>().Session.Area.LevelSet != "Xaphan/0" ? Dialog.Clean("XaphanHelper_UI_abilities") : Dialog.Clean("XaphanHelper_UI_menu");
-                    string label3 = Dialog.Clean("XaphanHelper_UI_showhints");
-                    string label4 = Dialog.Clean("XaphanHelper_UI_hidehints");
+                    string label3 = Dialog.Clean("XaphanHelper_UI_displayOptions");
+                    string label4 = Dialog.Clean("XaphanHelper_UI_progres_display");
                     string label5 = Dialog.Clean("XaphanHelper_UI_progress_area");
                     string label6 = Dialog.Clean("XaphanHelper_UI_progress_subarea");
-                    string label7 = Dialog.Clean("XaphanHelper_UI_showProgress");
-                    string label8 = Dialog.Clean("XaphanHelper_UI_changeProgress");
-                    string label9 = Dialog.Clean("XaphanHelper_UI_hideProgress");
-                    string label10 = Dialog.Clean("XaphanHelper_UI_progress_allareas");
-                    string label11 = Dialog.Clean("XaphanHelper_UI_showWorldMap");
-                    string label12 = Dialog.Clean("XaphanHelper_UI_showAreaMap");
+                    string label7 = Dialog.Clean("XaphanHelper_UI_progress_allareas");
+                    string label8 = Dialog.Clean("XaphanHelper_UI_showWorldMap");
+                    string label9 = Dialog.Clean("XaphanHelper_UI_showAreaMap");
                     float num = ButtonUI.Width(label, Input.MenuCancel);
                     float num2 = ButtonUI.Width(label2, Input.Pause);
-                    float num3 = ButtonBindingButtonUI.Width(label3, XaphanSettings.MapScreenShowHints);
-                    float num4 = ButtonBindingButtonUI.Width(label4, XaphanSettings.MapScreenShowHints);
-                    float num5 = ButtonBindingButtonUI.Width(mode == "map" ? label11 : label12, XaphanSettings.MapScreenShowMapOrWorldMap);
+                    float num3 = ButtonBindingButtonUI.Width(label3, XaphanSettings.MapScreenDisplayOptions);
+                    float num5 = ButtonBindingButtonUI.Width(mode == "map" ? label8 : label9, XaphanSettings.MapScreenShowMapOrWorldMap);
                     Vector2 position = new(1830f, 1055f);
                     ButtonUI.Render(position, label, Input.MenuCancel, scale, 1f, closeWiggle.Value * 0.05f);
                     position.X -= num / 2 + 32;
@@ -1116,33 +1159,30 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     }
                     if (mapDisplay != null && mapDisplay.useHints)
                     {
-                        ButtonBindingButtonUI.Render(position, !mapDisplay.ShowHints ? label3 : label4, XaphanSettings.MapScreenShowHints, scale, 1f, hintWiggle.Value * 0.05f);
-                        position.X -= (!mapDisplay.ShowHints ? num3 : num4) / 2 + 32;
+                        ButtonBindingButtonUI.Render(position, label3, XaphanSettings.MapScreenDisplayOptions, scale, 1f, displayWiggle.Value * 0.05f);
+                        position.X -= num3 / 2 + 32;
                     }
                     if (HasWorldMap)
                     {
-                        ButtonBindingButtonUI.Render(position, mode == "map" ? label11 : label12, XaphanSettings.MapScreenShowMapOrWorldMap, scale, 1f, worldMapWiggle.Value * 0.05f);
+                        ButtonBindingButtonUI.Render(position, mode == "map" ? label8 : label9, XaphanSettings.MapScreenShowMapOrWorldMap, scale, 1f, worldMapWiggle.Value * 0.05f);
                         position.X -= num5 / 2 + 32;
                     }
                     if (MapProgressDisplay != null && MapProgressDisplay.Visible && !MapProgressDisplay.Hidden)
                     {
-                        string progressDisplayStatus = MapProgressDisplay.mode == 0 ? (MapProgressDisplay.getSubAreaIndex() == -1 || MapProgressDisplay.SubAreaControllerData.Count == 1 ? label9 : label8) : MapProgressDisplay.mode == 1 ? label9 : label7;
-                        ButtonBindingButtonUI.Render(position, progressDisplayStatus, XaphanSettings.MapScreenShowProgressDisplay, scale, 1f, progressWiggle.Value * 0.05f);
-                        if (MapProgressDisplay.mode != 2)
+                        if (MapProgressDisplay.mode != 0)
                         {
-                            string progressDisplayMode = MapProgressDisplay.mode == 0 ? label5 : label6;
+                            string progressDisplayMode = label4 + " " + (MapProgressDisplay.mode == 2 ? label5 : label6);
                             float progressDisplayWidth = ActiveFont.Measure(progressDisplayMode).X;
                             ActiveFont.Draw(progressDisplayMode, new Vector2(90 + progressDisplayWidth / 4, position.Y), new Vector2(0.5f), new Vector2(scale), Color.White);
                         }
                     }
                     if (WorldMapProgressDisplay != null && WorldMapProgressDisplay.Visible && !WorldMapProgressDisplay.Hidden)
                     {
-                        string progressDisplayStatus = WorldMapProgressDisplay.mode == 0 ? label9 : label7;
-                        ButtonBindingButtonUI.Render(position, progressDisplayStatus, XaphanSettings.MapScreenShowProgressDisplay, scale, 1f, progressWiggle.Value * 0.05f);
-                        if (WorldMapProgressDisplay.mode != 2)
+                        string progressDisplayStatus = label4 + " " + label7;
+                        if (WorldMapProgressDisplay.mode != 0)
                         {
-                            float progressDisplayWidth = ActiveFont.Measure(label10).X;
-                            ActiveFont.Draw(label10, new Vector2(90 + progressDisplayWidth / 4, position.Y), new Vector2(0.5f), new Vector2(scale), Color.White);
+                            float progressDisplayWidth = ActiveFont.Measure(progressDisplayStatus).X;
+                            ActiveFont.Draw(progressDisplayStatus, new Vector2(90 + progressDisplayWidth / 4, position.Y), new Vector2(0.5f), new Vector2(scale), Color.White);
                         }
                     }
                 }

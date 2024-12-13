@@ -97,14 +97,11 @@ namespace Celeste.Mod.XaphanHelper
         [DefaultButtonBinding(Buttons.RightShoulder, Keys.D)]
         public ButtonBinding UseMiscItemSlot { get; set; }
 
-        [DefaultButtonBinding(Buttons.LeftTrigger, Keys.Z)]
-        public ButtonBinding MapScreenShowProgressDisplay { get; set; }
-
         [DefaultButtonBinding(Buttons.Y, Keys.A)]
         public ButtonBinding MapScreenShowMapOrWorldMap { get; set; }
 
-        [DefaultButtonBinding(Buttons.A, Keys.C)]
-        public ButtonBinding MapScreenShowHints { get; set; }
+        [DefaultButtonBinding(Buttons.LeftTrigger, Keys.Z)]
+        public ButtonBinding MapScreenDisplayOptions { get; set; }
 
         // Celeste Upgrades
 

@@ -17,13 +17,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         private static readonly MTexture playerIconHair = GFX.Gui["maps/player_hair"];
         private static readonly string areaProgressLabel = Dialog.Clean("XaphanHelper_UI_progress_area");
         private static readonly string subareaProgressLabel = Dialog.Clean("XaphanHelper_UI_progress_subarea");
-        private static readonly string showProgressLabel = Dialog.Clean("XaphanHelper_UI_showProgress");
-        private static readonly string changeProgressLabel = Dialog.Clean("XaphanHelper_UI_changeProgress");
-        private static readonly string hideProgressLabel = Dialog.Clean("XaphanHelper_UI_hideProgress");
-        private readonly Wiggler progressWiggle;
         private MapDisplay mapDisplay;
         private MapProgressDisplay mapProgressDisplay;
-        private float progressWiggleDelay;
         private bool displayIcon;
 
         private readonly string confirmSfx;
@@ -47,8 +42,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
             Tag = Tags.HUD;
             Depth = -10002;
-
-            Add(progressWiggle = Wiggler.Create(0.4f, 4f));
         }
 
         public WarpInfo SelectedWarp => warpMenu.SelectedWarp;
@@ -144,11 +137,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     float scale = 0.5f;
                     Vector2 position = new(1030f, 1055f);
-                    string progressDisplayStatus = mapProgressDisplay.mode == 0 ? (mapProgressDisplay.getSubAreaIndex() == -1 || mapProgressDisplay.SubAreaControllerData.Count == 1 ? hideProgressLabel : changeProgressLabel) : mapProgressDisplay.mode == 1 ? hideProgressLabel : showProgressLabel;
-                    ButtonBindingButtonUI.Render(position, progressDisplayStatus, XaphanModule.ModSettings.MapScreenShowProgressDisplay, scale, 1f, progressWiggle.Value * 0.05f);
-                    if (mapProgressDisplay.mode != 2)
+                    if (mapProgressDisplay.mode != 0)
                     {
-                        string progressDisplayMode = mapProgressDisplay.mode == 0 ? areaProgressLabel : subareaProgressLabel;
+                        string progressDisplayMode = Dialog.Clean("XaphanHelper_UI_progres_display") + " " + (mapProgressDisplay.mode == 2 ? areaProgressLabel : subareaProgressLabel);
                         float progressDisplayWidth = ActiveFont.Measure(progressDisplayMode).X;
                         ActiveFont.Draw(progressDisplayMode, new Vector2(90 + progressDisplayWidth / 4, position.Y), new Vector2(0.5f), new Vector2(scale), Color.White);
                     }
@@ -333,8 +324,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private void UpdateMenu()
         {
-            progressWiggleDelay -= Engine.DeltaTime;
-
             if (Scene.OnRawInterval(0.3f))
             {
                 displayIcon = !displayIcon;
@@ -368,12 +357,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         // FIXME: hackfix for now, MapDisplay.GetRoomOffset should be refactored to accept WarpInfo (?)
                         Vector2 roomOffset = mapDisplay.GetRoomOffset(null, SelectedWarp.Room, 0);
                         mapDisplay.SetCurrentRoomCoordinates(roomOffset);
-                    }
-
-                    if (mapProgressDisplay != null && XaphanModule.ModSettings.MapScreenShowProgressDisplay.Check && progressWiggleDelay <= 0f)
-                    {
-                        progressWiggle.Start();
-                        progressWiggleDelay = 0.5f;
                     }
                 }
             }

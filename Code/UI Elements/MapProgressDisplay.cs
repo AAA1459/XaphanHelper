@@ -57,7 +57,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             EntitiesData = entitiesData;
             this.chapterIndex = chapterIndex;
             this.currentRoom = currentRoom;
-            Depth = -10003;
+            Depth = -10002;
         }
 
         public override void Added(Scene scene)
@@ -65,31 +65,17 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             base.Added(scene);
             MapScreen = Level.Tracker.GetEntity<MapScreen>();
             Prefix = Level.Session.Area.LevelSet;
-            if (chapterIndex != -1)
+            if (!XaphanModule.ModSaveData.ProgressMode.ContainsKey(Prefix))
             {
-                if (!XaphanModule.ModSaveData.ProgressMode.ContainsKey(Prefix))
-                {
-                    XaphanModule.ModSaveData.ProgressMode.Add(Prefix, 0);
-                }
-                else
-                {
-                    mode = XaphanModule.ModSaveData.ProgressMode[Prefix];
-                }
-                if (mode == 1 && SubAreaControllerData.Count == 1)
-                {
-                    mode = 0;
-                }
+                XaphanModule.ModSaveData.ProgressMode.Add(Prefix, 0);
             }
             else
             {
-                if (!XaphanModule.ModSaveData.WorldMapProgressMode.ContainsKey(Prefix))
-                {
-                    XaphanModule.ModSaveData.WorldMapProgressMode.Add(Prefix, 0);
-                }
-                else
-                {
-                    mode = XaphanModule.ModSaveData.WorldMapProgressMode[Prefix];
-                }
+                mode = XaphanModule.ModSaveData.ProgressMode[Prefix];
+            }
+            if (mode == 1 && SubAreaControllerData.Count == 1)
+            {
+                mode = 2;
             }
             MapPercent = (getCurrentMapTiles() * 100 / getTotalMapTiles()).ToString();
             currentChapter = Level.Session.Area.ChapterIndex == -1 ? 0 : Level.Session.Area.ChapterIndex;
@@ -111,7 +97,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     if (!areaModeStats.Completed)
                     {
                         Hidden = true;
-                        mode = 2;
+                        mode = 0;
                         return;
                     }
                 }
@@ -122,7 +108,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         if (areaStats.LevelSet == Prefix && !SaveData.Instance.Areas_Safe[areaStats.ID].Modes[(int)area.Mode].Completed)
                         {
                             Hidden = true;
-                            mode = 2;
+                            mode = 0;
                             return;
                         }
                     }
@@ -137,14 +123,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         if (areaStats.LevelSet == Prefix && !SaveData.Instance.Areas_Safe[areaStats.ID].Modes[(int)area.Mode].Completed)
                         {
                             Hidden = true;
-                            mode = 2;
+                            mode = 0;
                             return;
                         }
                     }
                 }
             }
             SubAreaMapPercent = (getCurrentMapTiles(getSubAreaIndex()) * 100 / getTotalMapTiles(getSubAreaIndex())).ToString();
-            if (XaphanModule.ModSettings.MapScreenShowProgressDisplay.Pressed && Visible && (MapScreen != null ? MapScreen.prompt == null : true))
+            /*if (XaphanModule.ModSettings.MapScreenShowProgressDisplay.Pressed && Visible && (MapScreen != null ? MapScreen.prompt == null : true))
             {
                 if (chapterIndex != -1)
                 {
@@ -152,7 +138,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     {
                         if (getSubAreaIndex() == -1 || SubAreaControllerData.Count == 1)
                         {
-                            mode = 2;
+                            mode = 0;
                             XaphanModule.ModSaveData.ProgressMode[Prefix] = mode;
                         }
                         else
@@ -163,30 +149,45 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     }
                     else
                     {
-                        mode = 0;
+                        mode = 2;
                         XaphanModule.ModSaveData.ProgressMode[Prefix] = mode;
                     }
                 }
                 else
                 {
-                    if (mode == 0)
-                    {
-                        mode = 2;
-                        XaphanModule.ModSaveData.WorldMapProgressMode[Prefix] = mode;
-                    }
-                    else
+                    if (mode == 2)
                     {
                         mode = 0;
                         XaphanModule.ModSaveData.WorldMapProgressMode[Prefix] = mode;
                     }
+                    else
+                    {
+                        mode = 2;
+                        XaphanModule.ModSaveData.WorldMapProgressMode[Prefix] = mode;
+                    }
                 }
-                if (mode == 1 || mode == 0)
+                if (mode == 1 || mode == 2)
                 {
                     Audio.Play("event:/ui/main/message_confirm");
                 }
                 else
                 {
                     Audio.Play("event:/ui/main/button_back");
+                }
+            }*/
+            if (chapterIndex != -1)
+            {
+                mode = XaphanModule.ModSaveData.ProgressMode[Prefix];
+            }
+            else
+            {
+                if (XaphanModule.ModSaveData.ProgressMode[Prefix] != 0)
+                {
+                    mode = 2;
+                }
+                else
+                {
+                    mode = XaphanModule.ModSaveData.ProgressMode[Prefix];
                 }
             }
         }
@@ -1103,7 +1104,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public override void Render()
         {
             base.Render();
-            if (mode != 2)
+            if (mode != 0)
             {
                 int iconYPos = 0;
                 int iconXPos = 209;
@@ -1265,7 +1266,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 iconYPos = 0;
 
                 string character = "";
-                if (mode == 0)
+                if (mode == 2)
                 {
                     if (!InGameMapControllerData.HideMapProgress && !NoMapTiles)
                     {

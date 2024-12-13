@@ -29,8 +29,6 @@ namespace Celeste.Mod.XaphanHelper
 
         public Dictionary<string, int> ProgressMode = new();
 
-        public Dictionary<string, int> WorldMapProgressMode = new();
-
         // Warps
 
         public HashSet<string> UnlockedWarps = new();
