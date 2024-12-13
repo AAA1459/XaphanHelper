@@ -103,6 +103,11 @@ namespace Celeste.Mod.XaphanHelper
         [DefaultButtonBinding(Buttons.LeftTrigger, Keys.Z)]
         public ButtonBinding MapScreenDisplayOptions { get; set; }
 
+        [DefaultButtonBinding(Buttons.RightTrigger, Keys.C)]
+        public ButtonBinding MapScreenPlaceMarker { get; set; }
+
+        
+
         // Celeste Upgrades
 
         [SettingIgnore]

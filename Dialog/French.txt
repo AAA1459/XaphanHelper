@@ -250,6 +250,7 @@
 	XaphanHelper_UI_progress_subarea= Sous-zone actuelle
 	XaphanHelper_UI_showWorldMap= Afficher carte du monde
 	XaphanHelper_UI_showAreaMap= Afficher carte de la zone
+	XaphanHelper_UI_markers= Ajouter / Supprimer marqueur
 	XaphanHelper_UI_confirm= Confirmer
 	XaphanHelper_UI_achievements= Succès
 	Xaphanhelper_UI_Arms= BRAS

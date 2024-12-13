@@ -12,6 +12,24 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
     [Tracked(true)]
     public class MapDisplay : Entity
     {
+        public class MarkerSelector : Entity
+        {
+            private Sprite Sprite;
+
+            public MarkerSelector(Vector2 position) : base(position)
+            {
+                Tag = Tags.HUD;
+                //Sprite = new Sprite(GFX.Gui, "");
+                Depth = -100003;
+            }
+
+            public override void Render()
+            {
+                base.Render();
+                Draw.Rect(new Rectangle((int)Position.X, (int)Position.Y, 40, 40), Color.Red);
+            }
+        }
+
         private Level level;
 
         public MapData MapData;
@@ -169,6 +187,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public bool NoGrid;
 
         public bool ConnectionTilesOnly;
+
+        public bool MarkerSelectionMode;
+
+        public MarkerSelector markerSelector;
 
         public MapDisplay(Level level, string mode, int chapter = -1, bool noGrid = false, bool noIndicator = false)
         {
@@ -2542,6 +2564,21 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 Player player = level.Tracker.GetEntity<Player>();
                 playerPosition = new Vector2(Math.Min((float)Math.Floor((player.Center.X - level.Bounds.X) / ScreenTilesX), (float)Math.Round(level.Bounds.Width / (float)ScreenTilesX, MidpointRounding.AwayFromZero) - 1), Math.Min((float)Math.Floor((player.Center.Y - level.Bounds.Y) / ScreenTilesY), (float)Math.Round(level.Bounds.Height / (float)ScreenTilesY, MidpointRounding.AwayFromZero) + 1));
+            }
+        }
+
+        public void EnterMarkerMode()
+        {
+            MarkerSelectionMode = !MarkerSelectionMode;
+            if (markerSelector == null)
+            {
+                Vector2 RoomPosition = CalcRoomPosition(GetRoomPosition(currentRoom) + (roomIsAdjusted(currentRoom) ? GetAdjustedPosition(currentRoom) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
+                level.Add(markerSelector = new MarkerSelector(Vector2.One + RoomPosition + playerPosition * 40));
+            }
+            else
+            {
+                level.Remove(markerSelector);
+                markerSelector = null;
             }
         }
 
