@@ -14,19 +14,99 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
     {
         public class MarkerSelector : Entity
         {
-            private Sprite Sprite;
+            private Sprite MiddleSprite;
 
-            public MarkerSelector(Vector2 position) : base(position)
+            private Sprite TopSprite;
+
+            private Sprite BottomSprite;
+
+            private Sprite LeftSprite;
+
+            private Sprite RightSprite;
+
+            public string CurrentRoom;
+
+            public Vector2 TilePosition;
+
+            public MarkerSelector(Vector2 position, string currentRoom, Vector2 playerPosition) : base(position)
             {
                 Tag = Tags.HUD;
-                //Sprite = new Sprite(GFX.Gui, "");
-                Depth = -100003;
+                CurrentRoom = currentRoom;
+                TilePosition = playerPosition;
+                Add(MiddleSprite = new Sprite(GFX.Gui, "maps/"));
+                MiddleSprite.AddLoop("select", "select", 0.08f);
+                MiddleSprite.Position = new Vector2(playerPosition.X, playerPosition.Y) * 40f;
+                MiddleSprite.Play("select");
+                Add(TopSprite = new Sprite(GFX.Gui, "maps/"));
+                TopSprite.AddLoop("arrow", "arrow", 0.08f);
+                TopSprite.Position = new Vector2(playerPosition.X, playerPosition.Y) * 40f - Vector2.UnitY * 40f + Vector2.One * 20f;
+                TopSprite.CenterOrigin();
+                TopSprite.Play("arrow");
+                Add(BottomSprite = new Sprite(GFX.Gui, "maps/"));
+                BottomSprite.AddLoop("arrow", "arrow", 0.08f);
+                BottomSprite.Position = new Vector2(playerPosition.X, playerPosition.Y) * 40f + Vector2.UnitY * 40f + Vector2.One * 20f;
+                BottomSprite.CenterOrigin();
+                BottomSprite.Rotation = (float)Math.PI;
+                BottomSprite.Play("arrow");
+                Add(LeftSprite = new Sprite(GFX.Gui, "maps/"));
+                LeftSprite.AddLoop("arrow", "arrow", 0.08f);
+                LeftSprite.Position = new Vector2(playerPosition.X, playerPosition.Y) * 40f - Vector2.UnitX * 40f + Vector2.One * 20f;
+                LeftSprite.CenterOrigin();
+                LeftSprite.Rotation = -(float)Math.PI / 2;
+                LeftSprite.Play("arrow");
+                Add(RightSprite = new Sprite(GFX.Gui, "maps/"));
+                RightSprite.AddLoop("arrow", "arrow", 0.08f);
+                RightSprite.Position = new Vector2(playerPosition.X, playerPosition.Y) * 40f + Vector2.UnitX * 40f + Vector2.One * 20f;
+                RightSprite.CenterOrigin();
+                RightSprite.Rotation = (float)Math.PI / 2;
+                RightSprite.Play("arrow");
+                Depth = -10003;
+            }
+
+            public override void Update()
+            {
+                base.Update();
+                if (Input.MenuLeft.Pressed && Position.X >= 141f)
+                {
+                    Position.X -= 40f;
+                    TilePosition.X -= 1f;
+                }
+                else if (Input.MenuRight.Pressed && Position.X <= 1741f)
+                {
+                    Position.X += 40f;
+                    TilePosition.X += 1f;
+                }
+                else if (Input.MenuUp.Pressed && Position.Y >= 221f)
+                {
+                    Position.Y -= 40f;
+                    TilePosition.Y -= 1f;
+                }
+                else if (Input.MenuDown.Pressed && Position.Y <= 941f)
+                {
+                    Position.Y += 40f;
+                    TilePosition.Y += 1f;
+                }
             }
 
             public override void Render()
             {
-                base.Render();
-                Draw.Rect(new Rectangle((int)Position.X, (int)Position.Y, 40, 40), Color.Red);
+                MiddleSprite.Render();
+                if (Position.X >= 141f)
+                {
+                    LeftSprite.Render();
+                }
+                if (Position.X <= 1741f)
+                {
+                    RightSprite.Render();
+                }
+                if (Position.Y >= 221f)
+                {
+                    TopSprite.Render();
+                }
+                if (Position.Y <= 941f)
+                {
+                    BottomSprite.Render();
+                }
             }
         }
 
@@ -55,6 +135,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public List<InGameMapEntitiesData> EntitiesData = new();
 
         public List<InGameMapIconsData> Icons = new();
+
+        public List<InGameMapMarkersData> Markers = new();
 
         public List<InGameMapTilesData> TilesImage = new();
 
@@ -1864,6 +1946,23 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
         }
 
+        public void GenerateMarkers()
+        {
+            Markers.Clear();
+            if (XaphanModule.ModSaveData.Markers.ContainsKey(Prefix))
+            {
+                HashSet<string> markers = XaphanModule.ModSaveData.Markers[Prefix];
+                foreach (string marker in markers)
+                {
+                    int chapterIndex = int.Parse(marker.Split(':')[0]);
+                    string type = marker.Split(':')[3];
+                    string room = marker.Split(':')[4];
+                    Vector2 position = new Vector2(int.Parse(marker.Split(':')[5]), int.Parse(marker.Split(':')[6]));
+                    Markers.Add(new InGameMapMarkersData(chapterIndex, room, position * 40f, type));
+                }
+            }
+        }
+
         public void GenerateIcons()
         {
             Icons.Clear();
@@ -2096,6 +2195,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 GenerateTiles();
                 GenerateEntrances();
                 GenerateIcons();
+                GenerateMarkers();
             }
             yield return null;
             Display = true;
@@ -2573,7 +2673,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             if (markerSelector == null)
             {
                 Vector2 RoomPosition = CalcRoomPosition(GetRoomPosition(currentRoom) + (roomIsAdjusted(currentRoom) ? GetAdjustedPosition(currentRoom) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
-                level.Add(markerSelector = new MarkerSelector(Vector2.One + RoomPosition + playerPosition * 40));
+                level.Add(markerSelector = new MarkerSelector(Vector2.One + RoomPosition, currentRoom, playerPosition));
             }
             else
             {
@@ -2844,6 +2944,27 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     else
                     {
                         iconImage.Render();
+                    }
+                }
+
+                // Markers
+
+                foreach (InGameMapMarkersData marker in Markers)
+                {
+                    if (marker.ChapterIndex == chapterIndex)
+                    {
+                        Vector2 RoomPosition = CalcRoomPosition(GetRoomPosition(marker.Room) + (roomIsAdjusted(marker.Room) ? GetAdjustedPosition(marker.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
+                        Vector2 IconPosition = marker.Position;
+                        if (isNotVisibleOnScreen(RoomPosition, IconPosition))
+                        {
+                            continue;
+                        }
+                        Image markerImage = null;
+                        string path = "maps/marker-";
+                        markerImage = new Image(GFX.Gui[path + marker.Type]);
+                        markerImage.Color *= Opacity;
+                        markerImage.Position = RoomPosition + marker.Position;
+                        markerImage.Render();
                     }
                 }
 

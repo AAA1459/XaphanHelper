@@ -5,6 +5,7 @@ using System.Linq;
 using Celeste.Mod.XaphanHelper.Data;
 using Microsoft.Xna.Framework;
 using Monocle;
+using static Celeste.Mod.XaphanHelper.UI_Elements.MapDisplay;
 
 namespace Celeste.Mod.XaphanHelper.UI_Elements
 {
@@ -996,43 +997,91 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         }
                     }
                 }
-                if (XaphanSettings.MapScreenPlaceMarker.Pressed && !mapDisplay.MarkerSelectionMode)
+                bool registerMarker = false;
+                if (XaphanSettings.MapScreenPlaceMarker.Pressed)
                 {
-                    if (prompt == null && displayMenu == null && mode == "map")
+                    if (!mapDisplay.MarkerSelectionMode)
                     {
-                        Vector2 CurrentRoomPosition = mapDisplay.CalcRoomPosition(mapDisplay.GetRoomPosition(mapDisplay.currentRoom) + (mapDisplay.roomIsAdjusted(mapDisplay.currentRoom) ? mapDisplay.GetAdjustedPosition(mapDisplay.currentRoom) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition);
-                        Vector2 PlayerIconPosition = Vector2.One + mapDisplay.playerPosition * 40;
-                        if (mapDisplay.isNotVisibleOnScreen(CurrentRoomPosition, PlayerIconPosition))
+                        if (prompt == null && displayMenu == null && mode == "map")
                         {
-                            if ((CurrentRoomPosition.Y + PlayerIconPosition.Y) < mapDisplay.Grid.Top)
+                            Vector2 CurrentRoomPosition = mapDisplay.CalcRoomPosition(mapDisplay.GetRoomPosition(mapDisplay.currentRoom) + (mapDisplay.roomIsAdjusted(mapDisplay.currentRoom) ? mapDisplay.GetAdjustedPosition(mapDisplay.currentRoom) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition);
+                            Vector2 PlayerIconPosition = Vector2.One + mapDisplay.playerPosition * 40;
+                            if (mapDisplay.isNotVisibleOnScreen(CurrentRoomPosition, PlayerIconPosition))
                             {
-                                int YAutoMoves = Math.Abs(((int)(CurrentRoomPosition.Y + PlayerIconPosition.Y) - mapDisplay.Grid.Top - 1) / 40);
-                                MapAutoMoves.Y = YAutoMoves;
-                                MoveMapY(YAutoMoves * 40, silence: true);
+                                if ((CurrentRoomPosition.Y + PlayerIconPosition.Y) < mapDisplay.Grid.Top)
+                                {
+                                    int YAutoMoves = Math.Abs(((int)(CurrentRoomPosition.Y + PlayerIconPosition.Y) - mapDisplay.Grid.Top - 1) / 40);
+                                    MapAutoMoves.Y = YAutoMoves;
+                                    MoveMapY(YAutoMoves * 40, silence: true);
+                                }
+                                if ((CurrentRoomPosition.Y + PlayerIconPosition.Y) > mapDisplay.Grid.Bottom)
+                                {
+                                    int YAutoMoves = ((int)(CurrentRoomPosition.Y + PlayerIconPosition.Y) - mapDisplay.Grid.Bottom - 1) / 40 + 2;
+                                    MapAutoMoves.Y = -YAutoMoves;
+                                    MoveMapY(YAutoMoves * -40, silence: true);
+                                }
+                                if ((CurrentRoomPosition.X + PlayerIconPosition.X) < mapDisplay.Grid.Left)
+                                {
+                                    int XAutoMoves = Math.Abs(((int)(CurrentRoomPosition.X + PlayerIconPosition.X) - mapDisplay.Grid.Left - 1) / 40) + 1;
+                                    MapAutoMoves.X = XAutoMoves;
+                                    MoveMapX(XAutoMoves * 40, silence: true);
+                                }
+                                if ((CurrentRoomPosition.X + PlayerIconPosition.X) > mapDisplay.Grid.Right)
+                                {
+                                    int XAutoMoves = ((int)(CurrentRoomPosition.X + PlayerIconPosition.X) - mapDisplay.Grid.Right - 1) / 40 + 2;
+                                    MapAutoMoves.X = -XAutoMoves;
+                                    MoveMapX(XAutoMoves * -40, silence: true);
+                                }
                             }
-                            if ((CurrentRoomPosition.Y + PlayerIconPosition.Y) > mapDisplay.Grid.Bottom)
+                            mapDisplay.EnterMarkerMode();
+                        }
+                    }
+                    else
+                    {
+                        string currentRoom = mapDisplay.markerSelector.CurrentRoom;
+                        Vector2 markerPosition = mapDisplay.CalcRoomPosition(mapDisplay.GetRoomPosition(currentRoom) + (mapDisplay.roomIsAdjusted(currentRoom) ? mapDisplay.GetAdjustedPosition(currentRoom) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition);
+                        string markerFull = mapDisplay.chapterIndex + ":" + (markerPosition.X - mapDisplay.MapPosition.X + (mapDisplay.markerSelector.TilePosition.X * 40)) + ":" + (markerPosition.Y - mapDisplay.MapPosition.Y + (mapDisplay.markerSelector.TilePosition.Y * 40)) + ":00:" + mapDisplay.currentRoom + ":" + mapDisplay.markerSelector.TilePosition.X + ":" + mapDisplay.markerSelector.TilePosition.Y; // Marker to register or remove
+                        string markerGlobalCords = mapDisplay.chapterIndex + ":" + (markerPosition.X - mapDisplay.MapPosition.X + (mapDisplay.markerSelector.TilePosition.X * 40)) + ":" + (markerPosition.Y - mapDisplay.MapPosition.Y + (mapDisplay.markerSelector.TilePosition.Y * 40));
+                        HashSet<string> markers = XaphanModule.ModSaveData.Markers.ContainsKey(mapDisplay.Prefix) ? XaphanModule.ModSaveData.Markers[mapDisplay.Prefix] : null;
+                        if (markers != null)
+                        {
+                            bool alreadyExist = false;
+                            foreach (string marker in markers)
                             {
-                                int YAutoMoves = ((int)(CurrentRoomPosition.Y + PlayerIconPosition.Y) - mapDisplay.Grid.Bottom - 1) / 40 + 2;
-                                MapAutoMoves.Y = -YAutoMoves;
-                                MoveMapY(YAutoMoves * -40, silence: true);
+                                if (marker.Contains(markerGlobalCords))
+                                {
+                                    alreadyExist = true;
+                                    break;
+                                }
                             }
-                            if ((CurrentRoomPosition.X + PlayerIconPosition.X) < mapDisplay.Grid.Left)
+                            if (alreadyExist) // Current marker is already registered. Remove it.
                             {
-                                int XAutoMoves = Math.Abs(((int)(CurrentRoomPosition.X + PlayerIconPosition.X) - mapDisplay.Grid.Left - 1) / 40) + 1;
-                                MapAutoMoves.X = XAutoMoves;
-                                MoveMapX(XAutoMoves * 40, silence: true);
+                                string markerInHashSet = null;
+                                foreach (string marker in markers)
+                                {
+                                    if (marker.Contains(markerGlobalCords))
+                                    {
+                                        markerInHashSet = marker;
+                                        break;
+                                    }
+                                }
+                                XaphanModule.ModSaveData.Markers[mapDisplay.Prefix].Remove(markerInHashSet);
                             }
-                            if ((CurrentRoomPosition.X + PlayerIconPosition.X) > mapDisplay.Grid.Right)
+                            else // Add current marker
                             {
-                                int XAutoMoves = ((int)(CurrentRoomPosition.X + PlayerIconPosition.X) - mapDisplay.Grid.Right - 1) / 40 + 2;
-                                MapAutoMoves.X = -XAutoMoves;
-                                MoveMapX(XAutoMoves * -40, silence: true);
+                                XaphanModule.ModSaveData.Markers[mapDisplay.Prefix].Add(markerFull);
                             }
                         }
-                        mapDisplay.EnterMarkerMode();
+                        else
+                        {
+                            XaphanModule.ModSaveData.Markers.Add(mapDisplay.Prefix, new HashSet<string>());
+                            XaphanModule.ModSaveData.Markers[mapDisplay.Prefix].Add(markerFull);
+                        }
+                        mapDisplay.GenerateMarkers();
+                        registerMarker = true;
                     }
                 }
-                if (Input.MenuCancel.Pressed && mapDisplay.MarkerSelectionMode)
+                if ((Input.MenuCancel.Pressed && mapDisplay.MarkerSelectionMode) || registerMarker)
                 {
                     mapDisplay.EnterMarkerMode();
                     if (!mapDisplay.MarkerSelectionMode && MapAutoMoves != Vector2.Zero)

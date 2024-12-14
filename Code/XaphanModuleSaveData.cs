@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Celeste.Mod.XaphanHelper.Managers;
 using Microsoft.Xna.Framework;
 using static Celeste.Mod.XaphanHelper.XaphanModuleSession;
 
@@ -28,6 +27,8 @@ namespace Celeste.Mod.XaphanHelper
         public Dictionary<string, bool> ShowHints = new();
 
         public Dictionary<string, int> ProgressMode = new();
+
+        public Dictionary<string, HashSet<string>> Markers = new();
 
         // Warps
 
