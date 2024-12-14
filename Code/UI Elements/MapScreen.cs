@@ -1041,7 +1041,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     }
                     else
                     {
-                        string currentRoom = mapDisplay.markerSelector.CurrentRoom;
+                        /*string currentRoom = mapDisplay.markerSelector.CurrentRoom;
                         Vector2 markerPosition = mapDisplay.CalcRoomPosition(mapDisplay.GetRoomPosition(currentRoom) + (mapDisplay.roomIsAdjusted(currentRoom) ? mapDisplay.GetAdjustedPosition(currentRoom) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition);
                         string markerFull = mapDisplay.chapterIndex + ":" + (markerPosition.X - mapDisplay.MapPosition.X + (mapDisplay.markerSelector.TilePosition.X * 40)) + ":" + (markerPosition.Y - mapDisplay.MapPosition.Y + (mapDisplay.markerSelector.TilePosition.Y * 40)) + ":00:" + mapDisplay.currentRoom + ":" + mapDisplay.markerSelector.TilePosition.X + ":" + mapDisplay.markerSelector.TilePosition.Y; // Marker to register or remove
                         string markerGlobalCords = mapDisplay.chapterIndex + ":" + (markerPosition.X - mapDisplay.MapPosition.X + (mapDisplay.markerSelector.TilePosition.X * 40)) + ":" + (markerPosition.Y - mapDisplay.MapPosition.Y + (mapDisplay.markerSelector.TilePosition.Y * 40));
@@ -1063,6 +1063,33 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 foreach (string marker in markers)
                                 {
                                     if (marker.Contains(markerGlobalCords))
+                                    {
+                                        markerInHashSet = marker;
+                                        break;
+                                    }
+                                }
+                                XaphanModule.ModSaveData.Markers[mapDisplay.Prefix].Remove(markerInHashSet);
+                            }
+                            else // Add current marker
+                            {
+                                XaphanModule.ModSaveData.Markers[mapDisplay.Prefix].Add(markerFull);
+                            }
+                        }
+                        else
+                        {
+                            XaphanModule.ModSaveData.Markers.Add(mapDisplay.Prefix, new HashSet<string>());
+                            XaphanModule.ModSaveData.Markers[mapDisplay.Prefix].Add(markerFull);
+                        }*/
+                        string markerFull = mapDisplay.chapterIndex + ":" + mapDisplay.currentRoom + ":" + mapDisplay.markerSelector.TilePosition.X + ":" + mapDisplay.markerSelector.TilePosition.Y + ":00"; // Marker to register or remove
+                        HashSet<string> markers = XaphanModule.ModSaveData.Markers.ContainsKey(mapDisplay.Prefix) ? XaphanModule.ModSaveData.Markers[mapDisplay.Prefix] : null;
+                        if (markers != null)
+                        {
+                            if (mapDisplay.markerSelector.HoverExistingMarker) // Current marker is already registered. Remove it.
+                            {
+                                string markerInHashSet = null;
+                                foreach (string marker in markers)
+                                {
+                                    if (marker.Contains(mapDisplay.markerSelector.HoverExistingMarkerRoom + ":" + mapDisplay.markerSelector.HoverExistingMarkerPosition.X + ":" + mapDisplay.markerSelector.HoverExistingMarkerPosition.Y))
                                     {
                                         markerInHashSet = marker;
                                         break;
@@ -1306,7 +1333,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             Vector2 position = new(1830f, 1055f);
                             ButtonUI.Render(position, label, Input.MenuCancel, scale, 1f, closeWiggle.Value * 0.05f);
                             position.X -= num / 2 + 32;
-                            ButtonBindingButtonUI.Render(position, mapDisplay.markerSelector.OnTopOfExistingMarker ? label3 : label2, XaphanSettings.MapScreenPlaceMarker, scale, 1f, displayWiggle.Value * 0.05f);
+                            ButtonBindingButtonUI.Render(position, mapDisplay.markerSelector.HoverExistingMarker ? label3 : label2, XaphanSettings.MapScreenPlaceMarker, scale, 1f, displayWiggle.Value * 0.05f);
                         }
                     }
                 }

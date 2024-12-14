@@ -30,7 +30,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
             private MapDisplay mapDisplay;
 
-            public bool OnTopOfExistingMarker;
+            public bool HoverExistingMarker;
+
+            public string HoverExistingMarkerRoom;
+
+            public Vector2 HoverExistingMarkerPosition;
 
             public MarkerSelector(Vector2 position, string currentRoom, Vector2 playerPosition, MapDisplay mapDisplay) : base(position)
             {
@@ -68,23 +72,32 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 Depth = -10003;
             }
 
+            public override void Added(Scene scene)
+            {
+                base.Added(scene);
+                CheckIfMarker();
+            }
+
             public void CheckIfMarker()
             {
-                Vector2 markerPosition = mapDisplay.CalcRoomPosition(mapDisplay.GetRoomPosition(CurrentRoom) + (mapDisplay.roomIsAdjusted(CurrentRoom) ? mapDisplay.GetAdjustedPosition(CurrentRoom) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition);
-                string markerGlobalCords = mapDisplay.chapterIndex + ":" + (markerPosition.X - mapDisplay.MapPosition.X + (TilePosition.X * 40)) + ":" + (markerPosition.Y - mapDisplay.MapPosition.Y + (TilePosition.Y * 40));
+                Vector2 selectorPosition = mapDisplay.CalcRoomPosition(mapDisplay.GetRoomPosition(CurrentRoom) + (mapDisplay.roomIsAdjusted(CurrentRoom) ? mapDisplay.GetAdjustedPosition(CurrentRoom) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition) + TilePosition * 40;
                 HashSet<string> markers = XaphanModule.ModSaveData.Markers.ContainsKey(mapDisplay.Prefix) ? XaphanModule.ModSaveData.Markers[mapDisplay.Prefix] : null;
                 if (markers != null)
                 {
-                    bool alreadyExist = false;
+                    HoverExistingMarker = false;
                     foreach (string marker in markers)
                     {
-                        if (marker.Contains(markerGlobalCords))
+                        int chapterIndex = int.Parse(marker.Split(':')[0]);
+                        string room = marker.Split(':')[1];
+                        Vector2 position = new Vector2(int.Parse(marker.Split(':')[2]), int.Parse(marker.Split(':')[3]));
+                        if (chapterIndex == mapDisplay.chapterIndex && (mapDisplay.CalcRoomPosition(mapDisplay.GetRoomPosition(room) + (mapDisplay.roomIsAdjusted(room) ? mapDisplay.GetAdjustedPosition(room) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition) + position * 40f) == selectorPosition)
                         {
-                            alreadyExist = true;
+                            HoverExistingMarker = true;
+                            HoverExistingMarkerRoom = room;
+                            HoverExistingMarkerPosition = position;
                             break;
                         }
                     }
-                    OnTopOfExistingMarker = alreadyExist;
                 }
             }
 
@@ -1984,9 +1997,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 foreach (string marker in markers)
                 {
                     int chapterIndex = int.Parse(marker.Split(':')[0]);
-                    string type = marker.Split(':')[3];
-                    string room = marker.Split(':')[4];
-                    Vector2 position = new Vector2(int.Parse(marker.Split(':')[5]), int.Parse(marker.Split(':')[6]));
+                    string room = marker.Split(':')[1];
+                    Vector2 position = new Vector2(int.Parse(marker.Split(':')[2]), int.Parse(marker.Split(':')[3]));
+                    string type = marker.Split(':')[4];
                     Markers.Add(new InGameMapMarkersData(chapterIndex, room, position * 40f, type));
                 }
             }
