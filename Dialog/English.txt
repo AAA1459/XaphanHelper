@@ -244,6 +244,7 @@
 	XaphanHelper_UI_deactivate= Deactivate
 	XaphanHelper_UI_displayOptions= Display Options
 	XaphanHelper_UI_showhints= Show Hints
+	XaphanHelper_UI_showmarkers= Show Markers
 	XaphanHelper_UI_progress= Progress Display
 	XaphanHelper_UI_progres_display= Display:
 	XaphanHelper_UI_progress_allareas= All Areas
@@ -252,6 +253,8 @@
 	XaphanHelper_UI_showWorldMap= Show World Map
 	XaphanHelper_UI_showAreaMap= Show Area Map
 	XaphanHelper_UI_markers= Add/Remove Marker
+	XaphanHelper_UI_markers_place= Place Marker
+	XaphanHelper_UI_markers_remove= Remove Marker
 	XaphanHelper_UI_confirm= Confirm
 	XaphanHelper_UI_achievements= Achievements
 	Xaphanhelper_UI_Arms= ARMS

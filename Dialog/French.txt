@@ -243,6 +243,7 @@
 	XaphanHelper_UI_deactivate= Désactiver
 	XaphanHelper_UI_displayOptions= Options d'affichage
 	XaphanHelper_UI_showhints= Afficher indices
+	XaphanHelper_UI_showmarkers= Afficher marqueurs
 	XaphanHelper_UI_progress= Progression
 	XaphanHelper_UI_progres_display= Progression :
 	XaphanHelper_UI_progress_allareas= Toutes les zones
@@ -251,6 +252,8 @@
 	XaphanHelper_UI_showWorldMap= Afficher carte du monde
 	XaphanHelper_UI_showAreaMap= Afficher carte de la zone
 	XaphanHelper_UI_markers= Ajouter / Supprimer marqueur
+	XaphanHelper_UI_markers_place= Placer marqueur
+	XaphanHelper_UI_markers_remove= Supprimer marqueur
 	XaphanHelper_UI_confirm= Confirmer
 	XaphanHelper_UI_achievements= Succès
 	Xaphanhelper_UI_Arms= BRAS

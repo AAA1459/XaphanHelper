@@ -30,6 +30,8 @@ namespace Celeste.Mod.XaphanHelper
 
         public Dictionary<string, HashSet<string>> Markers = new();
 
+        public Dictionary<string, bool> ShowMarkers = new();
+
         // Warps
 
         public HashSet<string> UnlockedWarps = new();

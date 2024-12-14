@@ -5,7 +5,6 @@ using System.Linq;
 using Celeste.Mod.XaphanHelper.Data;
 using Microsoft.Xna.Framework;
 using Monocle;
-using static Celeste.Mod.XaphanHelper.UI_Elements.MapDisplay;
 
 namespace Celeste.Mod.XaphanHelper.UI_Elements
 {
@@ -972,7 +971,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         Scene.Add(displayMenu = new TextMenu());
                         displayMenu.Depth = -10003;
                         displayMenu.AutoScroll = false;
-                        displayMenu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f);
+                        displayMenu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f + 60f);
                         displayMenu.Add(new TextMenu.Header(Dialog.Clean("XaphanHelper_UI_displayOptions").ToUpper()));
                         displayMenu.Add(new TextMenu.Slider(Dialog.Clean("XaphanHelper_UI_progress"), (int i) => i switch
                         {
@@ -990,6 +989,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 XaphanModule.ModSaveData.ShowHints[mapDisplay.Prefix] = b;
                             }));
                         }
+                        displayMenu.Add(new TextMenu.OnOff(Dialog.Clean("XaphanHelper_UI_showmarkers"), XaphanModule.ModSaveData.ShowMarkers[mapDisplay.Prefix]).Change(delegate (bool b)
+                        {
+                            XaphanModule.ModSaveData.ShowMarkers[mapDisplay.Prefix] = b;
+                        }));
                         displayMenu.OnCancel = displayMenu.OnClose = CloseDisplaymenu;
                         while (!displayMenu.Visible)
                         {
@@ -1234,60 +1237,76 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 if (inputEase > 0f)
                 {
                     float scale = 0.5f;
-                    if (mapDisplay != null && !mapDisplay.MarkerSelectionMode)
+                    if (mapDisplay != null)
                     {
-                        string label = Dialog.Clean("XaphanHelper_UI_close");
-                        string label2 = SceneAs<Level>().Session.Area.LevelSet != "Xaphan/0" ? Dialog.Clean("XaphanHelper_UI_abilities") : Dialog.Clean("XaphanHelper_UI_menu");
-                        string label3 = Dialog.Clean("XaphanHelper_UI_displayOptions");
-                        string label4 = Dialog.Clean("XaphanHelper_UI_progres_display");
-                        string label5 = Dialog.Clean("XaphanHelper_UI_progress_area");
-                        string label6 = Dialog.Clean("XaphanHelper_UI_progress_subarea");
-                        string label7 = Dialog.Clean("XaphanHelper_UI_progress_allareas");
-                        string label8 = Dialog.Clean("XaphanHelper_UI_showWorldMap");
-                        string label9 = Dialog.Clean("XaphanHelper_UI_showAreaMap");
-                        string label10 = Dialog.Clean("XaphanHelper_UI_markers");
-                        float num = ButtonUI.Width(label, Input.MenuCancel);
-                        float num2 = ButtonUI.Width(label2, Input.Pause);
-                        float num3 = ButtonBindingButtonUI.Width(label3, XaphanSettings.MapScreenDisplayOptions);
-                        float num4 = ButtonBindingButtonUI.Width(mode == "map" ? label8 : label9, XaphanSettings.MapScreenShowMapOrWorldMap);
-                        float num5 = ButtonBindingButtonUI.Width(label10, XaphanSettings.MapScreenPlaceMarker);
-                        Vector2 position = new(1830f, 1055f);
-                        ButtonUI.Render(position, label, Input.MenuCancel, scale, 1f, closeWiggle.Value * 0.05f);
-                        position.X -= num / 2 + 32;
-                        if (XaphanModule.useUpgrades && !XaphanModule.PlayerIsControllingRemoteDrone() && !XaphanModule.DisableStatusScreen)
+                        if (!mapDisplay.MarkerSelectionMode)
                         {
-                            ButtonUI.Render(position, label2, Input.Pause, scale, 1f, statusWiggle.Value * 0.05f);
-                            position.X -= num2 / 2 + 32;
-                        }
-                        ButtonBindingButtonUI.Render(position, label3, XaphanSettings.MapScreenDisplayOptions, scale, 1f, displayWiggle.Value * 0.05f);
-                        position.X -= num3 / 2 + 32;
-                        if (mode == "map")
-                        {
-                            ButtonBindingButtonUI.Render(position, label10, XaphanSettings.MapScreenPlaceMarker, scale, 1f, displayWiggle.Value * 0.05f);
-                            position.X -= num5 / 2 + 32;
-                        }
-                        if (HasWorldMap)
-                        {
-                            ButtonBindingButtonUI.Render(position, mode == "map" ? label8 : label9, XaphanSettings.MapScreenShowMapOrWorldMap, scale, 1f, worldMapWiggle.Value * 0.05f);
-                            position.X -= num4 / 2 + 32;
-                        }
-                        if (MapProgressDisplay != null && MapProgressDisplay.Visible && !MapProgressDisplay.Hidden)
-                        {
-                            if (MapProgressDisplay.mode != 0)
+                            string label = Dialog.Clean("XaphanHelper_UI_close");
+                            string label2 = SceneAs<Level>().Session.Area.LevelSet != "Xaphan/0" ? Dialog.Clean("XaphanHelper_UI_abilities") : Dialog.Clean("XaphanHelper_UI_menu");
+                            string label3 = Dialog.Clean("XaphanHelper_UI_displayOptions");
+                            string label4 = Dialog.Clean("XaphanHelper_UI_progres_display");
+                            string label5 = Dialog.Clean("XaphanHelper_UI_progress_area");
+                            string label6 = Dialog.Clean("XaphanHelper_UI_progress_subarea");
+                            string label7 = Dialog.Clean("XaphanHelper_UI_progress_allareas");
+                            string label8 = Dialog.Clean("XaphanHelper_UI_showWorldMap");
+                            string label9 = Dialog.Clean("XaphanHelper_UI_showAreaMap");
+                            string label10 = Dialog.Clean("XaphanHelper_UI_markers");
+                            float num = ButtonUI.Width(label, Input.MenuCancel);
+                            float num2 = ButtonUI.Width(label2, Input.Pause);
+                            float num3 = ButtonBindingButtonUI.Width(label3, XaphanSettings.MapScreenDisplayOptions);
+                            float num4 = ButtonBindingButtonUI.Width(mode == "map" ? label8 : label9, XaphanSettings.MapScreenShowMapOrWorldMap);
+                            float num5 = ButtonBindingButtonUI.Width(label10, XaphanSettings.MapScreenPlaceMarker);
+                            Vector2 position = new(1830f, 1055f);
+                            ButtonUI.Render(position, label, Input.MenuCancel, scale, 1f, closeWiggle.Value * 0.05f);
+                            position.X -= num / 2 + 32;
+                            if (XaphanModule.useUpgrades && !XaphanModule.PlayerIsControllingRemoteDrone() && !XaphanModule.DisableStatusScreen)
                             {
-                                string progressDisplayMode = label4 + " " + (MapProgressDisplay.mode == 2 ? label5 : label6);
-                                float progressDisplayWidth = ActiveFont.Measure(progressDisplayMode).X;
-                                ActiveFont.Draw(progressDisplayMode, new Vector2(90 + progressDisplayWidth / 4, position.Y), new Vector2(0.5f), new Vector2(scale), Color.White);
+                                ButtonUI.Render(position, label2, Input.Pause, scale, 1f, statusWiggle.Value * 0.05f);
+                                position.X -= num2 / 2 + 32;
+                            }
+                            ButtonBindingButtonUI.Render(position, label3, XaphanSettings.MapScreenDisplayOptions, scale, 1f, displayWiggle.Value * 0.05f);
+                            position.X -= num3 / 2 + 32;
+                            if (mode == "map")
+                            {
+                                ButtonBindingButtonUI.Render(position, label10, XaphanSettings.MapScreenPlaceMarker, scale, 1f, displayWiggle.Value * 0.05f);
+                                position.X -= num5 / 2 + 32;
+                            }
+                            if (HasWorldMap)
+                            {
+                                ButtonBindingButtonUI.Render(position, mode == "map" ? label8 : label9, XaphanSettings.MapScreenShowMapOrWorldMap, scale, 1f, worldMapWiggle.Value * 0.05f);
+                                position.X -= num4 / 2 + 32;
+                            }
+                            if (MapProgressDisplay != null && MapProgressDisplay.Visible && !MapProgressDisplay.Hidden)
+                            {
+                                if (MapProgressDisplay.mode != 0)
+                                {
+                                    string progressDisplayMode = label4 + " " + (MapProgressDisplay.mode == 2 ? label5 : label6);
+                                    float progressDisplayWidth = ActiveFont.Measure(progressDisplayMode).X;
+                                    ActiveFont.Draw(progressDisplayMode, new Vector2(90 + progressDisplayWidth / 4, position.Y), new Vector2(0.5f), new Vector2(scale), Color.White);
+                                }
+                            }
+                            if (WorldMapProgressDisplay != null && WorldMapProgressDisplay.Visible && !WorldMapProgressDisplay.Hidden)
+                            {
+                                string progressDisplayStatus = label4 + " " + label7;
+                                if (WorldMapProgressDisplay.mode != 0)
+                                {
+                                    float progressDisplayWidth = ActiveFont.Measure(progressDisplayStatus).X;
+                                    ActiveFont.Draw(progressDisplayStatus, new Vector2(90 + progressDisplayWidth / 4, position.Y), new Vector2(0.5f), new Vector2(scale), Color.White);
+                                }
                             }
                         }
-                        if (WorldMapProgressDisplay != null && WorldMapProgressDisplay.Visible && !WorldMapProgressDisplay.Hidden)
+                        else
                         {
-                            string progressDisplayStatus = label4 + " " + label7;
-                            if (WorldMapProgressDisplay.mode != 0)
-                            {
-                                float progressDisplayWidth = ActiveFont.Measure(progressDisplayStatus).X;
-                                ActiveFont.Draw(progressDisplayStatus, new Vector2(90 + progressDisplayWidth / 4, position.Y), new Vector2(0.5f), new Vector2(scale), Color.White);
-                            }
+                            string label = Dialog.Clean("KEY_CONFIG_CANCEL");
+                            string label2 = Dialog.Clean("XaphanHelper_UI_markers_place");
+                            string label3 = Dialog.Clean("XaphanHelper_UI_markers_remove");
+                            float num = ButtonUI.Width(label, Input.MenuCancel);
+                            float num2 = ButtonBindingButtonUI.Width(label2, XaphanSettings.MapScreenPlaceMarker);
+                            float num3 = ButtonBindingButtonUI.Width(label3, XaphanSettings.MapScreenPlaceMarker);
+                            Vector2 position = new(1830f, 1055f);
+                            ButtonUI.Render(position, label, Input.MenuCancel, scale, 1f, closeWiggle.Value * 0.05f);
+                            position.X -= num / 2 + 32;
+                            ButtonBindingButtonUI.Render(position, mapDisplay.markerSelector.OnTopOfExistingMarker ? label3 : label2, XaphanSettings.MapScreenPlaceMarker, scale, 1f, displayWiggle.Value * 0.05f);
                         }
                     }
                 }

@@ -28,11 +28,16 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
             public Vector2 TilePosition;
 
-            public MarkerSelector(Vector2 position, string currentRoom, Vector2 playerPosition) : base(position)
+            private MapDisplay mapDisplay;
+
+            public bool OnTopOfExistingMarker;
+
+            public MarkerSelector(Vector2 position, string currentRoom, Vector2 playerPosition, MapDisplay mapDisplay) : base(position)
             {
                 Tag = Tags.HUD;
                 CurrentRoom = currentRoom;
                 TilePosition = playerPosition;
+                this.mapDisplay = mapDisplay;
                 Add(MiddleSprite = new Sprite(GFX.Gui, "maps/"));
                 MiddleSprite.AddLoop("select", "select", 0.08f);
                 MiddleSprite.Position = new Vector2(playerPosition.X, playerPosition.Y) * 40f;
@@ -63,6 +68,26 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 Depth = -10003;
             }
 
+            public void CheckIfMarker()
+            {
+                Vector2 markerPosition = mapDisplay.CalcRoomPosition(mapDisplay.GetRoomPosition(CurrentRoom) + (mapDisplay.roomIsAdjusted(CurrentRoom) ? mapDisplay.GetAdjustedPosition(CurrentRoom) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition);
+                string markerGlobalCords = mapDisplay.chapterIndex + ":" + (markerPosition.X - mapDisplay.MapPosition.X + (TilePosition.X * 40)) + ":" + (markerPosition.Y - mapDisplay.MapPosition.Y + (TilePosition.Y * 40));
+                HashSet<string> markers = XaphanModule.ModSaveData.Markers.ContainsKey(mapDisplay.Prefix) ? XaphanModule.ModSaveData.Markers[mapDisplay.Prefix] : null;
+                if (markers != null)
+                {
+                    bool alreadyExist = false;
+                    foreach (string marker in markers)
+                    {
+                        if (marker.Contains(markerGlobalCords))
+                        {
+                            alreadyExist = true;
+                            break;
+                        }
+                    }
+                    OnTopOfExistingMarker = alreadyExist;
+                }
+            }
+
             public override void Update()
             {
                 base.Update();
@@ -70,21 +95,25 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     Position.X -= 40f;
                     TilePosition.X -= 1f;
+                    CheckIfMarker();
                 }
                 else if (Input.MenuRight.Pressed && Position.X <= 1741f)
                 {
                     Position.X += 40f;
                     TilePosition.X += 1f;
+                    CheckIfMarker();
                 }
                 else if (Input.MenuUp.Pressed && Position.Y >= 221f)
                 {
                     Position.Y -= 40f;
                     TilePosition.Y -= 1f;
+                    CheckIfMarker();
                 }
                 else if (Input.MenuDown.Pressed && Position.Y <= 941f)
                 {
                     Position.Y += 40f;
                     TilePosition.Y += 1f;
+                    CheckIfMarker();
                 }
             }
 
@@ -2655,6 +2684,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 XaphanModule.ModSaveData.ShowHints[Prefix] = false;
             }
+            if (!XaphanModule.ModSaveData.ShowMarkers.ContainsKey(Prefix))
+            {
+                XaphanModule.ModSaveData.ShowMarkers[Prefix] = true;
+            }
             useHintsCheck(level);
             if (useHints && XaphanModule.ModSaveData.ShowHints[Prefix])
             {
@@ -2673,7 +2706,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             if (markerSelector == null)
             {
                 Vector2 RoomPosition = CalcRoomPosition(GetRoomPosition(currentRoom) + (roomIsAdjusted(currentRoom) ? GetAdjustedPosition(currentRoom) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
-                level.Add(markerSelector = new MarkerSelector(Vector2.One + RoomPosition, currentRoom, playerPosition));
+                level.Add(markerSelector = new MarkerSelector(Vector2.One + RoomPosition, currentRoom, playerPosition, this));
             }
             else
             {
@@ -2949,22 +2982,25 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
                 // Markers
 
-                foreach (InGameMapMarkersData marker in Markers)
+                if (XaphanModule.ModSaveData.ShowMarkers[Prefix])
                 {
-                    if (marker.ChapterIndex == chapterIndex)
+                    foreach (InGameMapMarkersData marker in Markers)
                     {
-                        Vector2 RoomPosition = CalcRoomPosition(GetRoomPosition(marker.Room) + (roomIsAdjusted(marker.Room) ? GetAdjustedPosition(marker.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
-                        Vector2 IconPosition = marker.Position;
-                        if (isNotVisibleOnScreen(RoomPosition, IconPosition))
+                        if (marker.ChapterIndex == chapterIndex)
                         {
-                            continue;
+                            Vector2 RoomPosition = CalcRoomPosition(GetRoomPosition(marker.Room) + (roomIsAdjusted(marker.Room) ? GetAdjustedPosition(marker.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
+                            Vector2 IconPosition = marker.Position;
+                            if (isNotVisibleOnScreen(RoomPosition, IconPosition))
+                            {
+                                continue;
+                            }
+                            Image markerImage = null;
+                            string path = "maps/marker-";
+                            markerImage = new Image(GFX.Gui[path + marker.Type]);
+                            markerImage.Color *= Opacity;
+                            markerImage.Position = RoomPosition + marker.Position;
+                            markerImage.Render();
                         }
-                        Image markerImage = null;
-                        string path = "maps/marker-";
-                        markerImage = new Image(GFX.Gui[path + marker.Type]);
-                        markerImage.Color *= Opacity;
-                        markerImage.Position = RoomPosition + marker.Position;
-                        markerImage.Render();
                     }
                 }
 
