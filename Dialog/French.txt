@@ -212,6 +212,7 @@
 	ModOptions_XaphanModule_UseMiscItemSlot= Utiliser la capacité équipée dans l'emplacement Divers
 	ModOptions_XaphanModule_MapScreenShowMapOrWorldMap= Écran carte - Permuter entre carte de la zone et carte du monde
 	ModOptions_XaphanModule_MapScreenDisplayOptions= Écran carte - Personnaliser les options d'affichage
+	ModOptions_XaphanModule_MapScreenPlaceMarker= Écran carte - Placer marqueur
 #UI
 	XaphanHelper_UI_ActiveCM_title= PRÊT POUR UN DEFI ?
 	XaphanHelper_UI_CM_note1= Vous pouvez rejouer cette rencontre de boss{n} ou jouer à une version plus difficile

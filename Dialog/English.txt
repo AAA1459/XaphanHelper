@@ -212,6 +212,7 @@
 	ModOptions_XaphanModule_UseMiscItemSlot= Use Equiped Ability in Misc Slot
 	ModOptions_XaphanModule_MapScreenShowMapOrWorldMap= Map Screen - Switch between Area Map and World Map
 	ModOptions_XaphanModule_MapScreenDisplayOptions= Map Screen - Customise Display Options
+	ModOptions_XaphanModule_MapScreenPlaceMarker= Map Screen - Place Marker
 
 #UI
 	XaphanHelper_UI_ActiveCM_title= READY FOR A CHALLENGE?
