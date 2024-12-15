@@ -8,10 +8,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
     [Tracked(true)]
     class OxygenIndicator : Entity
     {
-        public static float BaseOxygen;
-
-        public static string Prefix;
-
         private Coroutine TimerRoutine = new();
 
         public OxygenIndicator()
