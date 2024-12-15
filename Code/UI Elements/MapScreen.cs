@@ -291,6 +291,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public bool registerMarker;
 
+        private bool CanSwitchToWorldMap;
+
         public MapScreen(Level level, bool fromStatus)
         {
             this.level = level;
@@ -330,7 +332,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
             if (prompt == null)
             {
-                if (XaphanSettings.MapScreenShowMapOrWorldMap.Pressed && mapDisplay != null && HasWorldMap && !mapDisplay.MarkerSelectionMode)
+                if (XaphanSettings.MapScreenShowMapOrWorldMap.Pressed && mapDisplay != null && CanSwitchToWorldMap && HasWorldMap && !mapDisplay.MarkerSelectionMode)
                 {
                     if (mode == "map")
                     {
@@ -436,7 +438,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         displayWiggleDelay = 0.5f;
                     }
                 }
-                if (XaphanSettings.MapScreenShowMapOrWorldMap.Pressed && worldMapWiggleDelay <= 0f && (mapDisplay != null ? !mapDisplay.MarkerSelectionMode : true))
+                if (XaphanSettings.MapScreenShowMapOrWorldMap.Pressed && CanSwitchToWorldMap && worldMapWiggleDelay <= 0f && (mapDisplay != null ? !mapDisplay.MarkerSelectionMode : true))
                 {
                     worldMapWiggle.Start();
                     worldMapWiggleDelay = 0.5f;
@@ -1014,6 +1016,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     }
                 }
             }
+            CanSwitchToWorldMap = true;
         }
 
         private IEnumerator MapRoutine(Level level)
