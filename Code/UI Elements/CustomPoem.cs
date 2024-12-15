@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
@@ -75,7 +76,13 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private Sprite upgradeSprite;
 
-        public CustomPoem(string inputActionA, string textA, string inputActionB = null, string textB = null, string textC = null, string poemColorA = "FFFFFF", string poemColorB = "FFFFFF", string poemColorC = "FFFFFF", string poemParticleColor = "FFFFFF", string sprite = "", float spriteAlpha = 1f, object controlA = null, object controlB = null, bool select = false)
+        private float spriteSpeed;
+
+        private float spriteWait;
+
+        private Coroutine LoopRoutine = new();
+
+        public CustomPoem(string inputActionA, string textA, string inputActionB = null, string textB = null, string textC = null, string poemColorA = "FFFFFF", string poemColorB = "FFFFFF", string poemColorC = "FFFFFF", string poemParticleColor = "FFFFFF", string sprite = "", float spriteSpeed = 0.08f, float spriteWait = 0f, float spriteAlpha = 1f, object controlA = null, object controlB = null, bool select = false)
         {
             if (textA != null)
             {
@@ -98,10 +105,13 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             this.poemColorC = poemColorC;
             this.poemParticleColor = poemParticleColor;
             this.select = select;
+            this.spriteSpeed = spriteSpeed;
+            this.spriteWait = spriteWait;
             if (sprite != "")
             {
                 Sprite = new Sprite(GFX.Gui, sprite);
-                Sprite.AddLoop("static", "", 0.08f, 0);
+                Sprite.Add("static", "", spriteSpeed);
+                Sprite.OnFinish = onFinish;
                 Sprite.Play("static");
                 Sprite.CenterOrigin();
                 Sprite.Position = new Vector2(1920f, 1080f) * 0.5f;
@@ -126,6 +136,17 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 particles[i].Reset(Calc.Random.NextFloat());
             }
+        }
+
+        private void onFinish(string s)
+        {
+            Add(LoopRoutine = new Coroutine(SpriteFinishRoutine()));
+        }
+
+        private IEnumerator SpriteFinishRoutine()
+        {
+            yield return spriteSpeed * spriteWait;
+            Sprite.Play("static");
         }
 
         public void Dispose()
@@ -301,6 +322,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 upgradeSprite.Color = Color.White * Alpha;
             }
+            LoopRoutine.Update();
         }
 
         public void BeforeRender()

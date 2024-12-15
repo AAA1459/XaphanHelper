@@ -73,7 +73,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             string poemTextB = Dialog.Clean("XaphanHelper_get_Map_Desc");
             string poemTextC = Dialog.Clean("XaphanHelper_get_Map_Desc_b");
             AreaKey area = level.Session.Area;
-            poem = new CustomPoem("XaphanHelper_Press", poemTextA, null, poemTextB, poemTextC, "AA00AA", "FFFFFF", "FFFFFF", "533467", "collectables/XaphanHelper/UpgradeCollectable/map", 0.5f, XaphanModule.ModSettings.OpenMap);
+            poem = new CustomPoem("XaphanHelper_Press", poemTextA, null, poemTextB, poemTextC, "AA00AA", "FFFFFF", "FFFFFF", "533467", "collectables/XaphanHelper/UpgradeCollectable/map", 0f, 0f, 0.5f, XaphanModule.ModSettings.OpenMap);
             poem.Alpha = 0f;
             Scene.Add(poem);
             for (float t2 = 0f; t2 < 1f; t2 += Engine.RawDeltaTime)

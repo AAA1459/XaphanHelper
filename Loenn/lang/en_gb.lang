@@ -146,6 +146,13 @@ entities.XaphanHelper/CustomCollectable.attributes.description.staticTime=Time i
 entities.XaphanHelper/CustomCollectable.attributes.description.particlesColor=Hexadecimal code for the color of the particles. Leave blank for no particles.
 entities.XaphanHelper/CustomCollectable.attributes.description.wiggle=If true, the collectable will slowly wiggle up and down.
 entities.XaphanHelper/CustomCollectable.attributes.description.animationSpeed= Delay between each frame of the animation. Default: 0.08.
+entities.XaphanHelper/CustomCollectable.attributes.description.poem= If true, the collectable will show a poem on screen (like crystal hears do) when collected.
+entities.XaphanHelper/CustomCollectable.attributes.description.poemName= Name of the poem that is displayed when the collectable is collected. No effect if Poem is not true.
+entities.XaphanHelper/CustomCollectable.attributes.description.poemColor= Color of the name of the poem that is displayed when the collectable is collected. No effect if Poem is not true.
+entities.XaphanHelper/CustomCollectable.attributes.description.poemParticlesColor= Colors of the particles displayed when the collectable is collected. No effect if Poem is not true.
+entities.XaphanHelper/CustomCollectable.attributes.description.poemSprite= The full path to the sprite that is displayed behind the poem, relative to Atlases/Gui/. No effect if Poem is not true.
+entities.XaphanHelper/CustomCollectable.attributes.description.poemSpriteAnimationSpeed=Delay between each frame of the animation of the sprite that is displayed behind the poem. No effect if Poem is not true.
+entities.XaphanHelper/CustomCollectable.attributes.description.poemSpriteAnimationPause= The number of frames to wait between each loop of the sprite that is displayed behind the poem. No effect if Poem is not true.
 
 # CustomCoverupWall
 entities.XaphanHelper/CustomCoverupWall.placements.name.CustomCoverupWall=Custom Coverup Wall

@@ -2,7 +2,7 @@ Version 1.0.64 :
 - Added "Force Inactive Flag" attribute to Drone Gates and Flag Dash Switches
 - Added "Cell Offset X" and "Cell Offset Y" attributes to Cell Locks
 - Added "Group", "Can Drown", "Air Timer", "Inside Transparency" and "Appear Flags" attributes to Liquids
-- Added ""Animation Speed", Particles Color", "Light Color", "Wiggle", "Loop Sound", "Loop Burst" and "Static Time" attributes to Custom Collectable
+- Added "Animation Speed", Particles Color", "Light Color", "Wiggle", "Loop Sound", "Loop Burst", "Static Time", "Poem", "Poem Name", "Poem Color", "Poem Particles Color", "Poem Sprite", "Poem Sprite Animation Speed" and "Poem Sprite Animation Pause" attributes to Custom Collectable
 - Added "Hide On World Map" attribute to In-game Map Hint Controllers
 - Moved the "Show Hints" and "Progress Display" options from the bottom of the In-Game map screen to a new menu accessible with a single button while the In-Game map is open
 - Added a Marker feature to the In-game map, allowing players to place markers on the map, at the location of their choice

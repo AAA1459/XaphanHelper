@@ -89,6 +89,24 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool Collected;
 
+        private SoundEmitter sfx;
+
+        private bool usePoem;
+
+        private CustomPoem poem;
+
+        private string poemName;
+
+        private string poemColor;
+
+        private string poemParticlesColor;
+
+        private string poemSprite;
+
+        private float poemSpriteAnimationSpeed;
+
+        private float poemSpriteAnimationPause;
+
         public bool FlagRegiseredInSaveData()
         {
             Session session = SceneAs<Level>().Session;
@@ -114,6 +132,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             ignoreGolden = data.Bool("ignoreGolden");
             canRespawn = data.Bool("canRespawn");
             particlesColor = data.Attr("particlesColor");
+            usePoem = data.Bool("poem");
+            poemName = Dialog.Clean(data.Attr("poemName"));
+            poemColor = data.Attr("poemColor", "FFFFFF");
+            poemParticlesColor = data.Attr("poemParticlesColor", "FFFFFF");
+            poemSprite = data.Attr("poemSprite", "collectables/heartgem/0/spin");
+            poemSpriteAnimationSpeed = data.Float("poemSpriteAnimationSpeed", 0.08f);
+            poemSpriteAnimationPause = data.Float("poemSpriteAnimationPause", 0f);
             if (sprite == "")
             {
                 sprite = "collectables/XaphanHelper/CustomCollectable/collectable";
@@ -295,16 +320,105 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Visible = false;
             Collidable = false;
             Collected = true;
-            Session session = SceneAs<Level>().Session;
-            if (!changeMusic)
+            Session session = level.Session;
+            if (!usePoem)
             {
-                SoundEmitter.Play(collectSound, this);
+                if (!changeMusic)
+                {
+                    SoundEmitter.Play(collectSound, this);
+                }
+                else
+                {
+                    oldMusic = Audio.CurrentMusic;
+                    session.Audio.Music.Event = SFX.EventnameByHandle(collectSound);
+                    session.Audio.Apply(forceSixteenthNoteHack: false);
+                }
+            }
+            if (usePoem)
+            {
+                level.CanRetry = false;
+                if (endChapter)
+                {
+                    Audio.SetMusic(null);
+                    Audio.SetAmbience(null);
+                }
+                sfx = SoundEmitter.Play(collectSound, this);
+                Add(new LevelEndingHook(delegate
+                {
+                    sfx.Source.Stop();
+                }));
+                Depth = -2000000;
+                yield return null;
+                Celeste.Freeze(0.2f);
+                yield return null;
+                Engine.TimeRate = 0.5f;
+                player.Depth = -2000000;
+            }
+            level.Shake();
+            Input.Rumble(RumbleStrength.Strong, RumbleLength.Medium);
+            for (int i = 0; i < 10; i++)
+            {
+                Scene.Add(new AbsorbOrb(Position + new Vector2(8, 8), player));
+            }
+            level.Flash(Color.White, drawPlayerOver: true);
+            if (usePoem)
+            {
+                level.FormationBackdrop.Display = true;
+                level.FormationBackdrop.Alpha = 1f;
+                light.Alpha = 0f;
+                Visible = false;
+                for (float t3 = 0f; t3 < 2f; t3 += Engine.RawDeltaTime)
+                {
+                    Engine.TimeRate = Calc.Approach(Engine.TimeRate, 0f, Engine.RawDeltaTime * 0.25f);
+                    yield return null;
+                }
+                yield return null;
+                if (player.Dead)
+                {
+                    yield return 100f;
+                }
+                Engine.TimeRate = 1f;
+                Tag = Tags.FrozenUpdate;
+                level.Frozen = true;
+                if (endChapter)
+                {
+                    level.TimerStopped = true;
+                    level.RegisterAreaComplete();
+                }
+                poem = new CustomPoem("", poemName, poemColorA: poemColor, sprite: poemSprite, spriteSpeed: poemSpriteAnimationSpeed, spriteWait: poemSpriteAnimationPause, poemParticleColor: poemParticlesColor);
+                poem.Alpha = 0f;
+                Scene.Add(poem);
+                for (float t2 = 0f; t2 < 1f; t2 += Engine.RawDeltaTime)
+                {
+                    poem.Alpha = Ease.CubeOut(t2);
+                    yield return null;
+                }
+                while (!Input.MenuConfirm.Pressed && !Input.MenuCancel.Pressed)
+                {
+                    yield return null;
+                }
+                sfx.Source.Param("end", 1f);
+                if (!endChapter)
+                {
+                    for (float t3 = 0f; t3 < 1f; t3 += Engine.RawDeltaTime * 2f)
+                    {
+                        poem.Alpha = Ease.CubeIn(1f - t3);
+                        yield return null;
+                    }
+                    player.Depth = 0;
+                    level.FormationBackdrop.Display = false;
+                    level.Frozen = false;
+                    level.CanRetry = true;
+                    Engine.TimeRate = 1f;
+                    if (poem != null)
+                    {
+                        poem.RemoveSelf();
+                    }
+                }
             }
             else
             {
-                oldMusic = Audio.CurrentMusic;
-                session.Audio.Music.Event = SFX.EventnameByHandle(collectSound);
-                session.Audio.Apply(forceSixteenthNoteHack: false);
+                Scene.Add(new BgFlash());
             }
             RegisterFlag();
             if (level.Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMShowMiniMap : XaphanModule.ModSettings.ShowMiniMap)
@@ -315,14 +429,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     mapDisplay.GenerateIcons();
                 }
             }
-            level.Shake();
-            Input.Rumble(RumbleStrength.Strong, RumbleLength.Medium);
-            for (int i = 0; i < 10; i++)
-            {
-                Scene.Add(new AbsorbOrb(Position + new Vector2(8, 8), player));
-            }
-            level.Flash(Color.White, drawPlayerOver: true);
-            Scene.Add(new BgFlash());
             List<Strawberry> strawbs = new();
             foreach (Follower follower in player.Leader.Followers)
             {
@@ -360,15 +466,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     strawb.OnCollect();
                 }
-                Engine.TimeRate = 0.5f;
-                player.Depth = -2000000;
-                level.FormationBackdrop.Display = true;
-                level.FormationBackdrop.Alpha = 1f;
                 Visible = false;
-                for (float i = 0f; i < 2f; i += Engine.RawDeltaTime)
+                if (!usePoem)
                 {
-                    Engine.TimeRate = Calc.Approach(Engine.TimeRate, 0f, Engine.RawDeltaTime * 0.25f);
-                    yield return null;
+                    Engine.TimeRate = 0.5f;
+                    player.Depth = -2000000;
+                    level.FormationBackdrop.Display = true;
+                    level.FormationBackdrop.Alpha = 1f;
+                    for (float i = 0f; i < 2f; i += Engine.RawDeltaTime)
+                    {
+                        Engine.TimeRate = Calc.Approach(Engine.TimeRate, 0f, Engine.RawDeltaTime * 0.25f);
+                        yield return null;
+                    }
                 }
                 if (player.Dead)
                 {
@@ -378,7 +487,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Tag = Tags.FrozenUpdate;
                 level.Frozen = true;
                 level.TimerStopped = true;
-                level.RegisterAreaComplete();
+                if (!usePoem)
+                {
+                    level.RegisterAreaComplete();
+                }
                 yield return new FadeWipe(level, wipeIn: false)
                 {
                     Duration = 1.25f
