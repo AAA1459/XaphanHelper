@@ -11,6 +11,208 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
     [Tracked(true)]
     public class MapScreen : Entity
     {
+        public class SelectMarkerPrompt : Entity
+        {
+            private class MarkerSelect : Entity
+            {
+                public int ID;
+
+                public float width = 100f;
+
+                public float height = 75f;
+
+                private Sprite sprite;
+
+                public bool Selected;
+
+                private float selectedAlpha = 0;
+
+                private int alphaStatus = 0;
+
+                SelectMarkerPrompt prompt;
+
+                public MarkerSelect(Vector2 position, int id, SelectMarkerPrompt prompt) : base(position - new Vector2(50f, 37.5f))
+                {
+                    Tag = Tags.HUD;
+                    ID = id;
+                    Add(sprite = new Sprite(GFX.Gui, "maps/keys/"));
+                    sprite.Position = new Vector2(18f, 7.5f);
+                    sprite.AddLoop("marker", "marker", 0.08f);
+                    switch (ID)
+                    {
+                        case 0:
+                            break;
+                        case 1:
+                            sprite.Color = Calc.HexToColor("4E8BFF");
+                            break;
+                        case 2:
+                            sprite.Color = Calc.HexToColor("F80000");
+                            break;
+                        case 3:
+                            sprite.Color = Calc.HexToColor("88F205");
+                            break;
+                        case 4:
+                            sprite.Color = Calc.HexToColor("F8B000");
+                            break;
+                        case 5:
+                            sprite.Color = Calc.HexToColor("7800F8");
+                            break;
+                    }
+                    sprite.Play("marker");
+                    this.prompt = prompt;
+                    Depth = prompt.Depth;
+                }
+
+                public override void Update()
+                {
+                    base.Update();
+                    if (prompt.Selection == ID)
+                    {
+                        Selected = true;
+                        if (alphaStatus == 0 || (alphaStatus == 1 && selectedAlpha != 0.9f))
+                        {
+                            alphaStatus = 1;
+                            selectedAlpha = Calc.Approach(selectedAlpha, 0.9f, Engine.DeltaTime);
+                            if (selectedAlpha == 0.9f)
+                            {
+                                alphaStatus = 2;
+                            }
+                        }
+                        if (alphaStatus == 2 && selectedAlpha != 0.1f)
+                        {
+                            selectedAlpha = Calc.Approach(selectedAlpha, 0.1f, Engine.DeltaTime);
+                            if (selectedAlpha == 0.1f)
+                            {
+                                alphaStatus = 1;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Selected = false;
+                    }
+                }
+
+                public override void Render()
+                {
+                    if (prompt.drawContent)
+                    {
+                        if (Selected)
+                        {
+                            Draw.Rect(Position, width, height, Color.Yellow * selectedAlpha);
+                        }
+                        sprite.Render();
+                    }
+                }
+            }
+
+            private float height;
+
+            private float width;
+
+            public bool drawContent;
+
+            public bool open;
+
+            public int maxSelection;
+
+            public int Selection = -1;
+
+            public Vector2 PromptPos;
+
+            public Coroutine OpenRoutine = new();
+
+            private List<MarkerSelect> MarkerSelects = new();
+
+            public SelectMarkerPrompt(Vector2 position, int selection) : base(position)
+            {
+                Tag = (Tags.HUD | Tags.Persistent);
+                Depth = -10003;
+                maxSelection = 5;
+                width = (maxSelection + 1) * 100 + 50;
+                Selection = selection;
+            }
+
+            public override void Added(Scene scene)
+            {
+                base.Added(scene);
+                OpenPrompt();
+            }
+
+            public override void Removed(Scene scene)
+            {
+                base.Removed(scene);
+                foreach (MarkerSelect markerSelect in MarkerSelects)
+                {
+                    markerSelect.RemoveSelf();
+                }
+            }
+
+            public void OpenPrompt()
+            {
+                open = true;
+                Add(new Coroutine(Open()));
+            }
+
+            public IEnumerator Open()
+            {
+                while (height < 200)
+                {
+                    height += Engine.DeltaTime * 1200;
+                    yield return null;
+                }
+                height = 200;
+                AddSelections();
+                drawContent = true;
+            }
+
+            public void AddSelections()
+            {
+                for (int i = 0; i <= maxSelection; i++)
+                {
+                    MarkerSelect select = new(PromptPos + new Vector2(75f + 100f * i, 130f), i, this);
+                    MarkerSelects.Add(select);
+                    SceneAs<Level>().Add(select);
+                }
+            }
+
+            public void ClosePrompt()
+            {
+                Add(new Coroutine(Close()));
+            }
+
+            public IEnumerator Close()
+            {
+                drawContent = false;
+                while (height > 1)
+                {
+                    height -= Engine.DeltaTime * 1200;
+                    yield return null;
+                }
+                open = false;
+                RemoveSelf();
+            }
+
+            public override void Update()
+            {
+                base.Update();
+                PromptPos = new Vector2(Engine.Width / 2 - width / 2, (Engine.Height / 2 - 39) + 200 / 2 - height / 2);
+            }
+
+            public override void Render()
+            {
+                Draw.Rect(PromptPos.X, PromptPos.Y, width, height, Color.Black);
+                Draw.Rect(PromptPos.X - 5, PromptPos.Y - 5, width + 10, 10, Color.White);
+                Draw.Rect(PromptPos.X - 5, PromptPos.Y - 5, 10, height + 10, Color.White);
+                Draw.Rect(PromptPos.X - 5, PromptPos.Y - 5 + height, width + 10, 10, Color.White);
+                Draw.Rect(PromptPos.X - 5 + width, PromptPos.Y - 5, 10, height + 10, Color.White);
+                if (drawContent)
+                {
+                    ActiveFont.Draw(Dialog.Clean("XaphanHelper_UI_markers_select"), new Vector2(PromptPos.X + width / 2, PromptPos.Y + 50f), new Vector2(0.5f), Vector2.One, Color.White);
+                }
+            }
+        }
+
         protected XaphanModuleSettings XaphanSettings => XaphanModule.ModSettings;
 
         private Level level;
@@ -38,6 +240,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public BigTitle SubAreaName;
 
         public SwitchUIPrompt prompt;
+
+        public SelectMarkerPrompt markerPrompt;
 
         public TextMenu displayMenu;
 
@@ -77,11 +281,15 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public int maxChapters;
 
+        private Vector2 MapAutoMoves = new();
+
         public MapProgressDisplay MapProgressDisplay;
 
         public MapProgressDisplay WorldMapProgressDisplay;
 
         public bool HasWorldMap;
+
+        public bool registerMarker;
 
         public MapScreen(Level level, bool fromStatus)
         {
@@ -982,6 +1190,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         {
                             XaphanModule.ModSaveData.ProgressMode[mapDisplay.Prefix] = i;
                         }));
+                        displayMenu.Add(new TextMenu.OnOff(Dialog.Clean("XaphanHelper_UI_showmarkers"), XaphanModule.ModSaveData.ShowMarkers[mapDisplay.Prefix]).Change(delegate (bool b)
+                        {
+                            XaphanModule.ModSaveData.ShowMarkers[mapDisplay.Prefix] = b;
+                        }));
                         if (mapDisplay.useHints)
                         {
                             displayMenu.Add(new TextMenu.OnOff(Dialog.Clean("XaphanHelper_UI_showhints"), XaphanModule.ModSaveData.ShowHints[mapDisplay.Prefix]).Change(delegate (bool b)
@@ -989,10 +1201,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 XaphanModule.ModSaveData.ShowHints[mapDisplay.Prefix] = b;
                             }));
                         }
-                        displayMenu.Add(new TextMenu.OnOff(Dialog.Clean("XaphanHelper_UI_showmarkers"), XaphanModule.ModSaveData.ShowMarkers[mapDisplay.Prefix]).Change(delegate (bool b)
-                        {
-                            XaphanModule.ModSaveData.ShowMarkers[mapDisplay.Prefix] = b;
-                        }));
                         displayMenu.OnCancel = displayMenu.OnClose = CloseDisplaymenu;
                         while (!displayMenu.Visible)
                         {
@@ -1000,13 +1208,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         }
                     }
                 }
-                bool registerMarker = false;
-                if (XaphanSettings.MapScreenPlaceMarker.Pressed)
+                registerMarker = false;
+                if (XaphanSettings.MapScreenPlaceMarker.Pressed && markerPrompt == null)
                 {
                     if (!mapDisplay.MarkerSelectionMode)
                     {
                         if (prompt == null && displayMenu == null && mode == "map")
                         {
+                            Audio.Play("event:/ui/main/message_confirm");
                             Vector2 CurrentRoomPosition = mapDisplay.CalcRoomPosition(mapDisplay.GetRoomPosition(mapDisplay.currentRoom) + (mapDisplay.roomIsAdjusted(mapDisplay.currentRoom) ? mapDisplay.GetAdjustedPosition(mapDisplay.currentRoom) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition);
                             Vector2 PlayerIconPosition = Vector2.One + mapDisplay.playerPosition * 40;
                             if (mapDisplay.isNotVisibleOnScreen(CurrentRoomPosition, PlayerIconPosition))
@@ -1041,46 +1250,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     }
                     else
                     {
-                        /*string currentRoom = mapDisplay.markerSelector.CurrentRoom;
-                        Vector2 markerPosition = mapDisplay.CalcRoomPosition(mapDisplay.GetRoomPosition(currentRoom) + (mapDisplay.roomIsAdjusted(currentRoom) ? mapDisplay.GetAdjustedPosition(currentRoom) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition);
-                        string markerFull = mapDisplay.chapterIndex + ":" + (markerPosition.X - mapDisplay.MapPosition.X + (mapDisplay.markerSelector.TilePosition.X * 40)) + ":" + (markerPosition.Y - mapDisplay.MapPosition.Y + (mapDisplay.markerSelector.TilePosition.Y * 40)) + ":00:" + mapDisplay.currentRoom + ":" + mapDisplay.markerSelector.TilePosition.X + ":" + mapDisplay.markerSelector.TilePosition.Y; // Marker to register or remove
-                        string markerGlobalCords = mapDisplay.chapterIndex + ":" + (markerPosition.X - mapDisplay.MapPosition.X + (mapDisplay.markerSelector.TilePosition.X * 40)) + ":" + (markerPosition.Y - mapDisplay.MapPosition.Y + (mapDisplay.markerSelector.TilePosition.Y * 40));
-                        HashSet<string> markers = XaphanModule.ModSaveData.Markers.ContainsKey(mapDisplay.Prefix) ? XaphanModule.ModSaveData.Markers[mapDisplay.Prefix] : null;
-                        if (markers != null)
-                        {
-                            bool alreadyExist = false;
-                            foreach (string marker in markers)
-                            {
-                                if (marker.Contains(markerGlobalCords))
-                                {
-                                    alreadyExist = true;
-                                    break;
-                                }
-                            }
-                            if (alreadyExist) // Current marker is already registered. Remove it.
-                            {
-                                string markerInHashSet = null;
-                                foreach (string marker in markers)
-                                {
-                                    if (marker.Contains(markerGlobalCords))
-                                    {
-                                        markerInHashSet = marker;
-                                        break;
-                                    }
-                                }
-                                XaphanModule.ModSaveData.Markers[mapDisplay.Prefix].Remove(markerInHashSet);
-                            }
-                            else // Add current marker
-                            {
-                                XaphanModule.ModSaveData.Markers[mapDisplay.Prefix].Add(markerFull);
-                            }
-                        }
-                        else
-                        {
-                            XaphanModule.ModSaveData.Markers.Add(mapDisplay.Prefix, new HashSet<string>());
-                            XaphanModule.ModSaveData.Markers[mapDisplay.Prefix].Add(markerFull);
-                        }*/
-                        string markerFull = mapDisplay.chapterIndex + ":" + mapDisplay.currentRoom + ":" + mapDisplay.markerSelector.TilePosition.X + ":" + mapDisplay.markerSelector.TilePosition.Y + ":00"; // Marker to register or remove
+                        string markerFull = mapDisplay.chapterIndex + ":" + mapDisplay.currentRoom + ":" + mapDisplay.markerSelector.TilePosition.X + ":" + mapDisplay.markerSelector.TilePosition.Y; // Marker to register or remove
                         HashSet<string> markers = XaphanModule.ModSaveData.Markers.ContainsKey(mapDisplay.Prefix) ? XaphanModule.ModSaveData.Markers[mapDisplay.Prefix] : null;
                         if (markers != null)
                         {
@@ -1095,24 +1265,33 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                         break;
                                     }
                                 }
+                                Audio.Play("event:/ui/main/button_select");
                                 XaphanModule.ModSaveData.Markers[mapDisplay.Prefix].Remove(markerInHashSet);
+                                registerMarker = true;
                             }
                             else // Add current marker
                             {
-                                XaphanModule.ModSaveData.Markers[mapDisplay.Prefix].Add(markerFull);
+                                yield return AddMarker(markerFull);
                             }
                         }
                         else
                         {
                             XaphanModule.ModSaveData.Markers.Add(mapDisplay.Prefix, new HashSet<string>());
-                            XaphanModule.ModSaveData.Markers[mapDisplay.Prefix].Add(markerFull);
+                            yield return AddMarker(markerFull);
                         }
                         mapDisplay.GenerateMarkers();
-                        registerMarker = true;
+                        foreach (MapDisplay display in worldMapMapDisplays)
+                        {
+                            display.GenerateMarkers();
+                        }
                     }
                 }
-                if ((Input.MenuCancel.Pressed && mapDisplay.MarkerSelectionMode) || registerMarker)
+                if ((Input.MenuCancel.Pressed && mapDisplay.MarkerSelectionMode && markerPrompt == null) || registerMarker)
                 {
+                    if (!registerMarker)
+                    {
+                        Audio.Play("event:/ui/main/button_back");
+                    }
                     mapDisplay.EnterMarkerMode();
                     if (!mapDisplay.MarkerSelectionMode && MapAutoMoves != Vector2.Zero)
                     {
@@ -1121,13 +1300,53 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         MapAutoMoves = Vector2.Zero;
                     }
                 }
+                if (mapDisplay.markerSelector != null)
+                {
+                    mapDisplay.markerSelector.Focused = true;
+                }
                 yield return null;
             }
             Audio.Play("event:/ui/game/unpause");
             Add(new Coroutine(TransitionToGame()));
         }
 
-        private Vector2 MapAutoMoves = new();
+        private IEnumerator AddMarker(string marker)
+        {
+            Audio.Play("event:/ui/main/button_toggle_on");
+            mapDisplay.markerSelector.Focused = false;
+            Scene.Add(markerPrompt = new SelectMarkerPrompt(Vector2.Zero, 0));
+            int type = 0;
+            bool canceled = false;
+            while (!Input.MenuConfirm.Pressed && !canceled)
+            {
+                if (Input.MenuLeft.Pressed && markerPrompt.Selection > 0)
+                {
+                    markerPrompt.Selection--;
+                }
+                if (Input.MenuRight.Pressed && markerPrompt.Selection < markerPrompt.maxSelection)
+                {
+                    markerPrompt.Selection++;
+                }
+                if (Input.MenuCancel.Pressed)
+                {
+                    canceled = true;
+                }
+                yield return null;
+            }
+            markerPrompt.ClosePrompt();
+            if (canceled)
+            {
+                Audio.Play("event:/ui/main/button_toggle_off");
+                markerPrompt = null;
+                yield break;
+            }
+            Audio.Play("event:/ui/main/button_select");
+            type = markerPrompt.Selection;
+            yield return 0.05f;
+            markerPrompt = null;
+            XaphanModule.ModSaveData.Markers[mapDisplay.Prefix].Add(marker + ":" + type);
+            registerMarker = true;
+        }
 
         private void CloseDisplaymenu()
         {
@@ -1295,7 +1514,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             position.X -= num3 / 2 + 32;
                             if (mode == "map")
                             {
-                                ButtonBindingButtonUI.Render(position, label10, XaphanSettings.MapScreenPlaceMarker, scale, 1f, displayWiggle.Value * 0.05f);
+                                ButtonBindingButtonUI.Render(position, label10, XaphanSettings.MapScreenPlaceMarker, scale, 1f);
                                 position.X -= num5 / 2 + 32;
                             }
                             if (HasWorldMap)

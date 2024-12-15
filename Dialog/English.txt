@@ -255,6 +255,7 @@
 	XaphanHelper_UI_markers= Add/Remove Marker
 	XaphanHelper_UI_markers_place= Place Marker
 	XaphanHelper_UI_markers_remove= Remove Marker
+	XaphanHelper_UI_markers_select= Select a Marker
 	XaphanHelper_UI_confirm= Confirm
 	XaphanHelper_UI_achievements= Achievements
 	Xaphanhelper_UI_Arms= ARMS

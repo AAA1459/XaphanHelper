@@ -36,6 +36,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
             public Vector2 HoverExistingMarkerPosition;
 
+            public bool Focused;
+
             public MarkerSelector(Vector2 position, string currentRoom, Vector2 playerPosition, MapDisplay mapDisplay) : base(position)
             {
                 Tag = Tags.HUD;
@@ -104,29 +106,37 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             public override void Update()
             {
                 base.Update();
-                if (Input.MenuLeft.Pressed && Position.X >= 141f)
+                if (Focused)
                 {
-                    Position.X -= 40f;
-                    TilePosition.X -= 1f;
-                    CheckIfMarker();
-                }
-                else if (Input.MenuRight.Pressed && Position.X <= 1741f)
-                {
-                    Position.X += 40f;
-                    TilePosition.X += 1f;
-                    CheckIfMarker();
-                }
-                else if (Input.MenuUp.Pressed && Position.Y >= 221f)
-                {
-                    Position.Y -= 40f;
-                    TilePosition.Y -= 1f;
-                    CheckIfMarker();
-                }
-                else if (Input.MenuDown.Pressed && Position.Y <= 941f)
-                {
-                    Position.Y += 40f;
-                    TilePosition.Y += 1f;
-                    CheckIfMarker();
+                    Vector2 previousPosition = Position;
+                    if (Input.MenuLeft.Pressed && Position.X >= 141f)
+                    {
+                        Position.X -= 40f;
+                        TilePosition.X -= 1f;
+                        CheckIfMarker();
+                    }
+                    else if (Input.MenuRight.Pressed && Position.X <= 1741f)
+                    {
+                        Position.X += 40f;
+                        TilePosition.X += 1f;
+                        CheckIfMarker();
+                    }
+                    else if (Input.MenuUp.Pressed && Position.Y >= 221f)
+                    {
+                        Position.Y -= 40f;
+                        TilePosition.Y -= 1f;
+                        CheckIfMarker();
+                    }
+                    else if (Input.MenuDown.Pressed && Position.Y <= 941f)
+                    {
+                        Position.Y += 40f;
+                        TilePosition.Y += 1f;
+                        CheckIfMarker();
+                    }
+                    if (Position != previousPosition)
+                    {
+                        Audio.Play("event:/ui/main/rollover_up");
+                    }
                 }
             }
 
@@ -3008,8 +3018,28 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 continue;
                             }
                             Image markerImage = null;
-                            string path = "maps/marker-";
-                            markerImage = new Image(GFX.Gui[path + marker.Type]);
+                            string path = "maps/marker";
+                            markerImage = new Image(GFX.Gui[path]);
+                            switch (marker.Type)
+                            {
+                                case "0":
+                                    break;
+                                case "1":
+                                    markerImage.Color = Calc.HexToColor("4E8BFF");
+                                    break;
+                                case "2":
+                                    markerImage.Color = Calc.HexToColor("F80000");
+                                    break;
+                                case "3":
+                                    markerImage.Color = Calc.HexToColor("88F205");
+                                    break;
+                                case "4":
+                                    markerImage.Color = Calc.HexToColor("F8B000");
+                                    break;
+                                case "5":
+                                    markerImage.Color = Calc.HexToColor("7800F8");
+                                    break;
+                            }
                             markerImage.Color *= Opacity;
                             markerImage.Position = RoomPosition + marker.Position;
                             markerImage.Render();
