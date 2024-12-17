@@ -130,54 +130,16 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
             }
             SubAreaMapPercent = (getCurrentMapTiles(getSubAreaIndex()) * 100 / getTotalMapTiles(getSubAreaIndex())).ToString();
-            /*if (XaphanModule.ModSettings.MapScreenShowProgressDisplay.Pressed && Visible && (MapScreen != null ? MapScreen.prompt == null : true))
-            {
-                if (chapterIndex != -1)
-                {
-                    if (mode <= 1)
-                    {
-                        if (getSubAreaIndex() == -1 || SubAreaControllerData.Count == 1)
-                        {
-                            mode = 0;
-                            XaphanModule.ModSaveData.ProgressMode[Prefix] = mode;
-                        }
-                        else
-                        {
-                            mode++;
-                            XaphanModule.ModSaveData.ProgressMode[Prefix]++;
-                        }
-                    }
-                    else
-                    {
-                        mode = 2;
-                        XaphanModule.ModSaveData.ProgressMode[Prefix] = mode;
-                    }
-                }
-                else
-                {
-                    if (mode == 2)
-                    {
-                        mode = 0;
-                        XaphanModule.ModSaveData.WorldMapProgressMode[Prefix] = mode;
-                    }
-                    else
-                    {
-                        mode = 2;
-                        XaphanModule.ModSaveData.WorldMapProgressMode[Prefix] = mode;
-                    }
-                }
-                if (mode == 1 || mode == 2)
-                {
-                    Audio.Play("event:/ui/main/message_confirm");
-                }
-                else
-                {
-                    Audio.Play("event:/ui/main/button_back");
-                }
-            }*/
             if (chapterIndex != -1)
             {
-                mode = XaphanModule.ModSaveData.ProgressMode[Prefix];
+                if (XaphanModule.ModSaveData.ProgressMode[Prefix] > 0 && (getSubAreaIndex() == -1 || SubAreaControllerData.Count == 1))
+                {
+                    mode = 2;
+                }
+                else
+                {
+                    mode = XaphanModule.ModSaveData.ProgressMode[Prefix];
+                }
             }
             else
             {

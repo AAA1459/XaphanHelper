@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using Celeste.Mod.XaphanHelper.Data;
-using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
 using Monocle;
