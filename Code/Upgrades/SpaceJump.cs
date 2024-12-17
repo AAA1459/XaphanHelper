@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.UI_Elements;
+using Microsoft.Xna.Framework;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Monocle;
@@ -210,9 +211,11 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 return initialJumpGraceTimer;
             }
 
-            if (self.Speed.Y <= 0 && (self.Speed.X <= -160f || self.Speed.X >= 160f) && self.StateMachine.State != Player.StDash)
+            // VineHead and Puffer fix
+            //if (self.Speed.Y <= 0 && (self.Speed.X <= -160f || self.Speed.X >= 160f) && self.StateMachine.State != Player.StDash)
+            Actor actor = self.CollideFirst<Actor>(self.BottomCenter + Vector2.UnitY * (self.Speed.Y < 0 ? 21f : 7f));
+            if ((self.Speed.Y <= 0 && (self.Speed.X <= -160f || self.Speed.X >= 160f) && self.StateMachine.State != Player.StDash) || (actor != null && (actor.GetType() == typeof(VineHead) || actor.GetType() == typeof(Puffer))))
             {
-                // Pupperfish fix
                 return 0f;
             }
 
