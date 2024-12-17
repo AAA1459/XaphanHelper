@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Celeste.Mod.XaphanHelper.Data;
+using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -743,6 +744,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     else if (entity.Name == "XaphanHelper/BigScreen" && entity.Bool("noInteract") == false)
                     {
                         EntitiesData.Add(new InGameMapEntitiesData(chapterIndex, level.Name, level, "bigScreen", new Vector2(entity.Position.X, entity.Position.Y), new Vector2((float)Math.Floor(entity.Position.X / ScreenTilesX), (float)Math.Floor(entity.Position.Y / ScreenTilesY))));
+                    }
+                    else if (entity.Name == "XaphanHelper/JournalPedestal")
+                    {
+                        EntitiesData.Add(new InGameMapEntitiesData(chapterIndex, level.Name, level, "journalPedestal", new Vector2(entity.Position.X, entity.Position.Y), new Vector2((float)Math.Floor(entity.Position.X / ScreenTilesX), (float)Math.Floor(entity.Position.Y / ScreenTilesY))));
                     }
                 }
             }
@@ -2115,6 +2120,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         {
                             Icons.Add(new InGameMapIconsData("bigScreen", entity.Room, Vector2.One + entity.MapTilesPosition * 40, false));
                         }
+                        else if (entity.Type.Contains("journalPedestal"))
+                        {
+                            Icons.Add(new InGameMapIconsData("journalPedestal", entity.Room, Vector2.One + entity.MapTilesPosition * 40, false));
+                        }
                     }
                 }
                 if (!InGameMapControllerData.HideIconsInUnexploredRooms)
@@ -2198,6 +2207,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 else if (entity.Type.Contains("bigScreen"))
                                 {
                                     Icons.Add(new InGameMapIconsData("bigScreen", entity.Room, Vector2.One + entity.MapTilesPosition * 40, false));
+                                }
+                                else if (entity.Type.Contains("journalPedestal"))
+                                {
+                                    Icons.Add(new InGameMapIconsData("journalPedestal", entity.Room, Vector2.One + entity.MapTilesPosition * 40, false));
                                 }
                             }
                         }
@@ -2971,6 +2984,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     if (path.Contains("bubbleDoor") || path.Contains("pipeGate") || path.Contains("bigScreen"))
                     {
                         path = icon.Type;
+                    }
+                    if (icon.Type.Contains("journalPedestal"))
+                    {
+                        path = "maps/Xaphan/0/";
                     }
                     if (icon.Checkmark)
                     {
