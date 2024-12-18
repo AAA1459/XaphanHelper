@@ -3569,6 +3569,10 @@ namespace Celeste.Mod.XaphanHelper
                         self.Wipe.Cancel();
                     }
                 }
+
+                // Set Flag to keep screen Black before Title Screen
+
+                self.Session.SetFlag("SoCM_startedGame", startedGame);
             }
 
             orig(self);
