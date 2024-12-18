@@ -219,6 +219,12 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                             Scene.Add(new CS05_Generator(player));
                         }
                         break;
+                    case "Ch5 - Generator2":
+                        if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch5_Generator2"))
+                        {
+                            Scene.Add(new CS05_Generator2(player));
+                        }
+                        break;
                 }
             }
         }

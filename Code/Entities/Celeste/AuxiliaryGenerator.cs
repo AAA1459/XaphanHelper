@@ -133,7 +133,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (SceneAs<Level>().Session.GetFlag("Ch4_Main_Power_Off"))
                 {
-                    talk.Enabled = SceneAs<Level>().Session.GetFlag("CS_Ch5_Generator_P1");
+                    talk.Enabled = XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch5_Generator");
                     if (!ActivationRoutine.Active)
                     {
                         Sprite.Play("off");
@@ -168,6 +168,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 yield return null;
             }
+            player.Facing = Facings.Right;
             SceneAs<Level>().Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_5_geothermal_active");
             SceneAs<Level>().Session.Audio.Apply(forceSixteenthNoteHack: false);
             Sprite.Play("on");
@@ -204,10 +205,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public void resumeSprite(string s)
         {
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-            if (player != null)
-            {
-                player.StateMachine.State = 0;
-            }
             PlayerPose = "";
             player.Sprite.OnLastFrame = resetSprite;
         }
