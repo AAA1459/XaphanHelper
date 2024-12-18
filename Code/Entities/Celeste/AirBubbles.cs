@@ -43,7 +43,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if ((player.Position - Position).LengthSquared() < 1500f && !PlayingSfx)
                 {
                     PlayingSfx = true;
-                    Logger.Log(LogLevel.Info, "Xh", "Distance : " + (player.Position - Position).LengthSquared());
                     idleSfx.Play("event:/game/xaphan/air_bubbles");
                 }
                 else if ((player.Position - Position).LengthSquared() > 1500f && PlayingSfx)
