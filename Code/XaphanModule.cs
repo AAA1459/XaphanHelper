@@ -2935,7 +2935,7 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     if (manager.MainMode != LightModes.None)
                     {
-                        ModSaveData.LightMode = manager.MainMode;
+                        ModSaveData.LightMode[level.Session.Area.LevelSet] = manager.MainMode;
                     }
                 }
 
@@ -3476,6 +3476,11 @@ namespace Celeste.Mod.XaphanHelper
             level.Session.SetFlag("XaphanHelper_Loaded_Player", false);
             ModSaveData.LoadedPlayer = false;
             long currentTime = level.Session.Time;
+            LightManager manager = level.Tracker.GetEntity<LightManager>();
+            if (manager != null)
+            {
+                ModSaveData.LightMode[level.Session.Area.LevelSet] = manager.MainMode;
+            }
             LevelEnter.Go(new Session(new AreaKey(AreaData.Get("Xaphan/0/0-Prologue").ToKey(AreaMode.Normal).ID))
             {
                 Time = currentTime,

@@ -246,7 +246,7 @@ namespace Celeste.Mod.XaphanHelper
 
         // Light Mode
 
-        public LightModes LightMode = LightModes.None;
+        public Dictionary<string, LightModes> LightMode = new();
 
         // Golden Strawberry
 

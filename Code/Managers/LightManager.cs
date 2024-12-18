@@ -69,6 +69,10 @@ namespace Celeste.Mod.XaphanHelper.Managers
         {
             base.Added(scene);
             MainMode = RespawnMode = XaphanModule.ModSession.LightMode;
+            if (!XaphanModule.ModSaveData.LightMode.ContainsKey(SceneAs<Level>().Session.Area.LevelSet))
+            {
+                XaphanModule.ModSaveData.LightMode[SceneAs<Level>().Session.Area.LevelSet] = XaphanModule.ModSession.LightMode;
+            }
         }
 
         public void SetMainMode(XaphanModuleSession.LightModes mode)
@@ -99,10 +103,10 @@ namespace Celeste.Mod.XaphanHelper.Managers
         public override void Update()
         {
             base.Update();
-            if (XaphanModule.ModSaveData.LightMode != XaphanModuleSession.LightModes.None && (XaphanModule.useMergeChaptersController ? SceneAs<Level>().Session.Level == XaphanModule.ModSaveData.SavedRoom[SceneAs<Level>().Session.Area.LevelSet] : true) && (SceneAs<Level>().Session.Area.GetSID().Contains("Xaphan/0") ? SceneAs<Level>().Session.Area.GetSID() != "Xaphan/0/0-Prologue" : true))
+            if (XaphanModule.ModSaveData.LightMode[SceneAs<Level>().Session.Area.LevelSet] != XaphanModuleSession.LightModes.None && (XaphanModule.useMergeChaptersController ? SceneAs<Level>().Session.Level == XaphanModule.ModSaveData.SavedRoom[SceneAs<Level>().Session.Area.LevelSet] : true) && (SceneAs<Level>().Session.Area.GetSID().Contains("Xaphan/0") ? SceneAs<Level>().Session.Area.GetSID() != "Xaphan/0/0-Prologue" : true))
             {
-                MainMode = RespawnMode = XaphanModule.ModSaveData.LightMode;
-                XaphanModule.ModSaveData.LightMode = XaphanModuleSession.LightModes.None;
+                MainMode = RespawnMode = XaphanModule.ModSaveData.LightMode[SceneAs<Level>().Session.Area.LevelSet];
+                XaphanModule.ModSaveData.LightMode[SceneAs<Level>().Session.Area.LevelSet] = XaphanModuleSession.LightModes.None;
             }
             if (MainMode != XaphanModuleSession.LightModes.None || TemporaryMode != XaphanModuleSession.LightModes.None)
             {
