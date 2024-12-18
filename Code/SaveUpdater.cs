@@ -22,9 +22,7 @@ namespace Celeste.Mod.XaphanHelper
         {
             if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
             {
-                /*string SoCMVersionMajor = XaphanModule.ModSaveData.SoCMVer.Split('.')[0];
-                string SoCMVersionMinor = XaphanModule.ModSaveData.SoCMVer.Split('.')[1];
-                string SoCMVersionBuild = XaphanModule.ModSaveData.SoCMVer.Split('.')[2];*/
+                // SoCMver is empty or null. This is an old save that need to be converted to version 3.0.0 or up
                 if (string.IsNullOrEmpty(XaphanModule.ModSaveData.SoCMVer))
                 {
                     // Remove Bombs upgrade
@@ -432,7 +430,10 @@ namespace Celeste.Mod.XaphanHelper
                         }
                     }
                     XaphanModule.SaveUpdaterUpdateLorebook = true;
+                    XaphanModule.ModSaveData.SoCMVer = "3.0.0";
                 }
+                
+                //... No newer version yet...
             }
             XaphanModule.ModSaveData.SoCMVer = XaphanModule.SoCMVersion.Major + "." + XaphanModule.SoCMVersion.Minor + "." + XaphanModule.SoCMVersion.Build;
         }
