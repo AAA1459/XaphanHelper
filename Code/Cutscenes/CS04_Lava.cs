@@ -75,7 +75,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             }
             else
             {
-                yield return Textbox.Say("Xaphan_Ch4_A_Warp_d_no_lore");
+                yield return Textbox.Say("Xaphan_Ch4_A_Lava_d_no_lore");
             }
             yield return CutscenesHelper.BadelineMerge(Level, player, badeline);
             yield return Level.ZoomBack(0.5f);
