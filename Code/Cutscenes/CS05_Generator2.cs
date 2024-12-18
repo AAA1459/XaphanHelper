@@ -44,13 +44,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public IEnumerator Cutscene(Level level)
         {
-            level.InCutscene = false;
-            level.CancelCutscene();
-            while (!XaphanModule.ModSaveData.GlobalFlags.Contains("Xaphan/0_Ch5_Auxiliary_Power"))
-            {
-                yield return null;
-            }
-            level.InCutscene = true;
             player.StateMachine.State = 11;
             yield return 0.3f;
             yield return Level.ZoomTo(new Vector2(160f, 110f), 1.5f, 1f);

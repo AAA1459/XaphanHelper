@@ -22,7 +22,10 @@ namespace Celeste.Mod.XaphanHelper
         {
             if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
             {
-                if (XaphanModule.ModSaveData.SoCMVer < 300)
+                /*string SoCMVersionMajor = XaphanModule.ModSaveData.SoCMVer.Split('.')[0];
+                string SoCMVersionMinor = XaphanModule.ModSaveData.SoCMVer.Split('.')[1];
+                string SoCMVersionBuild = XaphanModule.ModSaveData.SoCMVer.Split('.')[2];*/
+                if (string.IsNullOrEmpty(XaphanModule.ModSaveData.SoCMVer))
                 {
                     // Remove Bombs upgrade
 
@@ -399,6 +402,13 @@ namespace Celeste.Mod.XaphanHelper
                             XaphanModule.ModSaveData.SavedSesionFlags["Xaphan/0"] = newFlags;
                         }
 
+                        // Adjust Watched Cutscenes
+
+                        if (XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch0_Statue_Room"))
+                        {
+                            XaphanModule.ModSaveData.WatchedCutscenes.Add("Xaphan/0_Ch0_Statue_Room2");
+                        }
+
                         // Adjust Starting Room
 
                         if (XaphanModule.ModSaveData.SavedChapter.ContainsKey("Xaphan/0") && XaphanModule.ModSaveData.SavedRoom.ContainsKey("Xaphan/0"))
@@ -424,7 +434,7 @@ namespace Celeste.Mod.XaphanHelper
                     XaphanModule.SaveUpdaterUpdateLorebook = true;
                 }
             }
-            XaphanModule.ModSaveData.SoCMVer = XaphanModule.SoCMVersion.Major * 100 + XaphanModule.SoCMVersion.Minor * 10 + XaphanModule.SoCMVersion.Build;
+            XaphanModule.ModSaveData.SoCMVer = XaphanModule.SoCMVersion.Major + "." + XaphanModule.SoCMVersion.Minor + "." + XaphanModule.SoCMVersion.Build;
         }
 
         public static void RemoveUpgrades()

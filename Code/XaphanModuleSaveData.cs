@@ -264,6 +264,6 @@ namespace Celeste.Mod.XaphanHelper
 
         public bool LoadedPlayer = false;
 
-        public int SoCMVer = 0;
+        public string SoCMVer = "";
     }
 }
