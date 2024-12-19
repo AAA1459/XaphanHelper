@@ -395,15 +395,16 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     "\"Path of Ruin\" by Darkesword"),
                 new MultiCredit.Section("Other Tracks",
                     "\"Arrival on Crateria (Remastered/Cover)\" by Maned Wolf",
-                    "\"Metroid Dread - Artaria (Bustello Remix)\" by Bustello",
                     "\"Chozo Laboratory - Remix Cover\" by Vetom",
                     "\"Chozo Ruins - Metroid Prime Remix\" by ArizonaPlus Music",
                     "\"Crateria - First Landing\" by Aaron Talbert",
                     "\"Credits - Metroid (NES)\" by Red_OWLdeer",
                     "\"It's Around the Corner\" by Caluctor",
                     "\"Lower Maridia (Super Metroid - Remix)\" by Daibu the Man",
+                    "\"Metroid Dread - Artaria (Bustello Remix)\" by Bustello",
                     "\"Metroid Fusion - Environmental Mystery (Korg Minilogue Cover)\" by Andrew Wukusick",
                     "\"Red Streaming Rivers\" by Caluctor",
+                    "\"Ridley [Fusion Remix]\" by Achiro`s Game Fusion Remixes",
                     "\"Sector 1 [SRX] (Arranged) - Metroid Fusion\" by Gencoil",
                     "\"Super Metroid 'Norfair (Frailty Awaiting)\" by Children of the Monkey Machine",
                     "\"Super Metroid Orchestrated - Norfair: Hot Lava Area / Upper Norfair\" by 1ucasvb",
@@ -457,7 +458,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 height -= 280f;
             }
-            AutoScrollSpeedMultiplier = fromTitleScreen ? 0.77f : 0.99f;
+            AutoScrollSpeedMultiplier = fromTitleScreen ? 0.78f : 1f;
         }
 
         public void Update()
