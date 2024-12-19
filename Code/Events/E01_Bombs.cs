@@ -27,7 +27,7 @@ namespace Celeste.Mod.XaphanHelper.Events
         {
             if (!level.Session.GetFlag("Torizo_Defeated") && !level.Session.GetFlag("D-U0_Gate_1"))
             {
-                while (!level.Session.GetFlag("Upgrade_Bombs") && player.Right > left - 16f)
+                while (!level.Session.GetFlag("Upgrade_Bombs") || player.Right > left - 16f)
                 {
                     yield return null;
                 }
