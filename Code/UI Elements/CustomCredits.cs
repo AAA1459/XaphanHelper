@@ -363,19 +363,21 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             list.Add(new Thanks(padding, spacing, "Inspiration",
                 "Another Metroid 2 Remake fangame (AM2R)",
                 "The Metroid series"));
-            list.Add(new Thanks(0, spacing, "World Design, Gameplay Polish, Camera, Decoration and Code",
+            list.Add(new Thanks(padding, spacing, "World Design, Gameplay Polish, Camera, Decoration and Code",
                 "Xaphan"));
             list.Add(new Thanks(0, spacing, "Gameplay, Dialogs and Custom Entities Ideas",
                 "Spekio"));
             list.Add(new Thanks(padding, spacing, "Custom Tilesets and Graphics",
                 "AM2R",
                 "Flagpole1up",
+                "Klyaksun",
                 "Little Water Studio",
                 "Meowsmith",
+                "Moretti93",
                 "Pyxelbit",
                 "Spooooky"));
             list.Add(new MultiCredit(padding, spacing, sectionSpacing, "Custom Musics and effects",
-                new MultiCredit.Section("AM2R tracks",
+                new MultiCredit.Section("AM2R Tracks",
                     "\"Ancient Guardian\"",
                     "\"Ancient Power\"",
                     "\"Flooded Complex\"",
@@ -391,7 +393,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     "\"Danger in Old Tourian\" by DoctorM64",
                     "\"In the Begining\" by Mercury Adept",
                     "\"Path of Ruin\" by Darkesword"),
-                new MultiCredit.Section("Others tracks",
+                new MultiCredit.Section("Other Tracks",
                     "\"Arrival on Crateria (Remastered/Cover)\" by Maned Wolf",
                     "\"Metroid Dread - Artaria (Bustello Remix)\" by Bustello",
                     "\"Chozo Laboratory - Remix Cover\" by Vetom",
@@ -407,7 +409,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     "\"Super Metroid Orchestrated - Norfair: Hot Lava Area / Upper Norfair\" by 1ucasvb",
                     "\"Super Metroid Title Theme Remix (Remastered/Remake/Rearrangement)\" by Jorge Constantini",
                     "\"Torizo Battle\" by DJ @tomnium"),
-                new MultiCredit.Section("B-Sides tracks",
+                new MultiCredit.Section("B-Sides Tracks",
                     "\"New Strong Resistance\" by Caluctor")));
             list.Add(new Thanks(padding, spacing, "Playtesters",
                 "Alex Tholen",
@@ -455,7 +457,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 height -= 280f;
             }
-            AutoScrollSpeedMultiplier = fromTitleScreen ? 0.75f : 0.97f;
+            AutoScrollSpeedMultiplier = fromTitleScreen ? 0.77f : 0.99f;
         }
 
         public void Update()
