@@ -306,8 +306,8 @@ namespace Celeste.Mod.XaphanHelper
                    categoryID: 0,
                    icon: "achievements/Xaphan/ItemsCheckmarkGold",
                    flag: "XaphanHelper_StatFlag_Items",
-                   currentValue: currentTotalStrawberries + currentTotalEnergyTanks + currentTotalFireRateModules + currentTotalMissiles + currentTotalSuperMissiles + currentTotalCassettes + currentTotalASideHearts,
-                   maxValue: maxTotalStrawberries + maxTotalEnergyTanks + maxTotalFireRateModules + maxTotalMissiles + maxTotalSuperMissiles + maxTotalCassettes + maxTotalASideHearts,
+                   currentValue: currentTotalStrawberries + currentTotalEnergyTanks + currentTotalFireRateModules + currentTotalMissiles + currentTotalSuperMissiles + currentTotalCassettes + currentTotalASideHearts + StatsFlags.CurrentUpgrades,
+                   maxValue: maxTotalStrawberries + maxTotalEnergyTanks + maxTotalFireRateModules + maxTotalMissiles + maxTotalSuperMissiles + maxTotalCassettes + maxTotalASideHearts + StatsFlags.TotalUpgrades,
                    medals: 50
                 ));
                 list.Add(new AchievementData(
