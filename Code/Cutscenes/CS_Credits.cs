@@ -106,7 +106,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             SceneAs<Level>().PauseLock = true;
             SceneAs<Level>().AllowHudHide = false;
             Audio.SetAmbience(null);
-            if (Input.ESC.Check && skipWiggleDelay <= 0f)
+            if ((Input.ESC.Pressed || Input.MenuCancel.Pressed) && skipWiggleDelay <= 0f)
             {
                 skipWiggle.Start();
                 skipWiggleDelay = 0.5f;
@@ -138,12 +138,12 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             {
                 float num = 0.5f;
                 string label = Dialog.Clean("XaphanHelper_UI_skip");
-                MTexture buttonTexture = Input.GuiButton(Input.ESC, "controls/keyboard/oemquestion");
+                MTexture buttonTexture = Input.GuiButton(Input.MenuCancel, "controls/keyboard/oemquestion");
                 int buttonTextureWidth = buttonTexture.Width;
-                float num3 = ButtonUI.Width(label, Input.ESC);
+                float num3 = ButtonUI.Width(label, Input.MenuCancel);
                 Vector2 position = new(0f, 1045f);
                 position.X = 1920 - num3 / 2 + buttonTextureWidth + (Settings.Instance.Language == "french" ? 19 : 0);
-                ButtonUI.Render(position, label, Input.ESC, num, 1f, skipWiggle.Value * 0.05f);
+                ButtonUI.Render(position, label, Input.MenuCancel, num, 1f, skipWiggle.Value * 0.05f);
             }
             base.Render();
         }
@@ -156,6 +156,8 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
                 {
                     XaphanModule.ModSettings.WatchedCredits = true;
+                    XaphanModule.SaveIconVisible = false;
+                    level.AutoSave();
                     XaphanModule.ReturnToTitleScreen(level);
                 }
                 else
@@ -214,7 +216,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             credits.Enabled = true;
             while (credits.BottomTimer <= 2f && !Skipped)
             {
-                if (Input.ESC.Pressed)
+                if (Input.ESC.Pressed || Input.MenuCancel.Pressed)
                 {
                     Skipped = true;
                 }
@@ -390,7 +392,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                         Show = true
                     });
                 }
-                while (!Input.ESC.Pressed && !Input.MenuConfirm.Pressed)
+                while (!Input.MenuCancel.Pressed && !Input.MenuConfirm.Pressed)
                 {
                     yield return null;
                 }

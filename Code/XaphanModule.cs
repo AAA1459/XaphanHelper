@@ -135,7 +135,7 @@ namespace Celeste.Mod.XaphanHelper
 
         public static bool refillJumps;
 
-        public bool SaveIconVisible = true;
+        public static bool SaveIconVisible = true;
 
         public enum Upgrades
         {
@@ -1438,8 +1438,6 @@ namespace Celeste.Mod.XaphanHelper
             }
             orig(self);
         }
-
-
 
         private int modOuiChapterPanelGetModeHeight(On.Celeste.OuiChapterPanel.orig_GetModeHeight orig, OuiChapterPanel self)
         {
