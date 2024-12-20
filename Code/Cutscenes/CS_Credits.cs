@@ -307,7 +307,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 TimeDisplay totaltime = new(gameTime, 960 - timeWidth / 2, Engine.Height / 2 + 146);
                 int TotalItemsCollected = currentTotalStrawberries + currentTotalEnergyTanks + currentTotalFireRateModules + currentTotalMissiles + currentTotalSuperMissiles + currentTotalCassettes + currentTotalASideHearts + StatsFlags.CurrentUpgrades;
                 int TotalItems = maxTotalStrawberries + maxTotalEnergyTanks + maxTotalFireRateModules + maxTotalMissiles + maxTotalSuperMissiles + maxTotalCassettes + maxTotalASideHearts + StatsFlags.TotalUpgrades;
-                double ItemPercentage = Math.Round(TotalItemsCollected * 100f / TotalItems, 0, MidpointRounding.AwayFromZero);
+                double ItemPercentage = Math.Truncate(TotalItemsCollected * 100f / TotalItems);
                 if (!Skipped)
                 {
                     Scene.Add(endTextA = new IntroText("Xaphan_0_Credits_ClearTime", "Middle", Engine.Height / 2 + 35, Color.DarkGreen, 1f, outline: true)
