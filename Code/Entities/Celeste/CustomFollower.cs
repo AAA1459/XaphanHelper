@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -435,6 +436,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             StatsFlags.CurrentFireRateModules[chapterIndex]++;
                             break;
                         }
+                }
+            }
+            if (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMShowMiniMap : XaphanModule.ModSettings.ShowMiniMap)
+            {
+                MapDisplay mapDisplay = SceneAs<Level>().Tracker.GetEntity<MapDisplay>();
+                if (mapDisplay != null)
+                {
+                    mapDisplay.GenerateIcons();
                 }
             }
             RemoveSelf();
