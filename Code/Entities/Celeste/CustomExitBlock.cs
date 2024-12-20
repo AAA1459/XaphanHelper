@@ -21,7 +21,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private TransitionListener tl;
 
-        private EffectCutout cutout;
+        public EffectCutout cutout;
 
         private float startAlpha;
 

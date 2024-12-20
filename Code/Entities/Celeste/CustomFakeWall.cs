@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -166,20 +167,36 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        private bool CheckedExitBlocks;
+
+        private bool OverlapExitBlock;
+
         public override void Update()
         {
             base.Update();
             if (fade)
             {
-                bool overlapExitBlock = false;
-                foreach (CustomExitBlock exitBlock in SceneAs<Level>().Tracker.GetEntities<CustomExitBlock>())
+                if (!CheckedExitBlocks)
                 {
-                    if (exitBlock.group == group && CollideCheck(exitBlock))
+                    List<Entity> exitBlocks = SceneAs<Level>().Tracker.GetEntities<CustomExitBlock>().ToList();
+                    foreach (CustomExitBlock exitBlock in exitBlocks)
                     {
-                        overlapExitBlock = true;
+                        exitBlock.Collidable = true;
                     }
+                    foreach (CustomExitBlock exitBlock in SceneAs<Level>().Tracker.GetEntities<CustomExitBlock>())
+                    {
+                        if (exitBlock.group == group && CollideCheck(exitBlock))
+                        {
+                            OverlapExitBlock = true;
+                        }
+                    }
+                    foreach (CustomExitBlock exitBlock in exitBlocks)
+                    {
+                        exitBlock.Collidable = exitBlock.cutout.Alpha > 0;
+                    }
+                    CheckedExitBlocks = true;
                 }
-                if (!overlapExitBlock)
+                if (!OverlapExitBlock)
                 {
                     tiles.Alpha = Calc.Approach(tiles.Alpha, 0f, 2f * Engine.DeltaTime);
                     cutout.Alpha = tiles.Alpha;
