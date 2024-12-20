@@ -3255,7 +3255,8 @@ namespace Celeste.Mod.XaphanHelper
                     ModSaveData.SavedCoreMode.Remove(level.Session.Area.LevelSet);
                     ModSaveData.SavedMusic.Remove(level.Session.Area.LevelSet);
                     ModSaveData.SavedAmbience.Remove(level.Session.Area.LevelSet);
-                    if (ModSaveData.SavedNoLoadEntities.ContainsKey(level.Session.Area.LevelSet)) {
+                    if (ModSaveData.SavedNoLoadEntities.ContainsKey(level.Session.Area.LevelSet))
+                    {
                         ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet].Clear();
                     }
                     ModSaveData.SavedTime.Remove(level.Session.Area.LevelSet);
@@ -3264,6 +3265,10 @@ namespace Celeste.Mod.XaphanHelper
                     if (ModSaveData.SavedSessionStrawberries.ContainsKey(level.Session.Area.LevelSet))
                     {
                         ModSaveData.SavedSessionStrawberries[level.Session.Area.LevelSet].Clear();
+                    }
+                    if (ModSaveData.LightMode.ContainsKey(level.Session.Area.LevelSet))
+                    {
+                        ModSaveData.LightMode.Remove(level.Session.Area.LevelSet);
                     }
                     List<string> FlagsToRemove = new();
                     List<string> CutscenesToRemove = new();
@@ -4113,8 +4118,12 @@ namespace Celeste.Mod.XaphanHelper
                     {
                         playerPosition.Y = 0;
                     }
-                    if (!ModSaveData.VisitedRoomsTiles.Contains(Prefix + "/Ch" + chapterIndex + "/" + self.Session.Level + "-" + playerPosition.X + "-" + playerPosition.Y))
+                    if (!ModSaveData.VisitedRoomsTiles.Contains(Prefix + "/Ch" + chapterIndex + "/" + self.Session.Level + "-" + playerPosition.X + "-" + playerPosition.Y) && (!string.IsNullOrEmpty(ModSaveData.DestinationRoom) ? self.Session.Level == ModSaveData.DestinationRoom : true) && ModSaveData.LoadedPlayer)
                     {
+                        if (self.Session.Level == "L-00")
+                        {
+                            Logger.Log(LogLevel.Info, "XH", "Add a tile on the map !");
+                        }
                         ModSaveData.VisitedRoomsTiles.Add(Prefix + "/Ch" + chapterIndex + "/" + self.Session.Level + "-" + playerPosition.X + "-" + playerPosition.Y);
                         InGameMapRoomController roomController = self.Tracker.GetEntity<InGameMapRoomController>();
                         List<Entity> tilesControllers = self.Tracker.GetEntities<InGameMapTilesController>();
