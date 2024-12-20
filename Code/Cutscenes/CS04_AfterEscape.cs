@@ -39,6 +39,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             }
             XaphanModule.ModSaveData.WatchedCutscenes.Add("Xaphan/0_Ch4_After_Escape");
             level.Session.SetFlag("CS_Ch4_After_Escape");
+            XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_Ch4_CS_Ch4_After_Escape");
             player.StateMachine.Locked = false;
             player.StateMachine.State = 0;
         }
