@@ -2280,7 +2280,7 @@ namespace Celeste.Mod.XaphanHelper
 
             // Room Music stuff
 
-            if (string.IsNullOrEmpty(level.Session.LevelData.Music))
+            if (string.IsNullOrEmpty(level.Session.LevelData.Music) && string.IsNullOrEmpty(ModSaveData.DestinationRoom) && ModSaveData.LoadedPlayer)
             {
                 foreach (RoomMusicControllerData roomMusicControllerData in RoomMusicControllerData)
                 {
