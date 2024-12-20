@@ -2579,7 +2579,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         {
             if (roomHasAdjustController(room))
             {
-                if (level.Session.GetFlag("Ignore_Room_Adjust_Ch" + chapterIndex + "_" + room) || XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ignore_Room_Adjust_Ch" + chapterIndex + "_" + room))
+                if (level.Session.GetFlag("Ignore_Room_Adjust_" + chapterIndex + "_" + room) || XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ignore_Room_Adjust_Ch" + chapterIndex + "_" + room))
                 {
                     return false;
                 }

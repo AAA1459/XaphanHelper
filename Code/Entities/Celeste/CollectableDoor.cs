@@ -560,10 +560,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 registerDoorOpenInSaveData();
             }
-            MiniMap minimap = SceneAs<Level>().Tracker.GetEntity<MiniMap>();
-            if (minimap != null && !level.Session.GetFlag("Map_Opened") && !level.InCutscene)
+            if (level.Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMShowMiniMap : XaphanModule.ModSettings.ShowMiniMap)
             {
-                minimap.mapDisplay.GenerateIcons();
+                MapDisplay mapDisplay = level.Tracker.GetEntity<MapDisplay>();
+                if (mapDisplay != null && !level.Session.GetFlag("Map_Opened") && !level.InCutscene)
+                {
+                    mapDisplay.GenerateIcons();
+                }
             }
             offset = 0f;
             yield return afterSliceDelay;
@@ -639,10 +642,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 registerDoorOpenInSaveData();
             }
-            MiniMap minimap = SceneAs<Level>().Tracker.GetEntity<MiniMap>();
-            if (minimap != null && !level.Session.GetFlag("Map_Opened") && !level.InCutscene)
+            if (level.Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMShowMiniMap : XaphanModule.ModSettings.ShowMiniMap)
             {
-                minimap.mapDisplay.GenerateIcons();
+                MapDisplay mapDisplay = level.Tracker.GetEntity<MapDisplay>();
+                if (mapDisplay != null && !level.Session.GetFlag("Map_Opened") && !level.InCutscene)
+                {
+                    mapDisplay.GenerateIcons();
+                }
             }
             offset = 0f;
             yield return afterSliceDelay;

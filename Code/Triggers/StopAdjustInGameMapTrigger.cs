@@ -41,10 +41,14 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                             }
                         }
                     }
-                    MiniMap minimap = SceneAs<Level>().Tracker.GetEntity<MiniMap>();
-                    if (minimap != null)
+                    if (SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMShowMiniMap : XaphanModule.ModSettings.ShowMiniMap)
                     {
-                        minimap.mapDisplay.GenerateIcons();
+                        MapDisplay mapDisplay = SceneAs<Level>().Tracker.GetEntity<MapDisplay>();
+                        if (mapDisplay != null)
+                        {
+                            mapDisplay.GenerateTiles();
+                            mapDisplay.GenerateIcons();
+                        }
                     }
                 }
             }
