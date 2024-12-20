@@ -25,6 +25,8 @@ Version 1.0.64 :
 - The "Show Heat Level" setting is no longer used and has been removed
 - Added a setting to show the stamina meter near the player instead or in addition to the one at the top of the screen when using abilities
 - Added a setting to show a breath meter near the player instead or in addition to the one at the top of the screen when the player is inside liquids with an Air timer
+- Stop Adjust In-Game Map Triggers now cause the minimap to immediately show updated entrances
+- Tiles are no longer added on the In-Game map during a teleportation to another chapter using Teleport To Chapter Triggers
 - Fixed a bug that prevented the "Golden Start With X" attributes to work correctly, removing abilities on room transition when holding a golden strawberry
 - Fixed a bug that prevented Flag On Interact Triggers to work if their "Req Flags" attribute was left empty
 - Fixed a bug that killed both Madeline and the Remote Drone at the same time if the player died while holding the drone

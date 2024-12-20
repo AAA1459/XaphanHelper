@@ -2080,7 +2080,7 @@ namespace Celeste.Mod.XaphanHelper
 
                 // Add current room to the in-game map
 
-                if (!ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + room))
+                if (!ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + room) && (!string.IsNullOrEmpty(ModSaveData.DestinationRoom) ? level.Session.Level == ModSaveData.DestinationRoom : true) && ModSaveData.LoadedPlayer)
                 {
                     ModSaveData.VisitedRooms.Add(Prefix + "/Ch" + chapterIndex + "/" + room);
                 }
@@ -4120,10 +4120,6 @@ namespace Celeste.Mod.XaphanHelper
                     }
                     if (!ModSaveData.VisitedRoomsTiles.Contains(Prefix + "/Ch" + chapterIndex + "/" + self.Session.Level + "-" + playerPosition.X + "-" + playerPosition.Y) && (!string.IsNullOrEmpty(ModSaveData.DestinationRoom) ? self.Session.Level == ModSaveData.DestinationRoom : true) && ModSaveData.LoadedPlayer)
                     {
-                        if (self.Session.Level == "L-00")
-                        {
-                            Logger.Log(LogLevel.Info, "XH", "Add a tile on the map !");
-                        }
                         ModSaveData.VisitedRoomsTiles.Add(Prefix + "/Ch" + chapterIndex + "/" + self.Session.Level + "-" + playerPosition.X + "-" + playerPosition.Y);
                         InGameMapRoomController roomController = self.Tracker.GetEntity<InGameMapRoomController>();
                         List<Entity> tilesControllers = self.Tracker.GetEntities<InGameMapTilesController>();
