@@ -261,7 +261,7 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         public IEnumerator Cutscene(Level level)
         {
-            if (!BossDefeated() || HasGolden() || (BossDefeated() && (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))))
+            if (!BossDefeated() || (BossDefeated() && (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))))
             {
                 level.Add(cellingTopSprite);
                 if (level.Session.GetFlag("boss_Checkpoint"))

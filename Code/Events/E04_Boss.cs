@@ -128,7 +128,7 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         public IEnumerator Cutscene(Level level)
         {
-            if (!BossDefeated() || HasGolden() || (BossDefeated() && level.Session.GetFlag("boss_Normal_Mode")) || (BossDefeated() && level.Session.GetFlag("boss_Challenge_Mode")))
+            if (!BossDefeated() || (BossDefeated() && level.Session.GetFlag("boss_Normal_Mode")) || (BossDefeated() && level.Session.GetFlag("boss_Challenge_Mode")))
             {
                 if (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))
                 {
@@ -170,7 +170,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                 }
                 level.Session.SetFlag("AncientGuardian_Start", false);
                 level.Session.SetFlag("AncientGuardian_Platforms", true);
-                if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch4_BossStart"))
+                if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch4_BossStart") || HasGolden())
                 {
                     yield return null;
                     LeftGate.Move();

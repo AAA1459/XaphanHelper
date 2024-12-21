@@ -118,7 +118,7 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         public IEnumerator Cutscene(Level level)
         {
-            if (!BossDefeated() || HasGolden() || (BossDefeated() && level.Session.GetFlag("boss_Normal_Mode")) || (BossDefeated() && level.Session.GetFlag("boss_Challenge_Mode")))
+            if (!BossDefeated() || (BossDefeated() && level.Session.GetFlag("boss_Normal_Mode")) || (BossDefeated() && level.Session.GetFlag("boss_Challenge_Mode")))
             {
                 if (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))
                 {
@@ -141,8 +141,12 @@ namespace Celeste.Mod.XaphanHelper.Events
                     }
                 }
                 level.Session.SetFlag("Torizo_Start", false);
-                if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch1_BossStart"))
+                if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch1_BossStart") || HasGolden())
                 {
+                    if (HasGolden())
+                    {
+                        boss.Visible = true;
+                    }
                     Scene.Add(new CS01_BossStart(player, boss));
                     while (!level.Session.GetFlag("Torizo_Start"))
                     {

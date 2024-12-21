@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.Events;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -654,6 +655,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool ForcedDestroy;
 
+        public bool HasGolden()
+        {
+            foreach (Strawberry item in Scene.Entities.FindAll<Strawberry>())
+            {
+                if (item.Golden && item.Follower.Leader != null)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public AncientGuardian(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             OrigPosition = Position;
@@ -685,7 +698,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             string Prefix = SceneAs<Level>().Session.Area.LevelSet;
             if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch4_Boss_Defeated"))
             {
-                Visible = false;
+                Visible = (HasGolden() && !XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch4_Boss_Defeated_GoldenStrawberry"));
             }
             if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch4_BossStart"))
             {

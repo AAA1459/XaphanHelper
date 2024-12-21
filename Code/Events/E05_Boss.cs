@@ -100,7 +100,7 @@ namespace Celeste.Mod.XaphanHelper.Events
         public IEnumerator Cutscene(Level level)
         {
             level.Session.SetFlag("Genesis_Start", false);
-            if (!BossDefeated() || HasGolden() || (BossDefeated() && level.Session.GetFlag("boss_Normal_Mode")) || (BossDefeated() && level.Session.GetFlag("boss_Challenge_Mode")))
+            if (!BossDefeated() || (BossDefeated() && level.Session.GetFlag("boss_Normal_Mode")) || (BossDefeated() && level.Session.GetFlag("boss_Challenge_Mode")))
             {
                 if (player.Dead)
                 {
@@ -119,7 +119,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                 {
                     boss.SetHealth(8);
                 }
-                if (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch5_Pre_Genesis_Event"))
+                if (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch5_Pre_Genesis_Event") || (HasGolden() && !BossDefeated()))
                 {
                     level.Add(dashBlock);
                     level.Add(spikes);
