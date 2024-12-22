@@ -22,8 +22,9 @@ namespace Celeste.Mod.XaphanHelper
         {
             if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
             {
-                // SoCMver is empty or null. This is an old save that need to be converted to version 3.0.0 or up
-                if (string.IsNullOrEmpty(XaphanModule.ModSaveData.SoCMVer))
+                // SoCMver is empty, null or use the old format without dots.
+                // This is an old save that need to be converted to version 3.0.0 or up
+                if (string.IsNullOrEmpty(XaphanModule.ModSaveData.SoCMVer) || !XaphanModule.ModSaveData.SoCMVer.Contains("."))
                 {
                     // Remove Bombs upgrade
 
