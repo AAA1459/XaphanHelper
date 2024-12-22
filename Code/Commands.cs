@@ -473,5 +473,18 @@ namespace Celeste.Mod.XaphanHelper
                 Engine.Commands.Log("You are not currently in a campaign, or this campaign do not use a Merge Chapter Controller. Aborting...");
             }
         }
+
+        [Command("remove_no_load_ID", "Remove an entity from the list of entities that should not load. Parameters: room: Room of the entity, id: ID of the entity")]
+        public static void Cmd_Remove_No_Load_ID(string room, int id)
+        {
+            if (XaphanModule.isInLevel)
+            {
+                level.Session.DoNotLoad.Remove(new EntityID(room, id));
+            }
+            else
+            {
+                Engine.Commands.Log("This command cannot be used outside of a map or campaign. Aborting...");
+            }
+        }
     }
 }
