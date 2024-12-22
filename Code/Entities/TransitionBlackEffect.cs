@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Celeste.Mod.XaphanHelper.Effects;
@@ -135,6 +136,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
             Drone drone = SceneAs<Level>().Tracker.GetEntity<Drone>();
+            List<Entity> bombs = SceneAs<Level>().Tracker.GetEntities<Bomb>();
             if (player != null)
             {
                 if (SceneAs<Level>().Transitioning)
@@ -145,6 +147,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (drone != null)
             {
                 drone.Depth = Depth - 1;
+            }
+            foreach (Entity entity in bombs)
+            {
+                if (entity.GetType() == typeof(Bomb))
+                {
+                    Bomb bomb = (Bomb)entity;
+                    if (bomb.Hold.IsHeld)
+                    {
+                        bomb.Depth = Depth - 1;
+                    }
+                }
             }
             float fadeTimer = 0.35f;
             while (fadeTimer > 0)
@@ -195,6 +208,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (drone != null)
             {
                 drone.Depth = 0;
+            }
+            foreach (Entity entity in bombs)
+            {
+                if (entity.GetType() == typeof(Bomb))
+                {
+                    Bomb bomb = (Bomb)entity;
+                    if (bomb.Hold.IsHeld)
+                    {
+                        bomb.Depth = 0;
+                    }
+                }
             }
             RemoveSelf();
         }

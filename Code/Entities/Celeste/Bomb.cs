@@ -20,6 +20,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
             public BombSpriteDisplay(Vector2 position, Bomb bomb) : base(position)
             {
+                Tag = Tags.TransitionUpdate;
                 Bomb = bomb;
                 Add(Sprite = bomb.bombSprite);
                 Depth = -9999;
@@ -102,12 +103,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             Speed = Vector2.Zero;
             AddTag(Tags.Persistent);
+            bombSpriteDisplay.AddTag(Tags.Persistent);
             AllowPushing = false;
         }
 
         private void OnRelease(Vector2 force)
         {
             RemoveTag(Tags.Persistent);
+            bombSpriteDisplay.RemoveTag(Tags.Persistent);
             if (force.X != 0f && force.Y == 0f)
             {
                 force.Y = -0.4f;
