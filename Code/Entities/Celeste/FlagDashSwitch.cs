@@ -85,7 +85,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Session session = SceneAs<Level>().Session;
             string Prefix = session.Area.LevelSet;
             int chapterIndex = session.Area.ChapterIndex;
-            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + (haveGolden ? "_GoldenStrawberry" : ""));
+            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag);
         }
 
         public Vector2? startSpawnPoint;
@@ -304,13 +304,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             {
                                 XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flagDashSwitch.flag);
                             }
-                            if (haveGolden)
-                            {
-                                if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flagDashSwitch.flag + "_GoldenStrawberry"))
-                                {
-                                    XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flagDashSwitch.flag + "_GoldenStrawberry");
-                                }
-                            }
                         }
                     }
                 }
@@ -405,13 +398,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
                     {
                         XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag);
-                    }
-                    if (haveGolden)
-                    {
-                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry"))
-                        {
-                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry");
-                        }
                     }
                 }
             }
@@ -613,13 +599,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
                             {
                                 XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag);
-                            }
-                            if (haveGolden)
-                            {
-                                if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry"))
-                                {
-                                    XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry");
-                                }
                             }
                         }
                         foreach (FlagDashSwitch dashSwitch in SceneAs<Level>().Tracker.GetEntities<FlagDashSwitch>())

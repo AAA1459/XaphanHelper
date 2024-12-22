@@ -32,7 +32,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Session session = SceneAs<Level>().Session;
             string Prefix = session.Area.LevelSet;
             int chapterIndex = session.Area.ChapterIndex;
-            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag);
         }
 
         public Detonator(EntityData data, Vector2 position) : base(data.Position + position, data.Width, data.Height, true)

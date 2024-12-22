@@ -758,10 +758,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 foreach (EntityData entity in level.Entities)
                 {
-                    if (entity.Name == "XaphanHelper/HeatController" && ((!string.IsNullOrEmpty(entity.Attr("inactiveFlag")) && !this.level.Session.GetFlag(entity.Attr("inactiveFlag"))) || string.IsNullOrEmpty(entity.Attr("inactiveFlag"))))
+                    if (entity.Name == "XaphanHelper/HeatController")
                     {
-                        HeatedRooms.Add(level.Name);
-                        break;
+                        string inactiveFlag = entity.Attr("inactiveFlag");
+                        if ((!string.IsNullOrEmpty(inactiveFlag) && !this.level.Session.GetFlag(inactiveFlag)) || string.IsNullOrEmpty(inactiveFlag))
+                        {
+                            HeatedRooms.Add(level.Name);
+                            break;
+                        }
                     }
                 }
             }

@@ -698,7 +698,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             string Prefix = SceneAs<Level>().Session.Area.LevelSet;
             if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch4_Boss_Defeated"))
             {
-                Visible = (HasGolden() && !XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch4_Boss_Defeated_GoldenStrawberry"));
+                Visible = false;
             }
             if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch4_BossStart"))
             {

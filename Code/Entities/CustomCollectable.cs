@@ -112,7 +112,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Session session = SceneAs<Level>().Session;
             string Prefix = session.Area.LevelSet;
             int chapterIndex = session.Area.ChapterIndex == -1 ? 0 : session.Area.ChapterIndex;
-            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag);
         }
 
         public CustomCollectable(EntityData data, Vector2 position, EntityID id) : base(data.Position + position)
@@ -265,7 +265,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Session session = SceneAs<Level>().Session;
                 string Prefix = session.Area.LevelSet;
                 int chapterIndex = session.Area.ChapterIndex == -1 ? 0 : session.Area.ChapterIndex;
-                if (!registerInSaveData ? SceneAs<Level>().Session.GetFlag(flag) : XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
+                if (!registerInSaveData ? SceneAs<Level>().Session.GetFlag(flag) : XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
                 {
                     shouldWaitBeforeRemoving = true;
                 }
@@ -281,7 +281,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             while (timer > 0)
             {
                 timer -= Engine.DeltaTime;
-                if (!registerInSaveData ? !SceneAs<Level>().Session.GetFlag(flag) : !XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
+                if (!registerInSaveData ? !SceneAs<Level>().Session.GetFlag(flag) : !XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
                 {
                     yield break;
                 }
@@ -531,14 +531,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag);
                     session.SetFlag("Ch" + chapterIndex + "_" + flag, true);
-                }
-                if (XaphanModule.PlayerHasGolden)
-                {
-                    if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry"))
-                    {
-                        XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry");
-                        session.SetFlag("Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry", true);
-                    }
                 }
             }
         }

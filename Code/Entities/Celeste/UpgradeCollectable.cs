@@ -111,10 +111,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Can_Open_Map");
             }
-            if (XaphanModule.PlayerHasGolden)
-            {
-                return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Upgrade_" + upgrade + "_GoldenStrawberry");
-            }
             return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Upgrade_" + upgrade);
         }
 
@@ -452,13 +448,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Upgrade_" + upgrade))
                     {
                         XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Upgrade_" + upgrade);
-                    }
-                    if (XaphanModule.PlayerHasGolden)
-                    {
-                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Upgrade_" + upgrade + "_GoldenStrawberry"))
-                        {
-                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Upgrade_" + upgrade + "_GoldenStrawberry");
-                        }
                     }
                 }
             }

@@ -56,13 +56,6 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                             {
                                 XaphanModule.ModSaveData.SavedFlags.Add(prefix + "_Upgrade_" + upgrade.ToString());
                             }
-                            if (XaphanModule.PlayerHasGolden)
-                            {
-                                if (!XaphanModule.ModSaveData.SavedFlags.Contains(prefix + "_Upgrade_" + upgrade + "_GoldenStrawberry"))
-                                {
-                                    XaphanModule.ModSaveData.SavedFlags.Add(prefix + "_Upgrade_" + upgrade + "_GoldenStrawberry");
-                                }
-                            }
                         }
                         break;
                     }
@@ -88,13 +81,6 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                             if (XaphanModule.ModSaveData.SavedFlags.Contains(prefix + "_Upgrade_" + upgrade.ToString()))
                             {
                                 XaphanModule.ModSaveData.SavedFlags.Remove(prefix + "_Upgrade_" + upgrade.ToString());
-                            }
-                            if (XaphanModule.PlayerHasGolden)
-                            {
-                                if (!XaphanModule.ModSaveData.SavedFlags.Contains(prefix + "_Upgrade_" + upgrade.ToString() + "_GoldenStrawberry"))
-                                {
-                                    XaphanModule.ModSaveData.SavedFlags.Remove(prefix + "_Upgrade_" + upgrade.ToString() + "_GoldenStrawberry");
-                                }
                             }
                         }
                         break;

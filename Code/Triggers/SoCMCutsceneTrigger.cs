@@ -12,12 +12,12 @@ namespace Celeste.Mod.XaphanHelper.Triggers
 
         public bool playerHasCollectedOneGem()
         {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) ||
-                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem2_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) ||
-                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch2_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) ||
-                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch3_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) ||
-                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch4_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) ||
-                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch5_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem_Collected") ||
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem2_Collected") ||
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch2_Gem_Collected") ||
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch3_Gem_Collected") ||
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch4_Gem_Collected") ||
+                XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch5_Gem_Collected");
         }
 
         public SoCMCutsceneTrigger(EntityData data, Vector2 offset) : base(data, offset)
@@ -69,7 +69,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                             }
                             break;
                         case "Ch0 - Statue Room 2":
-                            if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch0_Statue_Room2") && XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
+                            if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch0_Statue_Room2") && XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots"))
                             {
                                 Scene.Add(new CS00_StatueRoom2(player));
                             }
@@ -88,13 +88,13 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                                     bool PlayerHasNotSlotedGems = false;
                                     for (int i = 1; i <= 5; i++)
                                     {
-                                        if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch" + i + "_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) && !XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch" + i + "_Gem_Sloted" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
+                                        if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch" + i + "_Gem_Collected") && !XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch" + i + "_Gem_Sloted"))
                                         {
                                             PlayerHasNotSlotedGems = true;
                                             break;
                                         }
                                     }
-                                    if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem2_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) && !XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem2_Sloted" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
+                                    if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem2_Collected") && !XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem2_Sloted"))
                                     {
                                         PlayerHasNotSlotedGems = true;
                                     }
@@ -172,7 +172,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                             }
                             break;
                         case "Ch4 - Gem":
-                            if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch4_Gem"))
+                            if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch4_Gem") && XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch4_Gem_Collected"))
                             {
                                 Scene.Add(new CS04_Gem(player));
                             }

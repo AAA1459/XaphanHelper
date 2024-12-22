@@ -190,6 +190,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             SceneAs<Level>().Session.SetFlag("Ch5_Auxiliary_Power", true);
             player.Sprite.OnLastFrame = resumeSprite;
+            if (XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch5_Generator2") || XaphanModule.PlayerHasGolden)
+            {
+                yield return 0.2f;
+                player.StateMachine.State = 0;
+            }
         }
 
         public void stopSprite(string s)

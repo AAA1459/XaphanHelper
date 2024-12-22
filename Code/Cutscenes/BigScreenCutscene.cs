@@ -57,13 +57,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 {
                     XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + level.Session.Level + "_" + screen.ID.ID);
                 }
-                if (XaphanModule.PlayerHasGolden)
-                {
-                    if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + level.Session.Level + "_" + screen.ID.ID + "_GoldenStrawberry"))
-                    {
-                        XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + level.Session.Level + "_" + screen.ID.ID + "_GoldenStrawberry");
-                    }
-                }
             }
         }
 

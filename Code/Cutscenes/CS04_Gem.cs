@@ -45,13 +45,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public IEnumerator Cutscene(Level level)
         {
-            level.InCutscene = false;
-            level.CancelCutscene();
-            while (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch4_Gem_Collected" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
-            {
-                yield return null;
-            }
-            level.InCutscene = true;
             player.StateMachine.State = 11;
             player.StateMachine.Locked = true;
             if (player.Speed.X != 0)
@@ -67,7 +60,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             yield return 0.2f;
             badeline = CutscenesHelper.BadelineSplit(Level, player);
             yield return CutscenesHelper.BadelineFloat(this, 30, -18, badeline, -1, true, false, true);
-            if (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem2_Sloted" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
+            if (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem2_Sloted"))
             {
                 yield return Textbox.Say("Xaphan_Ch4_A_Gem");
             }

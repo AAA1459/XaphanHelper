@@ -329,13 +329,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Chapter_" + currentChapter + "_Complete");
             }
-            if (XaphanModule.PlayerHasGolden)
-            {
-                if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Chapter_" + currentChapter + "_Complete_GoldenStrawberry"))
-                {
-                    XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Chapter_" + currentChapter + "_Complete_GoldenStrawberry");
-                }
-            }
         }
     }
 }

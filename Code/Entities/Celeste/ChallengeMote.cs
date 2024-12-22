@@ -47,27 +47,27 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool SpaceJumpCollected()
         {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_SpaceJump" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_SpaceJump");
         }
 
         public bool BombsCollected()
         {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_Bombs" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_Bombs");
         }
 
         public bool SpiderMagnetCollected()
         {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_SpiderMagnet" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_SpiderMagnet");
         }
 
         public bool LightningDashCollected()
         {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_LightningDash" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_LightningDash");
         }
 
         public bool GravityJacketCollected()
         {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_GravityJacket" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_GravityJacket");
         }
 
         public ChallengeMote(EntityData data, Vector2 position, EntityID ID) : base(data.Position + position)
@@ -148,7 +148,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
-            if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + ChapterIndex + "_Boss_Defeated" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
+            if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + ChapterIndex + "_Boss_Defeated"))
             {
                 if (!level.Session.GetFlag("boss_Normal_Mode") && !level.Session.GetFlag("boss_Challenge_Mode"))
                 {
@@ -160,7 +160,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         Vector2 position = Position + new Vector2(0f, 1f) + Calc.AngleToVector(Calc.Random.NextAngle(), 5f);
                         level.ParticlesBG.Emit(P_Fire, position + new Vector2(0, -3f));
                     }
-                    if ((XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + ChapterIndex + "_Boss_Defeated_CM" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) || level.Session.GetFlag("Boss_Defeated_CM")) && (XaphanModule.SoCMVersion < new Version(3, 0, 0) ? strawberry != null : heart != null) && !BerryAppeared)
+                    if ((XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + ChapterIndex + "_Boss_Defeated_CM") || level.Session.GetFlag("Boss_Defeated_CM")) && (XaphanModule.SoCMVersion < new Version(3, 0, 0) ? strawberry != null : heart != null) && !BerryAppeared)
                     {
                         Visible = talk.Enabled = false;
                         BerryAppeared = true;

@@ -253,7 +253,13 @@ namespace Celeste.Mod.XaphanHelper
         public long PreGoldenTimer = 0;
 
         public HashSet<EntityID> PreGoldenDoNotLoad = new();
-        
+
+        public HashSet<string> PreGoldenFlags = new();
+
+        public HashSet<string> PreGoldenSavedFlags = new();
+
+        public HashSet<string> PreGoldenGlobalFlags = new();
+
         // Others
 
         public string CurrentSubArea = "";
