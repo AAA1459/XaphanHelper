@@ -250,6 +250,8 @@ namespace Celeste.Mod.XaphanHelper
 
         // Golden Strawberry
 
+        public int GoldenStartChapter = -999;
+
         public long PreGoldenTimer = 0;
 
         public HashSet<EntityID> PreGoldenDoNotLoad = new();

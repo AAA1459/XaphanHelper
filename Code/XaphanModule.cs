@@ -2519,7 +2519,7 @@ namespace Celeste.Mod.XaphanHelper
             {
                 // Give back upgrades the player has unlocked
 
-                if (!forceStartingUpgrades && (!PlayerHasGolden || (PlayerHasGolden && MergedChaptersGoldenStrawberry.StartChapter != -999)))
+                if (!forceStartingUpgrades && (!PlayerHasGolden || (PlayerHasGolden && ModSaveData.GoldenStartChapter != -999)))
                 {
                     // Celeste Upgrades
 
@@ -3407,7 +3407,7 @@ namespace Celeste.Mod.XaphanHelper
         {
             level.Paused = true;
             onTitleScreen = false;
-            MergedChaptersGoldenStrawberry.ResetProgression(level, true);
+            MergedChaptersGoldenStrawberry.ResetProgression(level);
             SoCMTitleFromGame = true;
             SkipSoCMIntro = false;
             level.Session.SetFlag("XaphanHelper_Loaded_Player", false);
@@ -3747,7 +3747,7 @@ namespace Celeste.Mod.XaphanHelper
 
                     // Save the room as the one that the player must load into when starting the campaign if using a MergeChaptersController with mode set to Rooms
 
-                    else if (useMergeChaptersController && MergeChaptersControllerMode == "Rooms" && !self.Session.GrabbedGolden && !self.Frozen && self.Tracker.GetEntity<CountdownDisplay>() == null && !TriggeredCountDown && self.Tracker.GetEntity<Player>() != null && self.Tracker.GetEntity<Player>().StateMachine.State != Player.StDummy && !((MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.LevelSetStats.AreaOffset)) && (startedAnySoCMChapter ? self.Session.Level != "Intro" : true))
+                    else if (useMergeChaptersController && MergeChaptersControllerMode == "Rooms" && !PlayerHasGolden && !self.Frozen && self.Tracker.GetEntity<CountdownDisplay>() == null && !TriggeredCountDown && self.Tracker.GetEntity<Player>() != null && self.Tracker.GetEntity<Player>().StateMachine.State != Player.StDummy && !((MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.LevelSetStats.AreaOffset)) && (startedAnySoCMChapter ? self.Session.Level != "Intro" : true))
                     {
                         //ModSaveData.LoadedPlayer = true;
                         if (!ModSaveData.SavedChapter.ContainsKey(self.Session.Area.LevelSet))
@@ -4481,7 +4481,7 @@ namespace Celeste.Mod.XaphanHelper
             }
             if (useUpgrades && self.Golden)
             {
-                PlayerHasGolden = MergedChaptersGoldenStrawberry.StartChapter == -999 ? false : true;
+                PlayerHasGolden = ModSaveData.GoldenStartChapter == -999 ? false : true;
                 orig(self);
             }
             else

@@ -16,7 +16,6 @@ namespace Celeste.Mod.XaphanHelper.Hooks
 
         public static int ID;
 
-        public static int StartChapter = -999;
 
         public static string StartRoom;
 
@@ -42,20 +41,25 @@ namespace Celeste.Mod.XaphanHelper.Hooks
             if (!XaphanModule.PlayerHasGolden)
             {
                 // Restaure timer from aborted golden attempt
-                if (XaphanModule.ModSaveData.PreGoldenTimer != 0)
+                if (XaphanModule.ModSaveData.PreGoldenTimer != 0 && XaphanModule.ModSaveData.GoldenStartChapter != -999)
                 {
-                    self.Session.Time += XaphanModule.ModSaveData.PreGoldenTimer;
-                    XaphanModule.ModSaveData.PreGoldenTimer = 0;
+                    int curentChapter = self.Session.Area.ChapterIndex == -1 ? 0 : self.Session.Area.ChapterIndex;
+                    if (curentChapter == XaphanModule.ModSaveData.GoldenStartChapter)
+                    {
+                        self.Session.Time += XaphanModule.ModSaveData.PreGoldenTimer;
+                        XaphanModule.ModSaveData.PreGoldenTimer = 0;
+                        XaphanModule.ModSaveData.GoldenStartChapter = -999;
+                    }
                 }
 
                 // Restaure no load entities from aborted golden attempt
                 if (XaphanModule.ModSaveData.PreGoldenDoNotLoad.Count > 0)
                 {
-                    foreach (EntityID entity in self.Session.DoNotLoad)
-                    {
-                        XaphanModule.ModSaveData.PreGoldenDoNotLoad.Add(entity);
-                    }
                     foreach (EntityID entity in XaphanModule.ModSaveData.PreGoldenDoNotLoad)
+                    {
+                        XaphanModule.ModSaveData.SavedNoLoadEntities[self.Session.Area.LevelSet].Add(entity);
+                    }
+                    foreach (EntityID entity in XaphanModule.ModSaveData.SavedNoLoadEntities[self.Session.Area.LevelSet])
                     {
                         self.Session.DoNotLoad.Add(entity);
                     }
@@ -123,6 +127,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
             On.Celeste.Player.Die -= onPlayerDie;
             On.Celeste.PlayerDeadBody.End -= onPlayerDeadBodyEnd;
             Everest.Events.Level.OnExit -= onLevelExit;
+            On.Celeste.Level.Update -= onLevelUpdate;
             On.Celeste.Level.RegisterAreaComplete -= onLevelRegisterAreaComplete;
         }
 
@@ -136,7 +141,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                     if (XaphanModule.useMergeChaptersController && !Grabbed)
                     {
                         Grabbed = true;
-                        StartChapter = level.Session.Area.ChapterIndex == -1 ? 0 : level.Session.Area.ChapterIndex;
+                        XaphanModule.ModSaveData.GoldenStartChapter = level.Session.Area.ChapterIndex == -1 ? 0 : level.Session.Area.ChapterIndex;
                         StartRoom = level.Session.Level;
                         StartSpawn = level.Session.RespawnPoint - new Vector2(level.Bounds.Left, level.Bounds.Top);
                         ID = self.ID.ID;
@@ -149,11 +154,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                             XaphanModule.ModSaveData.GoldenStrawberryDroneFireRateUpgrades.Clear();
                         }
                         XaphanModule.ModSaveData.PreGoldenTimer = level.Session.Time;
-                        XaphanModule.ModSaveData.PreGoldenDoNotLoad.Clear();
-                        XaphanModule.ModSaveData.PreGoldenFlags.Clear();
-                        XaphanModule.ModSaveData.PreGoldenSavedFlags.Clear();
-                        XaphanModule.ModSaveData.PreGoldenGlobalFlags.Clear();
-                        foreach (EntityID entity in level.Session.DoNotLoad)
+                        foreach (EntityID entity in XaphanModule.ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet])
                         {
                             XaphanModule.ModSaveData.PreGoldenDoNotLoad.Add(entity);
                         }
@@ -178,7 +179,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                                 XaphanModule.ModSaveData.PreGoldenGlobalFlags.Add(flag);
                             }
                         }
-                        level.Session.DoNotLoad.Clear();
+                        XaphanModule.ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet].Clear();
                         level.Session.Time = 0;
                         foreach (string flag in level.Session.Flags)
                         {
@@ -243,59 +244,8 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                 string Prefix = self.SceneAs<Level>().Session.Area.LevelSet;
                 XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_GoldenStrawberryGet");
                 self.SceneAs<Level>().Session.Time += XaphanModule.ModSaveData.PreGoldenTimer;
-                foreach (EntityID entity in self.SceneAs<Level>().Session.DoNotLoad)
-                {
-                    XaphanModule.ModSaveData.PreGoldenDoNotLoad.Add(entity);
-                }
-                foreach (EntityID entity in XaphanModule.ModSaveData.PreGoldenDoNotLoad)
-                {
-                    self.SceneAs<Level>().Session.DoNotLoad.Add(entity);
-                }
-
-                foreach (string flag in self.SceneAs<Level>().Session.Flags)
-                {
-                    if (!flag.Contains("XaphanHelper_") && flag != "SoCM_startedGame")
-                    {
-                        XaphanModule.ModSaveData.PreGoldenFlags.Add(flag);
-                    }
-                }
-
-                foreach (string flag in XaphanModule.ModSaveData.PreGoldenFlags)
-                {
-                    self.SceneAs<Level>().Session.SetFlag(flag, true);
-                }
-
-                foreach (string flag in XaphanModule.ModSaveData.SavedFlags)
-                {
-                    if (flag.Contains(self.SceneAs<Level>().Session.Area.LevelSet) && flag != self.SceneAs<Level>().Session.Area.LevelSet + "_Can_Open_Map" && !flag.Contains("_MapShard"))
-                    {
-                        XaphanModule.ModSaveData.PreGoldenSavedFlags.Add(flag);
-                    }
-                }
-
-                foreach (string flag in XaphanModule.ModSaveData.PreGoldenSavedFlags)
-                {
-                    XaphanModule.ModSaveData.SavedFlags.Add(flag);
-                }
-
-                foreach (string flag in XaphanModule.ModSaveData.GlobalFlags)
-                {
-                    if (flag.Contains(self.SceneAs<Level>().Session.Area.LevelSet))
-                    {
-                        XaphanModule.ModSaveData.PreGoldenGlobalFlags.Add(flag);
-                    }
-                }
-
-                foreach (string flag in XaphanModule.ModSaveData.PreGoldenGlobalFlags)
-                {
-                    XaphanModule.ModSaveData.GlobalFlags.Add(flag);
-                }
-
                 XaphanModule.ModSaveData.PreGoldenTimer = 0;
-                XaphanModule.ModSaveData.PreGoldenDoNotLoad.Clear();
-                XaphanModule.ModSaveData.PreGoldenFlags.Clear();
-                XaphanModule.ModSaveData.PreGoldenSavedFlags.Clear();
-                XaphanModule.ModSaveData.PreGoldenGlobalFlags.Clear();
+                MergeFlagsAndEntities(self.SceneAs<Level>());
             }
             yield return new SwapImmediately(orig(self, collectIndex));
             if (self.Golden && XaphanModule.useMergeChaptersController)
@@ -340,83 +290,26 @@ namespace Celeste.Mod.XaphanHelper.Hooks
             if (evenIfInvincible && self.SceneAs<Level>().Session.Area.Mode == 0)
             {
                 Grabbed = false;
-                ResetProgression(self.SceneAs<Level>());
             }
             return orig(self, direction, evenIfInvincible, registerDeathInStats);
         }
 
-        public static void ResetProgression(Level level, bool fullReset = false)
+        public static void ResetProgression(Level level)
         {
             List<string> ToRemove = new();
             if (level.Session.Area.LevelSet == "Xaphan/0")
             {
                 level.Session.SetFlag("SoCM-CarryGolden", false);
             }
-
-            // Get No Load entities and flags, add them to previous stored ones, then merge (this add new ones collected with the berry to old ones)
-
-            foreach (EntityID entity in level.Session.DoNotLoad)
-            {
-                XaphanModule.ModSaveData.PreGoldenDoNotLoad.Add(entity);
-            }
-            foreach (EntityID entity in XaphanModule.ModSaveData.PreGoldenDoNotLoad)
-            {
-                level.Session.DoNotLoad.Add(entity);
-            }
-
-            foreach (string flag in level.Session.Flags)
-            {
-                if (!flag.Contains("XaphanHelper_") && flag != "SoCM_startedGame")
-                {
-                    XaphanModule.ModSaveData.PreGoldenFlags.Add(flag);
-                }
-            }
-
-            foreach (string flag in XaphanModule.ModSaveData.PreGoldenFlags)
-            {
-                level.Session.SetFlag(flag, true);
-            }
-
-            foreach (string flag in XaphanModule.ModSaveData.SavedFlags)
-            {
-                if (flag.Contains(level.Session.Area.LevelSet) && flag != level.Session.Area.LevelSet + "_Can_Open_Map" && !flag.Contains("_MapShard"))
-                {
-                    XaphanModule.ModSaveData.PreGoldenSavedFlags.Add(flag);
-                }
-            }
-
-            foreach (string flag in XaphanModule.ModSaveData.PreGoldenSavedFlags)
-            {
-                XaphanModule.ModSaveData.SavedFlags.Add(flag);
-            }
-
-            foreach (string flag in XaphanModule.ModSaveData.GlobalFlags)
-            {
-                if (flag.Contains(level.Session.Area.LevelSet))
-                {
-                    XaphanModule.ModSaveData.PreGoldenGlobalFlags.Add(flag);
-                }
-            }
-
-            foreach (string flag in XaphanModule.ModSaveData.PreGoldenGlobalFlags)
-            {
-                XaphanModule.ModSaveData.GlobalFlags.Add(flag);
-            }
-            if (fullReset)
-            {
-                level.Session.GrabbedGolden = false;
-                XaphanModule.PlayerHasGolden = false;
-                Grabbed = false;
-                StartChapter = -999;
-                StartRoom = "";
-                StartSpawn = Vector2.Zero;
-                level.Session.Time += XaphanModule.ModSaveData.PreGoldenTimer;
-                XaphanModule.ModSaveData.PreGoldenTimer = 0;
-                XaphanModule.ModSaveData.PreGoldenDoNotLoad.Clear();
-                XaphanModule.ModSaveData.PreGoldenFlags.Clear();
-                XaphanModule.ModSaveData.PreGoldenSavedFlags.Clear();
-                XaphanModule.ModSaveData.PreGoldenGlobalFlags.Clear();
-            }
+            MergeFlagsAndEntities(level);
+            level.Session.GrabbedGolden = false;
+            XaphanModule.PlayerHasGolden = false;
+            Grabbed = false;
+            XaphanModule.ModSaveData.GoldenStartChapter = -999;
+            StartRoom = "";
+            StartSpawn = Vector2.Zero;
+            level.Session.Time += XaphanModule.ModSaveData.PreGoldenTimer;
+            XaphanModule.ModSaveData.PreGoldenTimer = 0;
         }
 
         private static void onPlayerDeadBodyEnd(On.Celeste.PlayerDeadBody.orig_End orig, PlayerDeadBody self)
@@ -424,9 +317,9 @@ namespace Celeste.Mod.XaphanHelper.Hooks
             Level level = self.SceneAs<Level>();
             if (level.Session.Area.Mode == AreaMode.Normal)
             {
-                if (XaphanModule.useMergeChaptersController && StartChapter != -999)
+                if (XaphanModule.useMergeChaptersController && XaphanModule.ModSaveData.GoldenStartChapter != -999)
                 {
-                    if (level.Session.Area.ChapterIndex != StartChapter || (level.Session.Area.ChapterIndex == StartChapter && level.Session.Level != StartRoom))
+                    if (level.Session.Area.ChapterIndex != XaphanModule.ModSaveData.GoldenStartChapter || (level.Session.Area.ChapterIndex == XaphanModule.ModSaveData.GoldenStartChapter && level.Session.Level != StartRoom))
                     {
                         self.DeathAction = delegate
                         {
@@ -437,44 +330,19 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                             XaphanModule.ModSaveData.Spawn = (Vector2)StartSpawn;
                             XaphanModule.ModSaveData.Wipe = "Fade";
                             XaphanModule.ModSaveData.WipeDuration = 0.35f;
-                            int chapterOffset = StartChapter - currentChapter;
+                            int chapterOffset = XaphanModule.ModSaveData.GoldenStartChapter - currentChapter;
                             int currentChapterID = area.ID;
 
                             XaphanModule.PlayerHasGolden = false;
                             Grabbed = false;
-                            StartChapter = -999;
+                            XaphanModule.ModSaveData.GoldenStartChapter = -999;
                             StartRoom = "";
                             StartSpawn = Vector2.Zero;
-
-                            foreach (EntityID entity in level.Session.DoNotLoad)
-                            {
-                                XaphanModule.ModSaveData.PreGoldenDoNotLoad.Add(entity);
-                            }
-                            foreach (string flag in level.Session.Flags)
-                            {
-                                if (!flag.Contains("XaphanHelper_") && flag != "SoCM_startedGame")
-                                {
-                                    XaphanModule.ModSaveData.PreGoldenFlags.Add(flag);
-                                }
-                            }
-                            foreach (string flag in XaphanModule.ModSaveData.SavedFlags)
-                            {
-                                if (flag.Contains(level.Session.Area.LevelSet) && flag != level.Session.Area.LevelSet + "_Can_Open_Map" && !flag.Contains("_MapShard"))
-                                {
-                                    XaphanModule.ModSaveData.PreGoldenSavedFlags.Add(flag);
-                                }
-                            }
-                            foreach (string flag in XaphanModule.ModSaveData.GlobalFlags)
-                            {
-                                if (flag.Contains(level.Session.Area.LevelSet))
-                                {
-                                    XaphanModule.ModSaveData.PreGoldenGlobalFlags.Add(flag);
-                                }
-                            }
+                            MergeFlagsAndEntities(level);
                             LevelEnter.Go(new Session(new AreaKey(currentChapterID + chapterOffset))
                             {
                                 Time = XaphanModule.ModSaveData.PreGoldenTimer + level.Session.Time,
-                                DoNotLoad = XaphanModule.ModSaveData.PreGoldenDoNotLoad,
+                                DoNotLoad = XaphanModule.ModSaveData.SavedNoLoadEntities.ContainsKey(level.Session.Area.LevelSet) ? XaphanModule.ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet] : new HashSet<EntityID>(),
                                 Strawberries = XaphanModule.ModSaveData.SavedSessionStrawberries.ContainsKey(level.Session.Area.LevelSet) ? XaphanModule.ModSaveData.SavedSessionStrawberries[level.Session.Area.LevelSet] : new HashSet<EntityID>()
                             }, fromSaveData: false);
                             XaphanModule.ModSaveData.PreGoldenTimer = 0;
@@ -488,7 +356,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
         private static void onLevelExit(Level level, LevelExit exit, LevelExit.Mode mode, Session session, HiresSnow snow)
         {
             Grabbed = false;
-            StartChapter = -999;
+            XaphanModule.ModSaveData.GoldenStartChapter = -999;
             StartRoom = "";
             StartSpawn = Vector2.Zero;
         }
@@ -537,6 +405,58 @@ namespace Celeste.Mod.XaphanHelper.Hooks
             {
                 orig(self);
             }
+        }
+
+        public static void MergeFlagsAndEntities(Level level)
+        {
+            foreach (EntityID entity in XaphanModule.ModSaveData.PreGoldenDoNotLoad)
+            {
+                XaphanModule.ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet].Add(entity);
+            }
+            foreach (EntityID entity in XaphanModule.ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet])
+            {
+                level.Session.DoNotLoad.Add(entity);
+            }
+
+            foreach (string flag in level.Session.Flags)
+            {
+                if (!flag.Contains("XaphanHelper_") && flag != "SoCM_startedGame")
+                {
+                    XaphanModule.ModSaveData.PreGoldenFlags.Add(flag);
+                }
+            }
+            foreach (string flag in XaphanModule.ModSaveData.PreGoldenFlags)
+            {
+                level.Session.SetFlag(flag, true);
+            }
+
+            foreach (string flag in XaphanModule.ModSaveData.SavedFlags)
+            {
+                if (flag.Contains(level.Session.Area.LevelSet) && flag != level.Session.Area.LevelSet + "_Can_Open_Map" && !flag.Contains("_MapShard"))
+                {
+                    XaphanModule.ModSaveData.PreGoldenSavedFlags.Add(flag);
+                }
+            }
+            foreach (string flag in XaphanModule.ModSaveData.PreGoldenSavedFlags)
+            {
+                XaphanModule.ModSaveData.SavedFlags.Add(flag);
+            }
+
+            foreach (string flag in XaphanModule.ModSaveData.GlobalFlags)
+            {
+                if (flag.Contains(level.Session.Area.LevelSet))
+                {
+                    XaphanModule.ModSaveData.PreGoldenGlobalFlags.Add(flag);
+                }
+            }
+            foreach (string flag in XaphanModule.ModSaveData.PreGoldenGlobalFlags)
+            {
+                XaphanModule.ModSaveData.GlobalFlags.Add(flag);
+            }
+            XaphanModule.ModSaveData.PreGoldenDoNotLoad.Clear();
+            XaphanModule.ModSaveData.PreGoldenFlags.Clear();
+            XaphanModule.ModSaveData.PreGoldenSavedFlags.Clear();
+            XaphanModule.ModSaveData.PreGoldenGlobalFlags.Clear();
         }
     }
 }
