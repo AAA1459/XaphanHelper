@@ -37,6 +37,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string flags;
 
+        private int GoldensChecks;
+
         public TeleportToOtherSidePortal(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
             Collider = new Circle(12f);
@@ -58,6 +60,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
             TeleportToStartingSpawnOfChapter = data.Bool("teleportToStartingSpawnOfChapter");
             RegisterCurrentSideAsCompelete = data.Bool("registerCurrentSideAsCompelete");
             Depth = 2000;
+        }
+
+        public bool HasGolden()
+        {
+            foreach (Strawberry item in Scene.Entities.FindAll<Strawberry>())
+            {
+                if (item.Golden && item.Follower.Leader != null)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public override void Added(Scene scene)
@@ -101,6 +115,30 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 RemoveSelf();
             }
             Add(new Coroutine(NoWarpdelay()));
+        }
+
+        public override void Awake(Scene scene)
+        {
+            base.Awake(scene);
+            if (HasGolden())
+            {
+                RemoveSelf();
+                return;
+            }
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            if (GoldensChecks < 3)
+            {
+                GoldensChecks++;
+                if (HasGolden())
+                {
+                    RemoveSelf();
+                    return;
+                }
+            }
         }
 
         private IEnumerator NoWarpdelay()
