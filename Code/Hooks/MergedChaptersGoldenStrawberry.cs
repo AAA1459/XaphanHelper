@@ -298,7 +298,10 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                 XaphanModule.ModSaveData.PreGoldenGlobalFlags.Clear();
             }
             yield return new SwapImmediately(orig(self, collectIndex));
-            self.SceneAs<Level>().Session.DoNotLoad.Remove(new EntityID(StartRoom, ID));
+            if (self.Golden && XaphanModule.useMergeChaptersController)
+            {
+                self.SceneAs<Level>().Session.DoNotLoad.Remove(new EntityID(StartRoom, ID));
+            }
         }
 
         public static void onStrawberryUpdate(On.Celeste.Strawberry.orig_Update orig, Strawberry self)
