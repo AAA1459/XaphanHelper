@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Xml;
 using Celeste.Mod.Meta;
 using Celeste.Mod.UI;
+using Celeste.Mod.XaphanHelper.Colliders;
 using Celeste.Mod.XaphanHelper.Components;
 using Celeste.Mod.XaphanHelper.Controllers;
 using Celeste.Mod.XaphanHelper.Cutscenes;
@@ -787,6 +788,7 @@ namespace Celeste.Mod.XaphanHelper
             BreathManager.Load();
             Skultera.Load();
             DebugBlocker.Load();
+            CustomPufferSpringCollider.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -906,6 +908,7 @@ namespace Celeste.Mod.XaphanHelper
             BreathManager.Unload();
             Skultera.Unload();
             DebugBlocker.Unload();
+            CustomPufferSpringCollider.Unload();
         }
 
 
