@@ -1683,7 +1683,8 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     Table.AddColumn(new OuiJournalPage.IconCell("skullred", 100f));
                 }
-                if (SaveData.Instance.UnlockedModes >= 3)
+                // Only display C-Side deaths when not in SoCM
+                if (SaveData.Instance.UnlockedModes >= 3 && SaveData.Instance.LevelSetStats.Name != "Xaphan/0")
                 {
                     Table.AddColumn(new OuiJournalPage.IconCell("skullgold", 100f));
                 }
@@ -1724,6 +1725,8 @@ namespace Celeste.Mod.XaphanHelper
                                 list.Add("heartgem" + j);
                             }
                         }
+
+                        // Add Yellow hearts for SoCM only
                         if (SoCMVersion >= new Version(3, 0, 0) && areaData.Name.Contains("Xaphan/0"))
                         {
                             int YellowHearts = 0;
@@ -1742,6 +1745,7 @@ namespace Celeste.Mod.XaphanHelper
                                 }
                             }
                         }
+
                         if (list.Count <= 0)
                         {
                             list.Add("dot");
@@ -1773,7 +1777,7 @@ namespace Celeste.Mod.XaphanHelper
                     }
                     else
                     {
-                        for (int k = 0; k < SaveData.Instance.UnlockedModes; k++)
+                        for (int k = 0; k < ((SoCMVersion >= new Version(3, 0, 0) && areaData.Name.Contains("Xaphan/0")) ? Math.Min(SaveData.Instance.UnlockedModes, 2) : SaveData.Instance.UnlockedModes); k++)
                         {
                             if (areaData.HasMode((AreaMode)k))
                             {
@@ -1833,7 +1837,7 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     total.Add(new OuiJournalPage.TextCell(Dialog.Deaths(TotalBSidesDeaths), TextJustify, 0.6f, TextColor));
                 }
-                if (SaveData.Instance.UnlockedModes >= 3)
+                if (SaveData.Instance.UnlockedModes >= 3 && SaveData.Instance.LevelSetStats.Name != "Xaphan/0")
                 {
                     total.Add(new OuiJournalPage.TextCell(Dialog.Deaths(TotalCSidesDeaths), TextJustify, 0.6f, TextColor));
                 }
