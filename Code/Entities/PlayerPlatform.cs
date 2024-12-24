@@ -39,6 +39,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public string PlayerPose = "";
 
+        public bool CollidableForPlayer;
+
         public PlayerPlatform(Vector2 position, int width, bool gentle, string side, int soundIndex, int slopeHeight, bool canSlide, float top, bool affectPlayerSpeed, bool upsideDown = false, bool stickyDash = false, bool canJumpThrough = false) : base(position, width, 4, true)
         {
             AllowStaticMovers = false;
@@ -340,6 +342,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                     }
                 }
+                CollidableForPlayer = Collidable;
             }
         }
 
@@ -421,7 +424,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Collidable = false;
             }
         }
-
         // Remove debug render
 
         public override void DebugRender(Camera camera)
@@ -430,6 +432,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 base.DebugRender(camera);
             }
+        }
+
+        public void RestoreCollisionForPlayer()
+        {
+            Collidable = CollidableForPlayer;
         }
     }
 }

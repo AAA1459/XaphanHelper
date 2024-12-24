@@ -533,7 +533,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Collider = MainCollider;
             }
             slopes.ForEach(entity => entity.Collidable = false);
-            playerPlatforms.ForEach(entity => entity.Collidable = true);
+            playerPlatforms.ForEach(entity => (entity as PlayerPlatform).RestoreCollisionForPlayer());
         }
 
         private void onCollideSolid(CollisionData data)

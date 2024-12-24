@@ -217,7 +217,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 foreach (PlayerPlatform plateform in SceneAs<Level>().Tracker.GetEntities<PlayerPlatform>())
                 {
-                    plateform.Collidable = true;
+                    plateform.RestoreCollisionForPlayer();
                 }
             }
 

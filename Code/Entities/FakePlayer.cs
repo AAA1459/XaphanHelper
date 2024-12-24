@@ -51,7 +51,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     Depth = 100;
                 }
                 fakePlayerPlatforms.ForEach(entity => entity.Collidable = false);
-                playerPlatforms.ForEach(entity => entity.Collidable = true);
+                playerPlatforms.ForEach(entity => (entity as PlayerPlatform).RestoreCollisionForPlayer());
             }
         }
     }

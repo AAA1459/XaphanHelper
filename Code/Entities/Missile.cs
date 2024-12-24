@@ -320,7 +320,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             MoveH(Speed.X * Engine.DeltaTime, onCollideSolid);
             MoveV(Speed.Y * Engine.DeltaTime, onCollideSolid);
             slopes.ForEach(entity => entity.Collidable = false);
-            playerPlatforms.ForEach(entity => entity.Collidable = true);
+            playerPlatforms.ForEach(entity => (entity as PlayerPlatform).RestoreCollisionForPlayer());
         }
 
         private void onCollideSolid(CollisionData data)
