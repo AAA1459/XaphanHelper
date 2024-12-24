@@ -930,7 +930,21 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     }
                 }
             }
-            ASideTotalHearts = levelSetStats.MaxHeartGems - BSideTotalHearts - CSideTotalHearts;
+
+            // SoCM only
+            if (XaphanModule.SoCMVersion >= new Version(3, 0, 0) && Area.LevelSet == "Xaphan/0")
+            {
+                foreach (string achievement in XaphanModule.ModSaveData.Achievements)
+                {
+                    if (achievement.Contains("boss") && achievement.Contains("cm"))
+                    {
+                        CSideHearts++;
+                    }
+                }
+                CSideTotalHearts = 4;
+            }
+
+            ASideTotalHearts = levelSetStats.MaxHeartGems - BSideTotalHearts - ((XaphanModule.SoCMVersion >= new Version(3, 0, 0) && Area.LevelSet == "Xaphan/0") ? 0 : CSideTotalHearts);
             heartsASide.Visible = (ASideHearts != 0);
             heartsASide.Amount = ASideHearts;
             heartsASide.OutOf = ASideTotalHearts;
