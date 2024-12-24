@@ -427,7 +427,7 @@ namespace Celeste.Mod.XaphanHelper
                 entryID: "heart",
                 categoryID: 2,
                 picture: "lorebook/Xaphan/Adventure/heart",
-                flag: "XaphanHelper_StatFlag_Heart",
+                flag: "XaphanHelper_StatFlag_SoCMHearts",
                 subCategoryID: "advc3"
             ));
 

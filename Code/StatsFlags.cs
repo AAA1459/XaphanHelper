@@ -93,6 +93,8 @@ namespace Celeste.Mod.XaphanHelper
 
         public static bool initialized;
 
+        private static List<AchievementData> achievements = new();
+
         public static bool fixedAchievements;
 
         public static void Load()
@@ -263,13 +265,17 @@ namespace Celeste.Mod.XaphanHelper
             TotalTiles = null;
             ReadLoreBookEntries = null;
             TotalLoreBookEntries = null;
+            achievements.Clear();
             initialized = false;
         }
 
         public static void RemoveCompletedAchievementsIfNoLongerComplete(Session session)
         {
             fixedAchievements = true;
-            List<AchievementData> achievements = Achievements.GenerateAchievementsList(session);
+            if (achievements.Count == 0)
+            {
+                achievements = Achievements.GenerateAchievementsList(session);
+            }
             HashSet<string> IDsToRemove = new();
             foreach (AchievementData achievement in achievements)
             {
@@ -610,6 +616,29 @@ namespace Celeste.Mod.XaphanHelper
                         if ((ReadLoreBookEntries[0] + ReadLoreBookEntries[1] + ReadLoreBookEntries[2]) == (TotalLoreBookEntries[0] + TotalLoreBookEntries[1] + TotalLoreBookEntries[2]))
                         {
                             self.Session.SetFlag("XaphanHelper_StatFlag_LoreBook");
+                        }
+                    }
+
+                    if (achievements.Count == 0)
+                    {
+                        achievements = Achievements.GenerateAchievementsList(self.Session);
+                    }
+                    else
+                    {
+                        int currentYellowHearts = 0;
+                        foreach (AchievementData achievement in achievements)
+                        {
+                            if (achievement.AchievementID.Contains("boss") && achievement.AchievementID.Contains("cm"))
+                            {
+                                if (self.Session.GetFlag(achievement.Flag))
+                                {
+                                    currentYellowHearts++;
+                                }
+                            }
+                        }
+                        if (self.Session.GetFlag("XaphanHelper_StatFlag_Heart") || currentYellowHearts > 0)
+                        {
+                            self.Session.SetFlag("XaphanHelper_StatFlag_SoCMHearts");
                         }
                     }
 
