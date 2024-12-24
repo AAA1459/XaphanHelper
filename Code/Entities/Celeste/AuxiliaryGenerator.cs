@@ -100,7 +100,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private static void PlayerSpritePlayHook(On.Monocle.Sprite.orig_Play orig, Sprite self, string id, bool restart = false, bool randomizeFrame = false)
         {
-            if (self.Entity is Player && self.Scene is Level level && !XaphanModule.PlayerIsControllingRemoteDrone())
+            if (self.Entity is Player player && player.Sprite == self && self.Scene is Level level && !XaphanModule.PlayerIsControllingRemoteDrone())
             {
                 foreach (AuxiliaryGenerator generator in level.Tracker.GetEntities<AuxiliaryGenerator>())
                 {
