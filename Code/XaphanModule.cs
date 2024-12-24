@@ -1724,6 +1724,24 @@ namespace Celeste.Mod.XaphanHelper
                                 list.Add("heartgem" + j);
                             }
                         }
+                        if (SoCMVersion >= new Version(3, 0, 0) && areaData.Name.Contains("Xaphan/0"))
+                        {
+                            int YellowHearts = 0;
+                            foreach (string achievement in ModSaveData.Achievements)
+                            {
+                                if (achievement.Contains("boss" + i) && achievement.Contains("cm"))
+                                {
+                                    YellowHearts++;
+                                }
+                            }
+                            if (YellowHearts > 0)
+                            {
+                                for (int j = 1; j <= YellowHearts; j++)
+                                {
+                                    list.Add("heartgem2");
+                                }
+                            }
+                        }
                         if (list.Count <= 0)
                         {
                             list.Add("dot");
