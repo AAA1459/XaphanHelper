@@ -37,8 +37,10 @@ Version 1.0.64 :
 - Fixed a bug that could prevent Heat Controllers with an empty Inactive Flag to work correctly
 - Fixed a bug that allowed the player to fall trough jumpthru platforms while using the drone after transitionning to another room than the room the drone was spawned in
 - Fixed a bug that caused bombs hold by the player to become invisible after transitioning to another room
+- Fixed a bug that could cause slopes hitboxes to be solid when they should not
 - Fixed a crash when using the retry option in the pause menu while holding the drone
 - Fixed a crash when closing the Binoculars from the Binoculars ability at the same time the player died
+- Fixed a crash that could happen by accidentally changing the player.sweatSprite animation when interacting with Slopes and Magnetic Ceilings
 
 Version 1.0.63 :
 - Replaced Teleport To Chapter Trigger "To Chapter" attribute with "Destination Chapter". This new attribute accept a chapter map path instead of a chapter index, and can be used to teleport to any chapter, even ouside of the current campaign. Old Teleport To Chapter triggers are unaffected
