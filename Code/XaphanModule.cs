@@ -6,22 +6,25 @@ using System.Reflection;
 using System.Xml;
 using Celeste.Mod.Meta;
 using Celeste.Mod.UI;
+using Celeste.Mod.XaphanHelper.Colliders;
 using Celeste.Mod.XaphanHelper.Components;
 using Celeste.Mod.XaphanHelper.Controllers;
 using Celeste.Mod.XaphanHelper.Cutscenes;
 using Celeste.Mod.XaphanHelper.Data;
 using Celeste.Mod.XaphanHelper.Effects;
+using Celeste.Mod.XaphanHelper.Enemies;
 using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.Hooks;
 using Celeste.Mod.XaphanHelper.Managers;
 using Celeste.Mod.XaphanHelper.Triggers;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Celeste.Mod.XaphanHelper.Upgrades;
+using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
+using MonoMod.Cil;
 using MonoMod.Utils;
-using On.Celeste;
 using static Celeste.Mod.XaphanHelper.XaphanModuleSession;
 
 namespace Celeste.Mod.XaphanHelper
@@ -133,6 +136,8 @@ namespace Celeste.Mod.XaphanHelper
 
         public static bool refillJumps;
 
+        public static bool SaveIconVisible = true;
+
         public enum Upgrades
         {
             // Celeste Upgrades
@@ -181,166 +186,166 @@ namespace Celeste.Mod.XaphanHelper
 
         public static bool PowerGripCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_PowerGrip" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_PowerGrip");
         }
 
         public static bool ClimbingKitCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_ClimbingKit" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_ClimbingKit");
         }
 
         public static bool SpiderMagnetCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_SpiderMagnet" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_SpiderMagnet");
         }
 
         public static bool DroneTeleportCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_DroneTeleport" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_DroneTeleport");
         }
 
         public static bool JumpBoostCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_JumpBoost" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_JumpBoost");
         }
 
         public static bool BombsCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_Bombs" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_Bombs");
         }
 
         public static bool MegaBombsCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_MegaBombs" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_MegaBombs");
         }
 
         public static bool RemoteDroneCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_RemoteDrone" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_RemoteDrone");
         }
 
         public static bool GoldenFeatherCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_GoldenFeather" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_GoldenFeather");
         }
 
         public static bool BinocularsCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_Binoculars" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_Binoculars");
         }
 
         public static bool EtherealDashCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_EtherealDash" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_EtherealDash");
         }
 
         public static bool PortableStationCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_PortableStation" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_PortableStation");
         }
 
         public static bool PulseRadarCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_PulseRadar" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_PulseRadar");
         }
 
         public static bool DashBootsCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_DashBoots" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_DashBoots");
         }
 
         public static bool HoverJetCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_HoverJet" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_HoverJet");
         }
 
         public static bool LightningDashCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_LightningDash" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_LightningDash");
         }
 
         public static bool MissilesModuleCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_MissilesModule" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_MissilesModule");
         }
 
         public static bool SuperMissilesModuleCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_SuperMissilesModule" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_SuperMissilesModule");
         }
 
         // Metroid Upgrades
 
         public static bool SpazerCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_Spazer" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_Spazer");
         }
 
         public static bool PlasmaBeamCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_PlasmaBeam" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_PlasmaBeam");
         }
 
         public static bool MorphingBallCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_MorphingBall" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_MorphingBall");
         }
 
         public static bool MorphBombsCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_MorphBombs" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_MorphBombs");
         }
 
         public static bool SpringBallCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_SpringBall" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_SpringBall");
         }
 
         public static bool HighJumpBootsCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_HighJumpBoots" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_HighJumpBoots");
         }
 
         public static bool SpeedBoosterCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_SpeedBooster" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_SpeedBooster");
         }
 
         // Common Upgrades
 
         public static bool LongBeamCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_LongBeam" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_LongBeam");
         }
 
         public static bool IceBeamCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_IceBeam" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_IceBeam");
         }
 
         public static bool WaveBeamCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_WaveBeam" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_WaveBeam");
         }
 
         public static bool VariaJacketCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_VariaJacket" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_VariaJacket");
         }
 
         public static bool GravityJacketCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_GravityJacket" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_GravityJacket");
         }
 
         public static bool ScrewAttackCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_ScrewAttack" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_ScrewAttack");
         }
 
         public static bool SpaceJumpCollected(Level level)
         {
-            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_SpaceJump" + (PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_SpaceJump");
         }
 
         public static void useIngameMapCheck(Level level)
@@ -510,6 +515,19 @@ namespace Celeste.Mod.XaphanHelper
 
         private bool onMapListOrSearch;
 
+        public override void CreateModMenuSection(TextMenu menu, bool inGame, EventInstance pauseSnapshot)
+        {
+            bool isPlayingSoCM = false;
+            if (Engine.Scene is Level)
+            {
+                isPlayingSoCM = ((Level)Engine.Scene).Session.Area.LevelSet == "Xaphan/0";
+            }
+            if (!isPlayingSoCM)
+            {
+                base.CreateModMenuSection(menu, inGame, pauseSnapshot);
+            }
+        }
+
         public XaphanModule()
         {
             Instance = this;
@@ -667,7 +685,8 @@ namespace Celeste.Mod.XaphanHelper
             Everest.Events.Level.OnLoadBackdrop += OnLoadBackdrop;
             Everest.Events.Level.OnLoadLevel += onLevelLoad;
             Everest.Events.Level.OnExit += onLevelExit;
-            Everest.Events.Level.OnCreatePauseMenuButtons += onCreatePauseMenuButtons;
+            //Everest.Events.Level.OnCreatePauseMenuButtons += onCreatePauseMenuButtons;
+            IL.Celeste.Player.Render += modILPlayerRender;
             On.Celeste.AreaData.HasMode += monAreaDataHasMode;
             On.Celeste.Cassette.UnlockedBSide.EaseIn += modCassetteUnlockedBSideEaseIn;
             On.Celeste.Cassette.UnlockedBSide.EaseOut += modCassetteUnlockedBSideEaseOut;
@@ -705,6 +724,8 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.PlayerSprite.CreateFramesMetadata += PlayerSpriteMetadataHook;
             On.Celeste.ReturnMapHint.Render += onReturnMapHintRender;
             On.Celeste.SaveData.FoundAnyCheckpoints += modSaveDataFoundAnyCheckpoints;
+            On.Celeste.SaveLoadIcon.Render += onSaveLoadIconRender;
+            On.Celeste.SaveLoadIcon.Routine += onSaveLoadIconRoutine;
             On.Celeste.Session.Restart += onSessionRestart;
             On.Celeste.SpeedrunTimerDisplay.DrawTime += onSpeedrunTimerDisplayDrawTime;
             On.Celeste.Strawberry.OnPlayer += modStrawberryOnPlayer;
@@ -762,6 +783,12 @@ namespace Celeste.Mod.XaphanHelper
             Lever.Load();
             LightManager.Load();
             ClimbableVine.Load();
+            ExplosiveBoulder.Load();
+            BreathDisplay.Load();
+            BreathManager.Load();
+            Skultera.Load();
+            DebugBlocker.Load();
+            CustomPufferSpringCollider.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -780,7 +807,8 @@ namespace Celeste.Mod.XaphanHelper
             Everest.Events.Level.OnLoadBackdrop -= OnLoadBackdrop;
             Everest.Events.Level.OnLoadLevel -= onLevelLoad;
             Everest.Events.Level.OnExit -= onLevelExit;
-            Everest.Events.Level.OnCreatePauseMenuButtons -= onCreatePauseMenuButtons;
+            //Everest.Events.Level.OnCreatePauseMenuButtons -= onCreatePauseMenuButtons;
+            IL.Celeste.Player.Render -= modILPlayerRender;
             On.Celeste.AreaData.HasMode -= monAreaDataHasMode;
             On.Celeste.Cassette.UnlockedBSide.EaseIn -= modCassetteUnlockedBSideEaseIn;
             On.Celeste.Cassette.UnlockedBSide.EaseOut -= modCassetteUnlockedBSideEaseOut;
@@ -816,6 +844,8 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.PlayerSprite.CreateFramesMetadata -= PlayerSpriteMetadataHook;
             On.Celeste.ReturnMapHint.Render -= onReturnMapHintRender;
             On.Celeste.SaveData.FoundAnyCheckpoints -= modSaveDataFoundAnyCheckpoints;
+            On.Celeste.SaveLoadIcon.Render -= onSaveLoadIconRender;
+            On.Celeste.SaveLoadIcon.Routine -= onSaveLoadIconRoutine;
             On.Celeste.Session.Restart -= onSessionRestart;
             On.Celeste.SpeedrunTimerDisplay.DrawTime -= onSpeedrunTimerDisplayDrawTime;
             On.Celeste.Strawberry.OnPlayer -= modStrawberryOnPlayer;
@@ -873,6 +903,12 @@ namespace Celeste.Mod.XaphanHelper
             Lever.Unload();
             LightManager.Unload();
             ClimbableVine.Unload();
+            ExplosiveBoulder.Unload();
+            BreathDisplay.Unload();
+            BreathManager.Unload();
+            Skultera.Unload();
+            DebugBlocker.Unload();
+            CustomPufferSpringCollider.Unload();
         }
 
 
@@ -1331,6 +1367,13 @@ namespace Celeste.Mod.XaphanHelper
                 }
             }
             orig(self, startIndex, minimal, quickReset);
+            if (Enumerable.FirstOrDefault(self.Entities.ToAdd, (Entity e) => e is TextMenu) is TextMenu textMenu)
+            {
+                if (!quickReset)
+                {
+                    onCreatePauseMenuButtons(self, textMenu, minimal);
+                }
+            }            
         }
 
         private void onReturnMapHintRender(On.Celeste.ReturnMapHint.orig_Render orig, ReturnMapHint self)
@@ -1367,6 +1410,36 @@ namespace Celeste.Mod.XaphanHelper
                 return false;
             }
             return orig(self, area);
+        }
+
+        private IEnumerator onSaveLoadIconRoutine(On.Celeste.SaveLoadIcon.orig_Routine orig, SaveLoadIcon self)
+        {
+            if (useMergeChaptersController && !SaveIconVisible)
+            {
+                self.Add(new Coroutine(SwitchBackSaveLoadIconVisibility(self)));
+            }
+            yield return new SwapImmediately(orig(self));
+        }
+
+        private IEnumerator SwitchBackSaveLoadIconVisibility(SaveLoadIcon icon)
+        {
+            DynData<SaveLoadIcon> SaveLoadIconData = new(icon);
+            Sprite iconSprite = SaveLoadIconData.Get<Sprite>("icon");
+            while (iconSprite.CurrentAnimationID != "end")
+            {
+                yield return null;
+            }
+            yield return 0.5f;
+            SaveIconVisible = true;
+        }
+
+        private void onSaveLoadIconRender(On.Celeste.SaveLoadIcon.orig_Render orig, SaveLoadIcon self)
+        {
+            if (useMergeChaptersController && !SaveIconVisible)
+            {
+                return;
+            }
+            orig(self);
         }
 
         private int modOuiChapterPanelGetModeHeight(On.Celeste.OuiChapterPanel.orig_GetModeHeight orig, OuiChapterPanel self)
@@ -1939,6 +2012,13 @@ namespace Celeste.Mod.XaphanHelper
 
         private void onLevelLoad(Level level, Player.IntroTypes playerIntro, bool isFromLoader)
         {
+            // Save the game on room entry when using a Merge Chapters Controller
+            if (useMergeChaptersController && MergeChaptersControllerMode == "Rooms")
+            {
+                SaveIconVisible = false;
+                level.AutoSave();
+            }
+
             isInLevel = true;
             string room = level.Session.Level;
             string Prefix = level.Session.Area.LevelSet;
@@ -2003,7 +2083,7 @@ namespace Celeste.Mod.XaphanHelper
 
                 // Add current room to the in-game map
 
-                if (!ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + room))
+                if (!ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + room) && (!string.IsNullOrEmpty(ModSaveData.DestinationRoom) ? level.Session.Level == ModSaveData.DestinationRoom : true) && ModSaveData.LoadedPlayer)
                 {
                     ModSaveData.VisitedRooms.Add(Prefix + "/Ch" + chapterIndex + "/" + room);
                 }
@@ -2069,7 +2149,7 @@ namespace Celeste.Mod.XaphanHelper
 
             // Set flags based on previous player progress
 
-            if (!PlayerHasGolden && !ModSaveData.SavedFlags.Contains(Prefix + "_teleporting"))
+            if (!ModSaveData.SavedFlags.Contains(Prefix + "_teleporting"))
             {
                 foreach (string savedFlag in ModSaveData.SavedFlags)
                 {
@@ -2131,80 +2211,11 @@ namespace Celeste.Mod.XaphanHelper
                 }
             }
 
-            if (PlayerHasGolden && useMergeChaptersController && !ModSaveData.SavedFlags.Contains(Prefix + "_teleporting"))
-            {
-                foreach (string savedFlag in ModSaveData.SavedFlags)
-                {
-                    if (forceStartingUpgrades)
-                    {
-                        if (savedFlag.Contains("Upgrade_"))
-                        {
-                            continue;
-                        }
-                    }
-                    if (savedFlag.Contains("_GoldenStrawberry"))
-                    {
-                        string[] savedFlags = savedFlag.Split('_');
-                        if (savedFlags[0] == Prefix && savedFlags[1] == "Ch" + chapterIndex)
-                        {
-
-                            string flagPrefix = savedFlags[0] + "_" + savedFlags[1] + "_";
-                            string flag = string.Empty;
-                            int num = savedFlag.IndexOf(flagPrefix);
-                            if (num >= 0)
-                            {
-                                flag = savedFlag.Remove(num, flagPrefix.Length);
-                            }
-                            int i = flag.IndexOf("_GoldenStrawberry");
-                            if (i >= 0)
-                            {
-                                flag = flag.Remove(i, "_GoldenStrawberry".Length);
-                            }
-                            level.Session.SetFlag(flag);
-                        }
-                    }
-                }
-                foreach (string flag in ModSaveData.SavedFlags)
-                {
-                    if (forceStartingUpgrades)
-                    {
-                        if (flag.Contains("Upgrade_"))
-                        {
-                            continue;
-                        }
-                    }
-                    if (flag.Contains(Prefix) && flag.Contains("_GoldenStrawberry"))
-                    {
-                        string toRemove = Prefix + "_";
-                        string result = string.Empty;
-                        int i = flag.IndexOf(toRemove);
-                        if (i >= 0)
-                        {
-                            result = flag.Remove(i, toRemove.Length);
-                        }
-                        level.Session.SetFlag(result, true);
-                    }
-                }
-                foreach (string flag in ModSaveData.GlobalFlags)
-                {
-                    if (flag.Contains(Prefix) && flag.Contains("_GoldenStrawberry"))
-                    {
-                        string toRemove = Prefix + "_";
-                        string result = string.Empty;
-                        int i = flag.IndexOf(toRemove);
-                        if (i >= 0)
-                        {
-                            result = flag.Remove(i, toRemove.Length);
-                        }
-                        level.Session.SetFlag(result, true);
-                    }
-                }
-            }
-
             // Room Music stuff
 
-            if (string.IsNullOrEmpty(level.Session.LevelData.Music))
+            if (string.IsNullOrEmpty(level.Session.LevelData.Music) && string.IsNullOrEmpty(ModSaveData.DestinationRoom) && ModSaveData.LoadedPlayer)
             {
+                bool playerHasGolden = useMergeChaptersController && PlayerHasGolden;
                 foreach (RoomMusicControllerData roomMusicControllerData in RoomMusicControllerData)
                 {
                     if (!level.Session.GetFlag(roomMusicControllerData.FlagInnactive) || string.IsNullOrEmpty(roomMusicControllerData.FlagInnactive))
@@ -2508,7 +2519,7 @@ namespace Celeste.Mod.XaphanHelper
             {
                 // Give back upgrades the player has unlocked
 
-                if (!forceStartingUpgrades && (!PlayerHasGolden || (PlayerHasGolden && MergedChaptersGoldenStrawberry.StartChapter != -999)))
+                if (!forceStartingUpgrades && (!PlayerHasGolden || (PlayerHasGolden && ModSaveData.GoldenStartChapter != -999)))
                 {
                     // Celeste Upgrades
 
@@ -2856,7 +2867,7 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     if (manager.MainMode != LightModes.None)
                     {
-                        ModSaveData.LightMode = manager.MainMode;
+                        ModSaveData.LightMode[level.Session.Area.LevelSet] = manager.MainMode;
                     }
                 }
 
@@ -2988,7 +2999,7 @@ namespace Celeste.Mod.XaphanHelper
 
                     if (returnToMapIndex == -1)
                     {
-                        // Bottm of the menu if "Return to map" is not found
+                        // Bottom of the menu if "Return to map" is not found
                         returnToMapIndex = menu.Items.Count - 1;
                     }
 
@@ -3010,6 +3021,36 @@ namespace Celeste.Mod.XaphanHelper
                     menu.Insert(returnToMapIndex, ReturnToTitleButton);
                 }
 
+                // Remove every other non-vanilla items from the menu
+                List<int> IndexesToRemove = new();
+                foreach (TextMenu.Item item in menu.Items)
+                {
+                    if (item.GetType() == typeof(TextMenu.Button) || !item.GetType().ToString().Contains("Celeste"))
+                    {
+                        TextMenu.Button button = (TextMenu.Button)item;
+                        if(button.Label != Dialog.Clean("MENU_PAUSE_RESUME") &&
+                            button.Label != Dialog.Clean("MENU_PAUSE_SKIP_CUTSCENE") &&
+                            button.Label != Dialog.Clean("MENU_PAUSE_RETRY") &&
+                            button.Label != Dialog.Clean("MENU_PAUSE_ASSIST") &&
+                            button.Label != Dialog.Clean("MENU_PAUSE_VARIANT") &&
+                            button.Label != Dialog.Clean("MENU_PAUSE_OPTIONS") &&
+                            button.Label != Dialog.Clean("MENU_PAUSE_MODOPTIONS") && 
+                            button.Label != Dialog.Clean("Xaphan_0_Pause_Menu_ReturnTitle") &&
+                            button.Label != Dialog.Clean("XaphanHelper_UI_GiveUpNM") &&
+                            button.Label != Dialog.Clean("XaphanHelper_UI_GiveUpCM") &&
+                            button.Label != Dialog.Clean("XaphanHelper_UI_GiveUpASide") &&
+                            button.Label != Dialog.Clean("XaphanHelper_UI_GiveUpBSide") &&
+                            button.Label != Dialog.Clean("XaphanHelper_UI_GiveUpCSide"))
+                        {
+                            IndexesToRemove.Add(menu.Items.IndexOf(item));
+                        }
+                    }
+                }
+                IndexesToRemove.Sort((a, b) => b.CompareTo(a));
+                foreach (int index in IndexesToRemove)
+                {
+                    menu.Remove(menu.Items[index]);
+                }
             }
         }
 
@@ -3148,7 +3189,8 @@ namespace Celeste.Mod.XaphanHelper
                     ModSaveData.SavedCoreMode.Remove(level.Session.Area.LevelSet);
                     ModSaveData.SavedMusic.Remove(level.Session.Area.LevelSet);
                     ModSaveData.SavedAmbience.Remove(level.Session.Area.LevelSet);
-                    if (ModSaveData.SavedNoLoadEntities.ContainsKey(level.Session.Area.LevelSet)) {
+                    if (ModSaveData.SavedNoLoadEntities.ContainsKey(level.Session.Area.LevelSet))
+                    {
                         ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet].Clear();
                     }
                     ModSaveData.SavedTime.Remove(level.Session.Area.LevelSet);
@@ -3157,6 +3199,10 @@ namespace Celeste.Mod.XaphanHelper
                     if (ModSaveData.SavedSessionStrawberries.ContainsKey(level.Session.Area.LevelSet))
                     {
                         ModSaveData.SavedSessionStrawberries[level.Session.Area.LevelSet].Clear();
+                    }
+                    if (ModSaveData.LightMode.ContainsKey(level.Session.Area.LevelSet))
+                    {
+                        ModSaveData.LightMode.Remove(level.Session.Area.LevelSet);
                     }
                     List<string> FlagsToRemove = new();
                     List<string> CutscenesToRemove = new();
@@ -3332,19 +3378,7 @@ namespace Celeste.Mod.XaphanHelper
                 level.DoScreenWipe(false, delegate
                 {
                     onTitleScreen = false;
-                    MergedChaptersGoldenStrawberry.ResetProgression(level, true);
-                    SoCMTitleFromGame = true;
-                    SkipSoCMIntro = false;
-                    level.Session.SetFlag("XaphanHelper_Loaded_Player", false);
-                    ModSaveData.LoadedPlayer = false;
-                    long currentTime = level.Session.Time;
-                    LevelEnter.Go(new Session(new AreaKey(AreaData.Get("Xaphan/0/0-Prologue").ToKey(AreaMode.Normal).ID))
-                    {
-                        Time = currentTime,
-                        DoNotLoad = ModSaveData.SavedNoLoadEntities.ContainsKey(level.Session.Area.LevelSet) ? ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet] : new HashSet<EntityID>(),
-                        Strawberries = ModSaveData.SavedSessionStrawberries.ContainsKey(level.Session.Area.LevelSet) ? ModSaveData.SavedSessionStrawberries[level.Session.Area.LevelSet] : new HashSet<EntityID>()
-                    }
-                    , fromSaveData: false);
+                    ReturnToTitleScreen(level);
                 });
             }));
             menu.Add(new TextMenu.Button(Dialog.Clean("menu_return_cancel")).Pressed(delegate
@@ -3367,6 +3401,48 @@ namespace Celeste.Mod.XaphanHelper
                 level.Pause(returnIndex, minimal: false);
             };
             level.Add(menu);
+        }
+
+        public static void ReturnToTitleScreen(Level level)
+        {
+            level.Paused = true;
+            onTitleScreen = false;
+            MergedChaptersGoldenStrawberry.ResetProgression(level);
+            SoCMTitleFromGame = true;
+            SkipSoCMIntro = false;
+            level.Session.SetFlag("XaphanHelper_Loaded_Player", false);
+            ModSaveData.LoadedPlayer = false;
+            long currentTime = level.Session.Time;
+            LightManager manager = level.Tracker.GetEntity<LightManager>();
+            if (manager != null)
+            {
+                ModSaveData.LightMode[level.Session.Area.LevelSet] = manager.MainMode;
+            }
+            LevelEnter.Go(new Session(new AreaKey(AreaData.Get("Xaphan/0/0-Prologue").ToKey(AreaMode.Normal).ID))
+            {
+                Time = currentTime,
+                DoNotLoad = ModSaveData.SavedNoLoadEntities.ContainsKey(level.Session.Area.LevelSet) ? ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet] : new HashSet<EntityID>(),
+                Strawberries = ModSaveData.SavedSessionStrawberries.ContainsKey(level.Session.Area.LevelSet) ? ModSaveData.SavedSessionStrawberries[level.Session.Area.LevelSet] : new HashSet<EntityID>()
+            }
+            , fromSaveData: false);
+        }
+
+        private static void modILPlayerRender(ILContext il)
+        {
+            ILCursor cursor = new(il);
+
+            if (cursor.TryGotoNext(instr => instr.MatchCallvirt<StateMachine>("get_State"), instr => instr.MatchLdcI4(19)))
+            {
+                cursor.Index++;
+                cursor.EmitDelegate<Func<int, int>>(orig =>
+                {
+                    if (HeatController.determineifHeatController() || BreathManager.determineifBreathManager())
+                    {
+                        return 19;
+                    }
+                    return orig;
+                });
+            }
         }
 
         private IEnumerator modLevelEnterRoutine(On.Celeste.LevelEnter.orig_Routine orig, LevelEnter self)
@@ -3430,6 +3506,10 @@ namespace Celeste.Mod.XaphanHelper
                         self.Wipe.Cancel();
                     }
                 }
+
+                // Set Flag to keep screen Black before Title Screen
+
+                self.Session.SetFlag("SoCM_startedGame", startedGame);
             }
 
             orig(self);
@@ -3493,7 +3573,7 @@ namespace Celeste.Mod.XaphanHelper
                 {
                     minimapEnabled = false;
                 }
-                if (allRoomsUseTileController && ModSettings.ShowMiniMap && ModSaveData.SavedFlags.Contains(self.Session.Area.LevelSet + "_Can_Open_Map") && !minimapEnabled)
+                if (allRoomsUseTileController && (self.Session.Area.LevelSet == "Xaphan/0" ? ModSettings.SoCMShowMiniMap : ModSettings.ShowMiniMap) && ModSaveData.SavedFlags.Contains(self.Session.Area.LevelSet + "_Can_Open_Map") && !minimapEnabled)
                 {
                     if (self.Tracker.GetEntity<MiniMap>() == null)
                     {
@@ -3503,7 +3583,7 @@ namespace Celeste.Mod.XaphanHelper
                 }
                 else
                 {
-                    if (!ModSettings.ShowMiniMap)
+                    if (self.Session.Area.LevelSet == "Xaphan/0" ? !ModSettings.SoCMShowMiniMap : !ModSettings.ShowMiniMap)
                     {
                         MiniMap minimap = self.Tracker.GetEntity<MiniMap>();
                         if (minimap != null)
@@ -3667,7 +3747,7 @@ namespace Celeste.Mod.XaphanHelper
 
                     // Save the room as the one that the player must load into when starting the campaign if using a MergeChaptersController with mode set to Rooms
 
-                    else if (useMergeChaptersController && MergeChaptersControllerMode == "Rooms" && !self.Session.GrabbedGolden && !self.Frozen && self.Tracker.GetEntity<CountdownDisplay>() == null && !TriggeredCountDown && self.Tracker.GetEntity<Player>() != null && self.Tracker.GetEntity<Player>().StateMachine.State != Player.StDummy && !((MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.LevelSetStats.AreaOffset)) && (startedAnySoCMChapter ? self.Session.Level != "Intro" : true))
+                    else if (useMergeChaptersController && MergeChaptersControllerMode == "Rooms" && !PlayerHasGolden && !self.Frozen && self.Tracker.GetEntity<CountdownDisplay>() == null && !TriggeredCountDown && self.Tracker.GetEntity<Player>() != null && self.Tracker.GetEntity<Player>().StateMachine.State != Player.StDummy && !((MergeChaptersControllerKeepPrologue && self.Session.Area.ID == SaveData.Instance.LevelSetStats.AreaOffset)) && (startedAnySoCMChapter ? self.Session.Level != "Intro" : true))
                     {
                         //ModSaveData.LoadedPlayer = true;
                         if (!ModSaveData.SavedChapter.ContainsKey(self.Session.Area.LevelSet))
@@ -3972,7 +4052,7 @@ namespace Celeste.Mod.XaphanHelper
                     {
                         playerPosition.Y = 0;
                     }
-                    if (!ModSaveData.VisitedRoomsTiles.Contains(Prefix + "/Ch" + chapterIndex + "/" + self.Session.Level + "-" + playerPosition.X + "-" + playerPosition.Y))
+                    if (!ModSaveData.VisitedRoomsTiles.Contains(Prefix + "/Ch" + chapterIndex + "/" + self.Session.Level + "-" + playerPosition.X + "-" + playerPosition.Y) && (!string.IsNullOrEmpty(ModSaveData.DestinationRoom) ? self.Session.Level == ModSaveData.DestinationRoom : true) && ModSaveData.LoadedPlayer)
                     {
                         ModSaveData.VisitedRoomsTiles.Add(Prefix + "/Ch" + chapterIndex + "/" + self.Session.Level + "-" + playerPosition.X + "-" + playerPosition.Y);
                         InGameMapRoomController roomController = self.Tracker.GetEntity<InGameMapRoomController>();
@@ -3999,7 +4079,7 @@ namespace Celeste.Mod.XaphanHelper
                                 }
                             }
                         }
-                        if (ModSettings.ShowMiniMap)
+                        if (self.Session.Area.LevelSet == "Xaphan/0" ? ModSettings.SoCMShowMiniMap : ModSettings.ShowMiniMap)
                         {
                             MapDisplay mapDisplay = self.Tracker.GetEntity<MapDisplay>();
                             if (mapDisplay != null)
@@ -4046,10 +4126,13 @@ namespace Celeste.Mod.XaphanHelper
                     if (liquid.Position == new Vector2(self.Bounds.Left, self.Bounds.Top))
                     {
                         liquid.Collider = new Hitbox(self.Bounds.Width, self.Bounds.Height);
-                        liquid.Displacement.RemoveSelf();
-                        liquid.grid = new bool[(int)(liquid.Collider.Width / 8f), (int)(liquid.Collider.Height / 8f)];
-                        liquid.CheckSolidsForDisplacement();
-                        liquid.Add(liquid.Displacement = new DisplacementRenderHook(liquid.RenderDisplacement));
+                        if (liquid.liquidType == "water")
+                        {
+                            liquid.Displacement.RemoveSelf();
+                            liquid.grid = new bool[(int)(liquid.Collider.Width / 8f), (int)(liquid.Collider.Height / 8f)];
+                            liquid.CheckSolidsForDisplacement();
+                            liquid.Add(liquid.Displacement = new DisplacementRenderHook(liquid.RenderDisplacement));
+                        }
                         break;
                     }
                 }
@@ -4121,21 +4204,24 @@ namespace Celeste.Mod.XaphanHelper
                         {
                             MergedChaptersGoldenStrawberry.ResetFlags = false;
                         }
-                        foreach (string flag in ModSaveData.SavedFlags)
+                        else
                         {
-                            string Prefix = level.Session.Area.LevelSet;
-                            int chapterIndex = level.Session.Area.ChapterIndex == -1 ? 0 : level.Session.Area.ChapterIndex;
-                            string[] str = flag.Split('_');
-                            if (str[0] == Prefix && str[1] == "Ch" + chapterIndex)
+                            foreach (string flag in ModSaveData.SavedFlags)
                             {
-                                string toRemove = str[0] + "_" + str[1] + "_";
-                                string result = string.Empty;
-                                int i = flag.IndexOf(toRemove);
-                                if (i >= 0)
+                                string Prefix = level.Session.Area.LevelSet;
+                                int chapterIndex = level.Session.Area.ChapterIndex == -1 ? 0 : level.Session.Area.ChapterIndex;
+                                string[] str = flag.Split('_');
+                                if (str[0] == Prefix && str[1] == "Ch" + chapterIndex)
                                 {
-                                    result = flag.Remove(i, toRemove.Length);
+                                    string toRemove = str[0] + "_" + str[1] + "_";
+                                    string result = string.Empty;
+                                    int i = flag.IndexOf(toRemove);
+                                    if (i >= 0)
+                                    {
+                                        result = flag.Remove(i, toRemove.Length);
+                                    }
+                                    level.Session.SetFlag(result, false);
                                 }
-                                level.Session.SetFlag(result, false);
                             }
                         }
 
@@ -4226,151 +4312,151 @@ namespace Celeste.Mod.XaphanHelper
                             {
                                 ModSettings.PowerGrip = true;
                                 level.Session.SetFlag("Upgrade_PowerGrip", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_PowerGrip_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_PowerGrip");
                             }
                             if (goldenClimbingKit)
                             {
                                 ModSettings.ClimbingKit = true;
                                 level.Session.SetFlag("Upgrade_ClimbingKit", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_ClimbingKit_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_ClimbingKit");
                             }
                             if (goldenSpiderMagnet)
                             {
                                 ModSettings.SpiderMagnet = true;
                                 level.Session.SetFlag("Upgrade_SpiderMagnet", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_SpiderMagnet_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_SpiderMagnet");
                             }
                             if (goldenDroneTeleport)
                             {
                                 ModSettings.DroneTeleport = true;
                                 level.Session.SetFlag("Upgrade_DroneTeleport", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_DroneTeleport_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_DroneTeleport");
                             }
                             if (goldenJumpBoost)
                             {
                                 ModSettings.JumpBoost = true;
                                 level.Session.SetFlag("Upgrade_JumpBoost", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_JumpBoost_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_JumpBoost");
                             }
                             if (goldenScrewAttack)
                             {
                                 ModSettings.ScrewAttack = true;
                                 level.Session.SetFlag("Upgrade_ScrewAttack", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_ScrewAttack_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_ScrewAttack");
                             }
                             if (goldenVariaJacket)
                             {
                                 ModSettings.VariaJacket = true;
                                 level.Session.SetFlag("Upgrade_VariaJacket", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_VariaJacket_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_VariaJacket");
                             }
                             if (goldenGravityJacket)
                             {
                                 ModSettings.GravityJacket = true;
                                 level.Session.SetFlag("Upgrade_GravityJacket", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_GravityJacket_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_GravityJacket");
                             }
                             if (goldenBombs)
                             {
                                 ModSettings.Bombs = true;
                                 level.Session.SetFlag("Upgrade_Bombs", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_Bombs_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_Bombs");
                             }
                             if (goldenMegaBombs)
                             {
                                 ModSettings.MegaBombs = true;
                                 level.Session.SetFlag("Upgrade_MegaBombs", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_MegaBombs_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_MegaBombs");
                             }
                             if (goldenRemoteDrone)
                             {
                                 ModSettings.RemoteDrone = true;
                                 level.Session.SetFlag("Upgrade_RemoteDrone", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_RemoteDrone_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_RemoteDrone");
                             }
                             if (goldenGoldenFeather)
                             {
                                 ModSettings.GoldenFeather = true;
                                 level.Session.SetFlag("Upgrade_GoldenFeather", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_GoldenFeather_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_GoldenFeather");
                             }
                             if (goldenBinoculars)
                             {
                                 ModSettings.Binoculars = true;
                                 level.Session.SetFlag("Upgrade_Binoculars", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_Binoculars_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_Binoculars");
                             }
                             if (goldenEtherealDash)
                             {
                                 ModSettings.EtherealDash = true;
                                 level.Session.SetFlag("Upgrade_EtherealDash", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_EtherealDash_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_EtherealDash");
                             }
                             if (goldenPortableStation)
                             {
                                 ModSettings.PortableStation = true;
                                 level.Session.SetFlag("Upgrade_PortableStation", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_PortableStation_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_PortableStation");
                             }
                             if (goldenPulseRadar)
                             {
                                 ModSettings.PulseRadar = true;
                                 level.Session.SetFlag("Upgrade_PulseRadar", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_PulseRadar_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_PulseRadar");
                             }
                             if (goldenDashBoots)
                             {
                                 ModSettings.DashBoots = true;
                                 level.Session.SetFlag("Upgrade_DashBoots", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_DashBoots_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_DashBoots");
                             }
                             if (goldenSpaceJump)
                             {
                                 ModSettings.SpaceJump = 2;
                                 level.Session.SetFlag("Upgrade_SpaceJump", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_SpaceJump_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_SpaceJump");
                             }
                             if (goldenHoverJet)
                             {
                                 ModSettings.HoverJet = true;
                                 level.Session.SetFlag("Upgrade_HoverJet", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_HoverJet_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_HoverJet");
                             }
                             if (goldenLightningDash)
                             {
                                 ModSettings.LightningDash = true;
                                 level.Session.SetFlag("Upgrade_LightningDash", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_LightningDash_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_LightningDash");
                             }
                             if (goldenLongBeam)
                             {
                                 ModSettings.LongBeam = true;
                                 level.Session.SetFlag("Upgrade_LongBeam", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_LongBeam_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_LongBeam");
                             }
                             if (goldenIceBeam)
                             {
                                 ModSettings.IceBeam = true;
                                 level.Session.SetFlag("Upgrade_IceBeam", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_IceBeam_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_IceBeam");
                             }
                             if (goldenWaveBeam)
                             {
                                 ModSettings.WaveBeam = true;
                                 level.Session.SetFlag("Upgrade_WaveBeam", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_WaveBeam_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_WaveBeam");
                             }
                             if (goldenMissilesModule)
                             {
                                 ModSettings.MissilesModule = true;
                                 level.Session.SetFlag("Upgrade_MissilesModule", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_MissilesModule_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_MissilesModule");
                             }
                             if (goldenSuperMissilesModule)
                             {
                                 ModSettings.SuperMissilesModule = true;
                                 level.Session.SetFlag("Upgrade_SuperMissilesModule", true);
-                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_SuperMissilesModule_GoldenStrawberry");
+                                ModSaveData.SavedFlags.Add(level.Session.Area.LevelSet + "_Upgrade_SuperMissilesModule");
                             }
                         }
                     }
@@ -4395,7 +4481,7 @@ namespace Celeste.Mod.XaphanHelper
             }
             if (useUpgrades && self.Golden)
             {
-                PlayerHasGolden = MergedChaptersGoldenStrawberry.StartChapter == -999 ? false : true;
+                PlayerHasGolden = ModSaveData.GoldenStartChapter == -999 ? false : true;
                 orig(self);
             }
             else
@@ -4416,7 +4502,7 @@ namespace Celeste.Mod.XaphanHelper
                     MapData MapData = AreaData.Areas[area.ID].Mode[(int)area.Mode].MapData;
                     GiveUpgradesToPlayer(MapData, self.SceneAs<Level>());
                 }
-                if (useMergeChaptersController)
+                /*if (useMergeChaptersController)
                 {
                     self.SceneAs<Level>().Session.Time += ModSaveData.PreGoldenTimer;
                     foreach (EntityID entity in self.SceneAs<Level>().Session.DoNotLoad)
@@ -4428,7 +4514,7 @@ namespace Celeste.Mod.XaphanHelper
                         self.SceneAs<Level>().Session.DoNotLoad.Add(entity);
                     }
                     ModSaveData.PreGoldenTimer = 0;
-                }
+                }*/
             }
         }
 
@@ -4574,6 +4660,10 @@ namespace Celeste.Mod.XaphanHelper
 
         private Backdrop OnLoadBackdrop(MapData map, BinaryPacker.Element child, BinaryPacker.Element super)
         {
+            if (child.Name.Equals("XaphanHelper/Heat", StringComparison.OrdinalIgnoreCase))
+            {
+                return new Heat();
+            }
             if (child.Name.Equals("XaphanHelper/HeatParticles", StringComparison.OrdinalIgnoreCase))
             {
                 return new HeatParticles(child.Attr("particlesColors"), child.AttrInt("particlesAmount"), child.AttrBool("noMist"));

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using Celeste.Mod.Entities;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
@@ -9,6 +8,7 @@ using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.Entities
 {
+    [Tracked(true)]
     [CustomEntity("XaphanHelper/CustomBounceBlock")]
     public class CustomBounceBlock : Solid
     {
@@ -203,6 +203,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string Directory;
 
+        private Dictionary<StaticMover, Vector2> StaticMoversPositions = new();
+
         public CustomBounceBlock(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, safe: false)
         {
             Directory = data.Attr("directory", "objects/bumpblocknew");
@@ -227,6 +229,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
             coldCenterSprite.Visible = false;
             Add(coldCenterSprite);
             Add(new CoreModeListener(OnChangeMode));
+        }
+
+        public override void Awake(Scene scene)
+        {
+            base.Awake(scene);
+            foreach (StaticMover staticMover in staticMovers)
+            {
+                StaticMoversPositions.Add(staticMover, staticMover.Entity.Position);
+            }
         }
 
         private List<Image> BuildSprite(MTexture source)
@@ -412,7 +423,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 moveSpeed = Calc.Approach(moveSpeed, 140f, 800f * Engine.DeltaTime);
                 Vector2 vector4 = startPos + bounceDir * 24f;
                 Vector2 vector5 = Calc.Approach(ExactPosition, vector4, moveSpeed * Engine.DeltaTime);
-                bounceLift = (vector5 - ExactPosition).SafeNormalize(Math.Min(moveSpeed * 3f, 200f));
+                bounceLift = (vector5 - ExactPosition).SafeNormalize(Math.Min(moveSpeed * 3f, 200f * bounceStrengthMultiplier));
                 bounceLift.X *= 0.75f;
                 MoveTo(vector5, bounceLift * bounceStrengthMultiplier);
                 windUpProgress = 1f;
@@ -465,6 +476,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        public void Bounce(Vector2 direction, bool respawn)
+        {
+            bounceDir = direction;
+            state = States.Bouncing;
+            if (!respawn)
+            {
+                Break(false);
+            }
+        }
+
         public IEnumerator EndRespawnTimer(Vector2 position)
         {
             while (respawnTimer > 0f)
@@ -484,7 +505,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Depth = -9000;
             foreach (StaticMover staticMover in staticMovers)
             {
-                staticMover.Move(Position - staticMover.Entity.Position);
+                staticMover.Entity.Position = StaticMoversPositions[staticMover];
             }
             EnableStaticMovers();
             Collidable = true;
@@ -508,7 +529,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Player WindUpPlayerCheck()
         {
-            Player player = CollideFirst<Player>(Position - Vector2.UnitY);
+            Player player = GetPlayerOnTop();
             if (player != null && player.Speed.Y < 0f)
             {
                 player = null;
@@ -539,7 +560,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
-        private void Break()
+        private void Break(bool respawn = true)
         {
             if (!iceMode)
             {
@@ -578,7 +599,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     level.Particles.Emit(iceMode ? BounceBlock.P_IceBreak : BounceBlock.P_FireBreak, vector, direction2);
                 }
             }
-            outlineFader.Replace(OutlineFade(1f));
+            if (!respawn)
+            {
+                RemoveSelf();
+            }
+            else
+            {
+                outlineFader.Replace(OutlineFade(1f));
+            }
         }
 
         private IEnumerator OutlineFade(float to)

@@ -68,22 +68,22 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         public bool BossDefeated()
         {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch2_Boss_Defeated" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch2_Boss_Defeated");
         }
 
         public bool BossDefeatedCM()
         {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch2_Boss_Defeated_CM" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch2_Boss_Defeated_CM");
         }
 
         public bool SpaceJumpCollected()
         {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_SpaceJump" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_SpaceJump");
         }
 
         public bool DashBootsCollected()
         {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots");
         }
 
         public bool HadDashBoots;
@@ -102,7 +102,7 @@ namespace Celeste.Mod.XaphanHelper.Events
             cellingRight = level.Entities.FindFirst<TempleCrackedBlock>();
             cellingRightSprite = level.Entities.FindFirst<CoverupWall>();
             booster = new Booster(bounds, true);
-            refill = new CustomRefill(bounds, "Max Dashes", false, 2.5f);
+            refill = new CustomRefill(bounds, "Max Dashes", false, 2.5f, 5);
             jumpThru1 = new JumpthruPlatform(bounds + new Vector2(144f, 80f), 32, "Xaphan/abyss_a", 8);
             jumpThru2 = new JumpthruPlatform(bounds + new Vector2(64f, 160f), 24, "Xaphan/abyss_a", 8);
             jumpThru3 = new JumpthruPlatform(bounds + new Vector2(232f, 160f), 24, "Xaphan/abyss_a", 8);
@@ -261,7 +261,7 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         public IEnumerator Cutscene(Level level)
         {
-            if (!BossDefeated() || HasGolden() || (BossDefeated() && (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))))
+            if (!BossDefeated() || (BossDefeated() && (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))))
             {
                 level.Add(cellingTopSprite);
                 if (level.Session.GetFlag("boss_Checkpoint"))
@@ -538,13 +538,6 @@ namespace Celeste.Mod.XaphanHelper.Events
                         {
                             XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch2_Boss_Defeated");
                         }
-                        if (XaphanModule.PlayerHasGolden)
-                        {
-                            if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated_GoldenStrawberry"))
-                            {
-                                XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch2_Boss_Defeated_GoldenStrawberry");
-                            }
-                        }
                     }
                     level.Session.SetFlag("Boss_Defeated", true);
                     if (level.Session.GetFlag("boss_Challenge_Mode"))
@@ -553,13 +546,6 @@ namespace Celeste.Mod.XaphanHelper.Events
                         if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated_CM"))
                         {
                             XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch2_Boss_Defeated_CM");
-                        }
-                        if (XaphanModule.PlayerHasGolden)
-                        {
-                            if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated_CM_GoldenStrawberry"))
-                            {
-                                XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch2_Boss_Defeated_CM_GoldenStrawberry");
-                            }
                         }
                     }
                     level.Session.SetFlag("In_bossfight", false);
@@ -578,7 +564,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                 }
                 level.Session.SetFlag("boss_Normal_Mode_Given_Up", false);
                 level.Session.SetFlag("boss_Challenge_Mode_Given_Up", false);
-                if (XaphanModule.ModSettings.ShowMiniMap)
+                if (XaphanModule.ModSettings.SoCMShowMiniMap)
                 {
                     MapDisplay mapDisplay = SceneAs<Level>().Tracker.GetEntity<MapDisplay>();
                     if (mapDisplay != null)

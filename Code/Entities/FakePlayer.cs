@@ -35,21 +35,24 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public override void Update()
         {
-            List<Entity> fakePlayerPlatforms = Scene.Tracker.GetEntities<FakePlayerPlatform>().ToList();
-            List<Entity> playerPlatforms = Scene.Tracker.GetEntities<PlayerPlatform>().ToList();
-            fakePlayerPlatforms.ForEach(entity => entity.Collidable = true);
-            playerPlatforms.ForEach(entity => entity.Collidable = false);
-            base.Update();
-            if (startSleep)
+            if (XaphanModule.ModSaveData.droneStartRoom.ContainsKey(SceneAs<Level>().Session.Area.LevelSet) && SceneAs<Level>().Session.Level == XaphanModule.ModSaveData.droneStartRoom[SceneAs<Level>().Session.Area.LevelSet])
             {
-                StateMachine.State = 11;
-                DummyAutoAnimate = false;
-                Sprite.Play("sleep");
-                Sprite.SetAnimationFrame(Sprite.CurrentAnimationTotalFrames - 1);
-                Depth = 100;
+                List<Entity> fakePlayerPlatforms = Scene.Tracker.GetEntities<FakePlayerPlatform>().ToList();
+                List<Entity> playerPlatforms = Scene.Tracker.GetEntities<PlayerPlatform>().ToList();
+                fakePlayerPlatforms.ForEach(entity => entity.Collidable = true);
+                playerPlatforms.ForEach(entity => entity.Collidable = false);
+                base.Update();
+                if (startSleep)
+                {
+                    StateMachine.State = 11;
+                    DummyAutoAnimate = false;
+                    Sprite.Play("sleep");
+                    Sprite.SetAnimationFrame(Sprite.CurrentAnimationTotalFrames - 1);
+                    Depth = 100;
+                }
+                fakePlayerPlatforms.ForEach(entity => entity.Collidable = false);
+                playerPlatforms.ForEach(entity => (entity as PlayerPlatform).RestoreCollisionForPlayer());
             }
-            fakePlayerPlatforms.ForEach(entity => entity.Collidable = false);
-            playerPlatforms.ForEach(entity => (entity as PlayerPlatform).RestoreCollisionForPlayer());
         }
     }
 }

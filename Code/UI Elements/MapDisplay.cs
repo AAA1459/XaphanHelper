@@ -12,6 +12,156 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
     [Tracked(true)]
     public class MapDisplay : Entity
     {
+        public class MarkerSelector : Entity
+        {
+            private Sprite MiddleSprite;
+
+            private Sprite TopSprite;
+
+            private Sprite BottomSprite;
+
+            private Sprite LeftSprite;
+
+            private Sprite RightSprite;
+
+            public string CurrentRoom;
+
+            public Vector2 TilePosition;
+
+            private MapDisplay mapDisplay;
+
+            public bool HoverExistingMarker;
+
+            public string HoverExistingMarkerRoom;
+
+            public Vector2 HoverExistingMarkerPosition;
+
+            public bool Focused;
+
+            public MarkerSelector(Vector2 position, string currentRoom, Vector2 playerPosition, MapDisplay mapDisplay) : base(position)
+            {
+                Tag = Tags.HUD;
+                CurrentRoom = currentRoom;
+                TilePosition = playerPosition;
+                this.mapDisplay = mapDisplay;
+                Add(MiddleSprite = new Sprite(GFX.Gui, "maps/"));
+                MiddleSprite.AddLoop("select", "select", 0.08f);
+                MiddleSprite.Position = new Vector2(playerPosition.X, playerPosition.Y) * 40f;
+                MiddleSprite.Play("select");
+                Add(TopSprite = new Sprite(GFX.Gui, "maps/"));
+                TopSprite.AddLoop("arrow", "arrow", 0.08f);
+                TopSprite.Position = new Vector2(playerPosition.X, playerPosition.Y) * 40f - Vector2.UnitY * 40f + Vector2.One * 20f;
+                TopSprite.CenterOrigin();
+                TopSprite.Play("arrow");
+                Add(BottomSprite = new Sprite(GFX.Gui, "maps/"));
+                BottomSprite.AddLoop("arrow", "arrow", 0.08f);
+                BottomSprite.Position = new Vector2(playerPosition.X, playerPosition.Y) * 40f + Vector2.UnitY * 40f + Vector2.One * 20f;
+                BottomSprite.CenterOrigin();
+                BottomSprite.Rotation = (float)Math.PI;
+                BottomSprite.Play("arrow");
+                Add(LeftSprite = new Sprite(GFX.Gui, "maps/"));
+                LeftSprite.AddLoop("arrow", "arrow", 0.08f);
+                LeftSprite.Position = new Vector2(playerPosition.X, playerPosition.Y) * 40f - Vector2.UnitX * 40f + Vector2.One * 20f;
+                LeftSprite.CenterOrigin();
+                LeftSprite.Rotation = -(float)Math.PI / 2;
+                LeftSprite.Play("arrow");
+                Add(RightSprite = new Sprite(GFX.Gui, "maps/"));
+                RightSprite.AddLoop("arrow", "arrow", 0.08f);
+                RightSprite.Position = new Vector2(playerPosition.X, playerPosition.Y) * 40f + Vector2.UnitX * 40f + Vector2.One * 20f;
+                RightSprite.CenterOrigin();
+                RightSprite.Rotation = (float)Math.PI / 2;
+                RightSprite.Play("arrow");
+                Depth = -10003;
+            }
+
+            public override void Added(Scene scene)
+            {
+                base.Added(scene);
+                CheckIfMarker();
+            }
+
+            public void CheckIfMarker()
+            {
+                Vector2 selectorPosition = mapDisplay.CalcRoomPosition(mapDisplay.GetRoomPosition(CurrentRoom) + (mapDisplay.roomIsAdjusted(CurrentRoom) ? mapDisplay.GetAdjustedPosition(CurrentRoom) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition) + TilePosition * 40;
+                HashSet<string> markers = XaphanModule.ModSaveData.Markers.ContainsKey(mapDisplay.Prefix) ? XaphanModule.ModSaveData.Markers[mapDisplay.Prefix] : null;
+                if (markers != null)
+                {
+                    HoverExistingMarker = false;
+                    foreach (string marker in markers)
+                    {
+                        int chapterIndex = int.Parse(marker.Split(':')[0]);
+                        string room = marker.Split(':')[1];
+                        Vector2 position = new Vector2(int.Parse(marker.Split(':')[2]), int.Parse(marker.Split(':')[3]));
+                        if (chapterIndex == mapDisplay.chapterIndex && (mapDisplay.CalcRoomPosition(mapDisplay.GetRoomPosition(room) + (mapDisplay.roomIsAdjusted(room) ? mapDisplay.GetAdjustedPosition(room) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition) + position * 40f) == selectorPosition)
+                        {
+                            HoverExistingMarker = true;
+                            HoverExistingMarkerRoom = room;
+                            HoverExistingMarkerPosition = position;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            public override void Update()
+            {
+                base.Update();
+                if (Focused)
+                {
+                    Vector2 previousPosition = Position;
+                    if (Input.MenuLeft.Pressed && Position.X >= 141f)
+                    {
+                        Position.X -= 40f;
+                        TilePosition.X -= 1f;
+                        CheckIfMarker();
+                    }
+                    else if (Input.MenuRight.Pressed && Position.X <= 1741f)
+                    {
+                        Position.X += 40f;
+                        TilePosition.X += 1f;
+                        CheckIfMarker();
+                    }
+                    else if (Input.MenuUp.Pressed && Position.Y >= 221f)
+                    {
+                        Position.Y -= 40f;
+                        TilePosition.Y -= 1f;
+                        CheckIfMarker();
+                    }
+                    else if (Input.MenuDown.Pressed && Position.Y <= 941f)
+                    {
+                        Position.Y += 40f;
+                        TilePosition.Y += 1f;
+                        CheckIfMarker();
+                    }
+                    if (Position != previousPosition)
+                    {
+                        Audio.Play("event:/ui/main/rollover_up");
+                    }
+                }
+            }
+
+            public override void Render()
+            {
+                MiddleSprite.Render();
+                if (Position.X >= 141f)
+                {
+                    LeftSprite.Render();
+                }
+                if (Position.X <= 1741f)
+                {
+                    RightSprite.Render();
+                }
+                if (Position.Y >= 221f)
+                {
+                    TopSprite.Render();
+                }
+                if (Position.Y <= 941f)
+                {
+                    BottomSprite.Render();
+                }
+            }
+        }
+
         private Level level;
 
         public MapData MapData;
@@ -37,6 +187,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public List<InGameMapEntitiesData> EntitiesData = new();
 
         public List<InGameMapIconsData> Icons = new();
+
+        public List<InGameMapMarkersData> Markers = new();
 
         public List<InGameMapTilesData> TilesImage = new();
 
@@ -168,6 +320,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public bool NoGrid;
 
+        public bool ConnectionTilesOnly;
+
+        public bool MarkerSelectionMode;
+
+        public MarkerSelector markerSelector;
+
         public MapDisplay(Level level, string mode, int chapter = -1, bool noGrid = false, bool noIndicator = false)
         {
             NoGrid = noGrid;
@@ -286,12 +444,26 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public static void UpdateIcons(Entity entity)
         {
-            if (XaphanModule.ModSettings.ShowMiniMap)
+            if (entity.SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMShowMiniMap : XaphanModule.ModSettings.ShowMiniMap)
             {
                 MapDisplay mapDisplay = entity.SceneAs<Level>().Tracker.GetEntity<MapDisplay>();
                 if (mapDisplay != null)
                 {
                     mapDisplay.GenerateIcons();
+                }
+            }
+        }
+
+        public static void UpdateTiles(Entity entity)
+        {
+            if (entity.SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMShowMiniMap : XaphanModule.ModSettings.ShowMiniMap)
+            {
+                MapDisplay mapDisplay = entity.SceneAs<Level>().Tracker.GetEntity<MapDisplay>();
+                if (mapDisplay != null)
+                {
+                    mapDisplay.HeatedRooms.Clear();
+                    mapDisplay.GetHeatedRooms();
+                    mapDisplay.GenerateTiles();
                 }
             }
         }
@@ -572,6 +744,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     {
                         EntitiesData.Add(new InGameMapEntitiesData(chapterIndex, level.Name, level, "bigScreen", new Vector2(entity.Position.X, entity.Position.Y), new Vector2((float)Math.Floor(entity.Position.X / ScreenTilesX), (float)Math.Floor(entity.Position.Y / ScreenTilesY))));
                     }
+                    else if (entity.Name == "XaphanHelper/JournalPedestal")
+                    {
+                        EntitiesData.Add(new InGameMapEntitiesData(chapterIndex, level.Name, level, "journalPedestal", new Vector2(entity.Position.X, entity.Position.Y), new Vector2((float)Math.Floor(entity.Position.X / ScreenTilesX), (float)Math.Floor(entity.Position.Y / ScreenTilesY))));
+                    }
                 }
             }
         }
@@ -584,8 +760,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     if (entity.Name == "XaphanHelper/HeatController")
                     {
-                        HeatedRooms.Add(level.Name);
-                        break;
+                        string inactiveFlag = entity.Attr("inactiveFlag");
+                        if ((!string.IsNullOrEmpty(inactiveFlag) && !this.level.Session.GetFlag(inactiveFlag)) || string.IsNullOrEmpty(inactiveFlag))
+                        {
+                            HeatedRooms.Add(level.Name);
+                            break;
+                        }
                     }
                 }
             }
@@ -1105,7 +1285,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 BeforeHintsMostTopRoomY = MostTopRoomY;
                 BeforeHintsMostRightRoomX = MostRightRoomX;
                 BeforeHintsMostBottomRoomY = MostBottomRoomY;
-                if (ShowHints)
+                if (ShowHints && !ConnectionTilesOnly)
                 {
                     foreach (InGameMapHintControllerData hint in HintControllerData)
                     {
@@ -1213,10 +1393,208 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             return mapShards;
         }
 
+        public void GenerateConnectionTiles()
+        {
+            TilesImage.Clear();
+            List<int> mapShards = GetUnlockedMapShards();
+            foreach (LevelData level in MapData.Levels)
+            {
+                getMapColors(level.Name);
+                if (XaphanModule.ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + level.Name) || (ExtraUnexploredRooms.Contains("Ch" + chapterIndex + "/" + level.Name)) || (InGameMapControllerData.RevealUnexploredRooms && !roomIsSecret(level.Name)) || ForceRevealUnexploredRooms)
+                {
+                    List<InGameMapTilesData> ToDelete = new();
+                    List<string> TilesTypes = GetTilesType(level.Name);
+                    List<Vector2> TilesPosition = GetTilesPosition(level.Name);
+                    Color color = Color.Transparent;
+                    for (int i = 0; i <= TilesTypes.Count - 1; i++)
+                    {
+                        if (XaphanModule.ModSaveData.VisitedRoomsTiles.Contains(Prefix + "/Ch" + chapterIndex + "/" + level.Name + "-" + TilesPosition[i].X + "-" + TilesPosition[i].Y) || ForceRevealUnexploredRooms)
+                        {
+                            if (HeatedRooms.Contains(level.Name))
+                            {
+                                color = HeatedRoomColor;
+                            }
+                            else
+                            {
+                                if (roomIsSecret(level.Name))
+                                {
+                                    color = SecretRoomColor;
+                                }
+                                else
+                                {
+                                    color = ExploredRoomColor;
+                                }
+                            }
+                        }
+                        else if (ExtraUnexploredRooms.Contains("Ch" + chapterIndex + "/" + level.Name))
+                        {
+                            color = UnexploredRoomColor;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                        if (roomHasAdjustController(level.Name))
+                        {
+                            bool hideTile = false;
+                            string[] tiles = GetHiddenTiles(level.Name).Split(',');
+                            foreach (string tile in tiles)
+                            {
+                                if (!string.IsNullOrEmpty(tile))
+                                {
+                                    string[] str = tile.Split('-');
+                                    int tileX = int.Parse(str[0]);
+                                    int tileY = int.Parse(str[1]);
+                                    if (tileX == TilesPosition[i].X && tileY == TilesPosition[i].Y)
+                                    {
+                                        if (color == UnexploredRoomColor)
+                                        {
+                                            hideTile = true;
+                                        }
+                                        else
+                                        {
+                                            color = SecretRoomColor;
+                                        }
+                                    }
+                                }
+                            }
+                            if (hideTile)
+                            {
+                                continue;
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(TilesTypes[i]) && TilesTypes[i] != "None")
+                        {
+                            string BG_Pattern = null;
+                            Color BG_Color = Color.Transparent;
+                            string Elevator_BG = null;
+                            Color Elevator_Color = Color.Transparent;
+                            if (TilesTypes[i] == "ElevatorShaft")
+                            {
+                                Elevator_BG = TilesTypes[i];
+                                Elevator_Color = ElevatorColor;
+                            }
+                            foreach (InGameMapTilesData tile in TilesImage)
+                            {
+                                if (tile.Room == level.Name && tile.Position == Vector2.One + TilesPosition[i] * 40)
+                                {
+                                    if (tile.BackgroundColor != color)
+                                    {
+                                        ToDelete.Add(tile);
+                                    }
+                                }
+                            }
+                            foreach (InGameMapTilesData tile in ToDelete)
+                            {
+                                TilesImage.Remove(tile);
+                            }
+                            if (TilesTypes.Contains("HorizontalAreaConnection") || TilesTypes.Contains("VerticalAreaConnection") || TilesTypes.Contains("ElevatorShaft"))
+                            {
+                                TilesImage.Add(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i]]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color));
+                            }
+                        }
+                    }
+                }
+                foreach (int mapShard in mapShards)
+                {
+                    if ((UnexploredRooms.Contains("Ch" + chapterIndex + "/" + level.Name + ":" + mapShard) && (MapCollected || RevealUnexploredRooms())))
+                    {
+                        List<InGameMapTilesData> ToDelete = new();
+                        List<string> TilesTypes = GetTilesType(level.Name);
+                        List<Vector2> TilesPosition = GetTilesPosition(level.Name);
+                        Color color = Color.Transparent;
+                        for (int i = 0; i <= TilesTypes.Count - 1; i++)
+                        {
+                            if (!XaphanModule.ModSaveData.VisitedRoomsTiles.Contains(Prefix + "/Ch" + chapterIndex + "/" + level.Name + "-" + TilesPosition[i].X + "-" + TilesPosition[i].Y))
+                            {
+                                if (UnexploredRooms.Contains("Ch" + chapterIndex + "/" + level.Name + ":" + mapShard))
+                                {
+                                    if (MapCollected || RevealUnexploredRooms())
+                                    {
+                                        color = UnexploredRoomColor;
+                                    }
+                                    else
+                                    {
+                                        continue;
+                                    }
+                                }
+                                else
+                                {
+                                    continue;
+                                }
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                            if (roomHasAdjustController(level.Name))
+                            {
+                                bool hideTile = false;
+                                string[] tiles = GetHiddenTiles(level.Name).Split(',');
+                                foreach (string tile in tiles)
+                                {
+                                    if (!string.IsNullOrEmpty(tile))
+                                    {
+                                        string[] str = tile.Split('-');
+                                        int tileX = int.Parse(str[0]);
+                                        int tileY = int.Parse(str[1]);
+                                        if (tileX == TilesPosition[i].X && tileY == TilesPosition[i].Y)
+                                        {
+                                            if (color == UnexploredRoomColor)
+                                            {
+                                                hideTile = true;
+                                            }
+                                            else
+                                            {
+                                                color = SecretRoomColor;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (hideTile)
+                                {
+                                    continue;
+                                }
+                            }
+                            if (!string.IsNullOrEmpty(TilesTypes[i]) && TilesTypes[i] != "None")
+                            {
+                                string BG_Pattern = null;
+                                Color BG_Color = Color.Transparent;
+                                string Elevator_BG = null;
+                                Color Elevator_Color = Color.Transparent;
+                                if (TilesTypes[i] == "ElevatorShaft")
+                                {
+                                    Elevator_BG = TilesTypes[i];
+                                    Elevator_Color = ElevatorColor;
+                                }
+                                foreach (InGameMapTilesData tile in TilesImage)
+                                {
+                                    if (tile.Room == level.Name && tile.Position == Vector2.One + TilesPosition[i] * 40)
+                                    {
+                                        if (tile.BackgroundColor != color)
+                                        {
+                                            ToDelete.Add(tile);
+                                        }
+                                    }
+                                }
+                                foreach (InGameMapTilesData tile in ToDelete)
+                                {
+                                    TilesImage.Remove(tile);
+                                }
+                                if (TilesTypes.Contains("HorizontalAreaConnection") || TilesTypes.Contains("VerticalAreaConnection") || TilesTypes.Contains("ElevatorShaft"))
+                                {
+                                    TilesImage.Add(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i]]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         public void GenerateTiles()
         {
             TilesImage.Clear();
-            List<InGameMapTilesData> ConnectionTiles = new();
             List<int> mapShards = GetUnlockedMapShards();
             foreach (LevelData level in MapData.Levels)
             {
@@ -1312,7 +1690,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 Elevator_BG = "Elevator";
                                 Elevator_Color = ElevatorColor;
                             }
-                            else if (TilesTypes[i] == "UpArrow" || TilesTypes[i] == "DownArrow" || TilesTypes[i] == "LeftArrow" || TilesTypes[i] == "RightArrow" || TilesTypes[i] == "HorizontalAreaConnection" || TilesTypes[i] == "VerticalAreaConnection")
+                            else if (TilesTypes[i] == "UpArrow" || TilesTypes[i] == "DownArrow" || TilesTypes[i] == "LeftArrow" || TilesTypes[i] == "RightArrow")
                             {
                                 BG_Pattern = null;
                                 BG_Color = Color.Transparent;
@@ -1362,13 +1740,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             {
                                 TilesImage.Remove(tile);
                             }
-                            if (TilesTypes.Contains("HorizontalAreaConnection") || TilesTypes.Contains("VerticalAreaConnection"))
+                            if (!TilesTypes.Contains("HorizontalAreaConnection") && !TilesTypes.Contains("VerticalAreaConnection"))
                             {
-                                ConnectionTiles.Add(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color));
-                            }
-                            else if (!TilesImage.Contains(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color)))
-                            {
-                                TilesImage.Add(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color));
+                                if (!TilesImage.Contains(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color)))
+                                {
+                                    TilesImage.Add(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color));
+                                }
                             }
                         }
                     }
@@ -1462,7 +1839,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                     Elevator_BG = "Elevator";
                                     Elevator_Color = ElevatorColor;
                                 }
-                                else if (TilesTypes[i] == "UpArrow" || TilesTypes[i] == "DownArrow" || TilesTypes[i] == "LeftArrow" || TilesTypes[i] == "RightArrow" || TilesTypes[i] == "HorizontalAreaConnection" || TilesTypes[i] == "VerticalAreaConnection")
+                                else if (TilesTypes[i] == "UpArrow" || TilesTypes[i] == "DownArrow" || TilesTypes[i] == "LeftArrow" || TilesTypes[i] == "RightArrow")
                                 {
                                     BG_Pattern = null;
                                     BG_Color = Color.Transparent;
@@ -1512,21 +1889,18 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 {
                                     TilesImage.Remove(tile);
                                 }
-                                if (TilesTypes.Contains("HorizontalAreaConnection") || TilesTypes.Contains("VerticalAreaConnection"))
+                                if (!TilesTypes.Contains("HorizontalAreaConnection") && !TilesTypes.Contains("VerticalAreaConnection"))
                                 {
-                                    ConnectionTiles.Add(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color));
-                                }
-                                else if (!TilesImage.Contains(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color)))
-                                {
-                                    TilesImage.Add(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color));
+                                    if (!TilesImage.Contains(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color)))
+                                    {
+                                        TilesImage.Add(new InGameMapTilesData(level.Name, TilesTypes[i] == "Middle" ? null : new Image(GFX.Gui["maps/tiles/borders/" + TilesTypes[i] + Entrance]), Vector2.One + TilesPosition[i] * 40, RoomBorderColor, BG_Pattern, BG_Color, Elevator_BG, Elevator_Color));
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-            ConnectionTiles.AddRange(TilesImage);
-            TilesImage = ConnectionTiles;
         }
 
         public void GenerateEntrances() // Only if not using a TilesController
@@ -1632,6 +2006,23 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
         }
 
+        public void GenerateMarkers()
+        {
+            Markers.Clear();
+            if (XaphanModule.ModSaveData.Markers.ContainsKey(Prefix))
+            {
+                HashSet<string> markers = XaphanModule.ModSaveData.Markers[Prefix];
+                foreach (string marker in markers)
+                {
+                    int chapterIndex = int.Parse(marker.Split(':')[0]);
+                    string room = marker.Split(':')[1];
+                    Vector2 position = new Vector2(int.Parse(marker.Split(':')[2]), int.Parse(marker.Split(':')[3]));
+                    string type = marker.Split(':')[4];
+                    Markers.Add(new InGameMapMarkersData(chapterIndex, room, position * 40f, type));
+                }
+            }
+        }
+
         public void GenerateIcons()
         {
             Icons.Clear();
@@ -1732,6 +2123,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         {
                             Icons.Add(new InGameMapIconsData("bigScreen", entity.Room, Vector2.One + entity.MapTilesPosition * 40, false));
                         }
+                        else if (entity.Type.Contains("journalPedestal"))
+                        {
+                            Icons.Add(new InGameMapIconsData("journalPedestal", entity.Room, Vector2.One + entity.MapTilesPosition * 40, false));
+                        }
                     }
                 }
                 if (!InGameMapControllerData.HideIconsInUnexploredRooms)
@@ -1816,6 +2211,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 {
                                     Icons.Add(new InGameMapIconsData("bigScreen", entity.Room, Vector2.One + entity.MapTilesPosition * 40, false));
                                 }
+                                else if (entity.Type.Contains("journalPedestal"))
+                                {
+                                    Icons.Add(new InGameMapIconsData("journalPedestal", entity.Room, Vector2.One + entity.MapTilesPosition * 40, false));
+                                }
                             }
                         }
                     }
@@ -1844,7 +2243,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
         }
 
-        public IEnumerator GenerateMap()
+        public IEnumerator GenerateMap(bool connectionTiles = false)
         {
             if (mode == "map" || mode == "worldmap")
             {
@@ -1855,9 +2254,17 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 SetCurrentRoomCoordinates(Vector2.Zero);
             }
-            GenerateTiles();
-            GenerateEntrances();
-            GenerateIcons();
+            if (connectionTiles)
+            {
+                GenerateConnectionTiles();
+            }
+            else
+            {
+                GenerateTiles();
+                GenerateEntrances();
+                GenerateIcons();
+                GenerateMarkers();
+            }
             yield return null;
             Display = true;
         }
@@ -2176,7 +2583,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         {
             if (roomHasAdjustController(room))
             {
-                if (level.Session.GetFlag("Ignore_Room_Adjust_Ch" + chapterIndex + "_" + room) || XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ignore_Room_Adjust_Ch" + chapterIndex + "_" + room))
+                if (level.Session.GetFlag("Ignore_Room_Adjust_" + chapterIndex + "_" + room) || XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ignore_Room_Adjust_Ch" + chapterIndex + "_" + room))
                 {
                     return false;
                 }
@@ -2316,6 +2723,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 XaphanModule.ModSaveData.ShowHints[Prefix] = false;
             }
+            if (!XaphanModule.ModSaveData.ShowMarkers.ContainsKey(Prefix))
+            {
+                XaphanModule.ModSaveData.ShowMarkers[Prefix] = true;
+            }
             useHintsCheck(level);
             if (useHints && XaphanModule.ModSaveData.ShowHints[Prefix])
             {
@@ -2328,23 +2739,27 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
         }
 
+        public void EnterMarkerMode()
+        {
+            MarkerSelectionMode = !MarkerSelectionMode;
+            if (markerSelector == null)
+            {
+                Vector2 RoomPosition = CalcRoomPosition(GetRoomPosition(currentRoom) + (roomIsAdjusted(currentRoom) ? GetAdjustedPosition(currentRoom) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
+                level.Add(markerSelector = new MarkerSelector(Vector2.One + RoomPosition, currentRoom, playerPosition, this));
+            }
+            else
+            {
+                level.Remove(markerSelector);
+                markerSelector = null;
+            }
+        }
+
         public override void Update()
         {
             base.Update();
             if (mode != "minimap")
             {
                 Opacity = 1;
-            }
-            else
-            {
-                if (useHints && XaphanModule.ModSaveData.ShowHints[Prefix])
-                {
-                    ShowHints = true;
-                }
-                else
-                {
-                    ShowHints = false;
-                }
             }
             Player player = level.Tracker.GetEntity<Player>();
             if (player != null)
@@ -2573,6 +2988,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     {
                         path = icon.Type;
                     }
+                    if (icon.Type.Contains("journalPedestal"))
+                    {
+                        path = "maps/Xaphan/0/";
+                    }
                     if (icon.Checkmark)
                     {
                         iconImage = new Image(GFX.Gui[path + icon.Type + (icon.Type == "boss" ? (BossDefeatedCM ? "DefeatedCM" : "Defeated") : (icon.Type.Contains("collectableDoor") ? "Opened" : "Collected"))]);
@@ -2601,6 +3020,50 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     else
                     {
                         iconImage.Render();
+                    }
+                }
+
+                // Markers
+
+                if (XaphanModule.ModSaveData.ShowMarkers[Prefix])
+                {
+                    foreach (InGameMapMarkersData marker in Markers)
+                    {
+                        if (marker.ChapterIndex == chapterIndex)
+                        {
+                            Vector2 RoomPosition = CalcRoomPosition(GetRoomPosition(marker.Room) + (roomIsAdjusted(marker.Room) ? GetAdjustedPosition(marker.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
+                            Vector2 IconPosition = marker.Position;
+                            if (isNotVisibleOnScreen(RoomPosition, IconPosition))
+                            {
+                                continue;
+                            }
+                            Image markerImage = null;
+                            string path = "maps/marker";
+                            markerImage = new Image(GFX.Gui[path]);
+                            switch (marker.Type)
+                            {
+                                case "0":
+                                    break;
+                                case "1":
+                                    markerImage.Color = Calc.HexToColor("4E8BFF");
+                                    break;
+                                case "2":
+                                    markerImage.Color = Calc.HexToColor("F80000");
+                                    break;
+                                case "3":
+                                    markerImage.Color = Calc.HexToColor("88F205");
+                                    break;
+                                case "4":
+                                    markerImage.Color = Calc.HexToColor("F8B000");
+                                    break;
+                                case "5":
+                                    markerImage.Color = Calc.HexToColor("7800F8");
+                                    break;
+                            }
+                            markerImage.Color *= Opacity;
+                            markerImage.Position = RoomPosition + marker.Position;
+                            markerImage.Render();
+                        }
                     }
                 }
 
@@ -2635,7 +3098,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
                 // Hints
 
-                if (ShowHints)
+                if (ShowHints && !ConnectionTilesOnly)
                 {
                     foreach (InGameMapHintControllerData hint in HintControllerData)
                     {

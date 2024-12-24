@@ -10,8 +10,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         private BadelineDummy badeline;
 
-        private Vector2 badelinEndPosition;
-
         public CS02_BossDefeated(Player player)
         {
             this.player = player;
@@ -40,40 +38,11 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                 }
             }
             string Prefix = SceneAs<Level>().Session.Area.LevelSet;
-            if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
+            if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch2_Boss_Defeated"))
             {
                 XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch2_Boss_Defeated");
-                if (XaphanModule.PlayerHasGolden)
-                {
-                    XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch2_Boss_Defeated_GoldenStrawberry");
-                }
             }
             player.StateMachine.State = 0;
-        }
-
-        public void badelineMerge(BadelineDummy badeline)
-        {
-            Audio.Play("event:/new_content/char/badeline/maddy_join_quick", badeline.Position);
-            Level.Displacement.AddBurst(badeline.Center, 0.5f, 8f, 32f, 0.5f);
-            badeline.RemoveSelf();
-        }
-
-        public void badelineFloat(int x, int y, BadelineDummy badeline, int? turnAtEndTo, bool faceDirection, bool fadeLight, bool quickEnd)
-        {
-            badelinEndPosition = new Vector2(badeline.Position.X + x, badeline.Position.Y + y);
-            Add(new Coroutine(badeline.FloatTo(badelinEndPosition, turnAtEndTo, faceDirection, fadeLight, quickEnd)));
-        }
-
-        public void badelineFloatToPlayer(BadelineDummy badeline)
-        {
-            Add(new Coroutine(badeline.FloatTo(player.Position, null, true, false, true)));
-        }
-
-        public void badelineSplit(BadelineDummy badeline)
-        {
-            Audio.Play("event:/char/badeline/maddy_split", player.Position);
-            Level.Add(badeline);
-            Level.Displacement.AddBurst(badeline.Center, 0.5f, 8f, 32f, 0.5f);
         }
 
         public IEnumerator Cutscene(Level level)
@@ -96,14 +65,9 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             player.Sprite.Play("tired");
             yield return Level.ZoomTo(new Vector2(160f, 110f), 1.5f, 1f);
             yield return Textbox.Say("Xaphan_Ch2_A_Boss_Defeated");
-            badeline = new BadelineDummy(player.Position);
-            badelineSplit(badeline);
-            badelineFloat(30, -18, badeline, -1, true, false, true);
-            while (badeline.Position != badelinEndPosition)
-            {
-                yield return 0.1f;
-            }
-            badelineFloat(-1, 0, badeline, null, true, false, false);
+            badeline = CutscenesHelper.BadelineSplit(Level, player);
+            yield return CutscenesHelper.BadelineFloat(this, 30, -18, badeline, -1, true, false, true);
+            yield return CutscenesHelper.BadelineFloat(this, -1, 0, badeline, null, true, false, false);
             yield return Textbox.Say("Xaphan_Ch2_A_Boss_Defeated_b");
             player.Sprite.Play("idle");
             player.DummyAutoAnimate = true;
@@ -112,12 +76,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             yield return 1f;
             player.Facing = Facings.Right;
             yield return Textbox.Say("Xaphan_Ch2_A_Boss_Defeated_c");
-            badelineFloatToPlayer(badeline);
-            while (badeline.Position != player.Position)
-            {
-                yield return 0.1f;
-            }
-            badelineMerge(badeline);
+            yield return CutscenesHelper.BadelineMerge(Level, player, badeline);
             yield return Level.ZoomBack(0.5f);
             EndCutscene(Level);
         }

@@ -13,25 +13,32 @@ namespace Celeste.Mod.XaphanHelper.Entities
     {
         private class Border : Entity
         {
-            private Entity[] drawing = new Entity[2];
+            private Entity entity;
 
-            public Border(Entity parent, Entity filler)
+            public Border(Entity parent)
             {
-                drawing[0] = parent;
-                drawing[1] = filler;
-                Depth = parent.Depth + 2;
+                entity = parent;
+                Depth = entity.Depth + 2;
+            }
+
+            public override void Awake(Scene scene)
+            {
+                base.Awake(scene);
+                if (entity != null && entity.GetType() == typeof(Filler))
+                {
+                    Depth = entity.Depth + 2;
+                }
             }
 
             public override void Render()
             {
-                if (drawing[0].Visible)
+                if (entity.Visible)
                 {
-                    DrawBorder(drawing[0]);
-                    DrawBorder(drawing[1]);
+                    DrawBorder();
                 }
             }
 
-            private void DrawBorder(Entity entity)
+            private void DrawBorder()
             {
                 if (entity != null)
                 {
@@ -62,6 +69,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         [Tracked(true)]
         public class Filler : Entity
         {
+            private Border border;
+
             public Filler(Vector2 position) : base(position)
             {
                 Collider = new Circle(4f);
@@ -73,12 +82,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 foreach (Entity entity in Scene.Tracker.GetEntities<Filler>())
                 {
                     Filler filler = (Filler)entity;
-                    if (CollideCheck(filler) && filler != this)
+                    if (filler.Position == Position && filler != this)
                     {
                         filler.RemoveSelf();
                     }
                 }
-                //Add(new WeaponCollider(HitByBeam, HitByMissile, Collider));
+                Scene.Add(border = new Border(this));
+                Add(new WeaponCollider(HitByBeam, HitByMissile, Collider));
             }
 
             public override void Awake(Scene scene)
@@ -97,6 +107,15 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 missile.CollideImmune(missile.Direction);
             }
 
+            public override void Removed(Scene scene)
+            {
+                if (border != null && border.Scene == scene)
+                {
+                    border.RemoveSelf();
+                }
+                base.Removed(scene);
+            }
+
             public override void DebugRender(Camera camera)
             {
                 //base.DebugRender(camera);
@@ -107,7 +126,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool AttachToSolid;
 
-        public Filler filler;
+        public List<Filler> fillers = new();
 
         private Border border;
 
@@ -212,31 +231,34 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (Scene.OnInterval(0.05f, offset))
                     {
                         Player player = Scene.Tracker.GetEntity<Player>();
-                        bool beamClose = false;
-                        bool missileClose = false;
-                        foreach (Beam beam in Scene.Tracker.GetEntities<Beam>())
+                        bool actorClose = false;
+                        float actorDistance;
+                        foreach (Actor actor in Scene.Tracker.GetEntities<Actor>())
                         {
-                            if (Math.Abs(beam.X - X) < 32f && Math.Abs(beam.Y - Y) < 32f)
+                            if (actor.GetType() == typeof(Player) || actor.GetType() == typeof(FakePlayer))
                             {
-                                beamClose = true;
+                                actorDistance = 128f;
+                            }
+                            else
+                            {
+                                actorDistance = 48f;
+                            }
+                            if (Math.Abs(actor.X - X) < actorDistance && Math.Abs(actor.Y - Y) < actorDistance)
+                            {
+                                actorClose = true;
                                 break;
                             }
                         }
-                        foreach (Missile missile in Scene.Tracker.GetEntities<Missile>())
-                        {
-                            if (Math.Abs(missile.X - X) < 32f && Math.Abs(missile.Y - Y) < 32f)
-                            {
-                                missileClose = true;
-                                break;
-                            }
-                        }
-                        Collidable = AlwaysCollidable || (player != null && Math.Abs(player.X - X) < 128f && Math.Abs(player.Y - Y) < 128f) || beamClose || missileClose;
+                        Collidable = AlwaysCollidable || actorClose;
                     }
                 }
             }
-            if (filler != null)
+            if (fillers.Count > 0)
             {
-                filler.Visible = !Hidden;
+                foreach (Filler filler in fillers)
+                {
+                    filler.Visible = !Hidden;
+                }
             }
         }
 
@@ -290,7 +312,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                     }
                 }
-                Scene.Add(border = new Border(this, filler));
+                Scene.Add(border = new Border(this));
                 expanded = true;
                 Calc.PopRandom();
             }
@@ -302,8 +324,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Image image = new(Calc.Random.Choose(atlasSubtextures));
             image.Rotation = Calc.Random.Choose(0, 1, 2, 3) * ((float)Math.PI / 2f);
             image.CenterOrigin();
-            Scene.Add(filler = new Filler(Position + offset));
+            Filler filler = new Filler(Position + offset);
             filler.Add(image);
+            Scene.Add(filler);
+            fillers.Add(filler);
         }
 
         private bool SolidCheck(Vector2 position)
@@ -325,11 +349,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void ClearSprites()
         {
-            if (filler != null)
+            if (fillers.Count > 0)
             {
-                filler.RemoveSelf();
+                foreach (Filler filler in fillers)
+                {
+                    filler.RemoveSelf();
+                }
             }
-            filler = null;
+            fillers.Clear();
             if (border != null)
             {
                 border.RemoveSelf();
@@ -375,14 +402,28 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void HitByMissile(Missile missile)
         {
-            missile.CollideImmune(missile.Direction, missile.Center.X < Center.X ? -30f : 30f);
+            if (type == "magma")
+            {
+                missile.CollideSolid(missile.Direction);
+                Destroy();
+            }
+            else
+            {
+                missile.CollideImmune(missile.Direction, missile.Center.X < Center.X ? -30f : 30f);
+            }
         }
 
         public override void Removed(Scene scene)
         {
-            if (filler != null && filler.Scene == scene)
+            if (fillers.Count > 0)
             {
-                filler.RemoveSelf();
+                foreach (Filler filler in fillers)
+                {
+                    if (filler.Scene == scene)
+                    {
+                        filler.RemoveSelf();
+                    }
+                }
             }
             if (border != null && border.Scene == scene)
             {
@@ -400,17 +441,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (type == "mines")
                 {
                     color = Calc.HexToColor("5B3311");
-                }
-                if (type != "magma")
-                {
                     CrystalDebris.Burst(Position, color, boss, 8);
                 }
-                else
+                if (type == "magma")
                 {
                     color = Calc.HexToColor("792E00");
                     CrystalDebris.Burst(Position, color, boss, 4);
                     color = Calc.HexToColor("F0900F");
                     CrystalDebris.Burst(Position, color, boss, 4);
+                }
+                else
+                {
+                    CrystalDebris.Burst(Position, color, boss, 8);
                 }
             }
             foreach (Entity entity in Scene.Tracker.GetEntities<Filler>())

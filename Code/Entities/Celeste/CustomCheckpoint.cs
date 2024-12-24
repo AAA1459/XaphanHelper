@@ -146,13 +146,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                     {
                                         XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flagDashSwitch.flag);
                                     }
-                                    if (XaphanModule.PlayerHasGolden)
-                                    {
-                                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flagDashSwitch.flag + "_GoldenStrawberry"))
-                                        {
-                                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flagDashSwitch.flag + "_GoldenStrawberry");
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -171,13 +164,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                     if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + droneSwitch.flag))
                                     {
                                         XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + droneSwitch.flag);
-                                    }
-                                    if (XaphanModule.PlayerHasGolden)
-                                    {
-                                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + droneSwitch.flag + "_GoldenStrawberry"))
-                                        {
-                                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + droneSwitch.flag + "_GoldenStrawberry");
-                                        }
                                     }
                                 }
                             }
@@ -198,13 +184,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                     {
                                         XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + bombSwitch.flag);
                                     }
-                                    if (XaphanModule.PlayerHasGolden)
-                                    {
-                                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + bombSwitch.flag + "_GoldenStrawberry"))
-                                        {
-                                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + bombSwitch.flag + "_GoldenStrawberry");
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -223,13 +202,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                     if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag))
                                     {
                                         XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag);
-                                    }
-                                    if (XaphanModule.PlayerHasGolden)
-                                    {
-                                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag + "_GoldenStrawberry"))
-                                        {
-                                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag + "_GoldenStrawberry");
-                                        }
                                     }
                                 }
                             }

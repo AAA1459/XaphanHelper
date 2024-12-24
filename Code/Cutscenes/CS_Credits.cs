@@ -32,8 +32,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             }
         }
 
-        private const int TotalItems = 57;
-
         private readonly Player player;
 
         public static CS_Credits Instance;
@@ -65,31 +63,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
         private bool FromTitleScreen;
 
         public bool Finished;
-
-        public bool DashBootsCollected(Level level)
-        {
-            return XaphanModule.ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_DashBoots");
-        }
-
-        public bool PowerGripCollected(Level level)
-        {
-            return XaphanModule.ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_PowerGrip");
-        }
-
-        public bool ClimbingKitCollected(Level level)
-        {
-            return XaphanModule.ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_ClimbingKit");
-        }
-
-        public bool BombsCollected(Level level)
-        {
-            return XaphanModule.ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_Bombs");
-        }
-
-        public bool SpaceJumpCollected(Level level)
-        {
-            return XaphanModule.ModSaveData.SavedFlags.Contains(level.Session.Area.LevelSet + "_Upgrade_SpaceJump");
-        }
 
         public CS_Credits(Player player, bool fromTitleScreen = false)
         {
@@ -133,7 +106,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             SceneAs<Level>().PauseLock = true;
             SceneAs<Level>().AllowHudHide = false;
             Audio.SetAmbience(null);
-            if (Input.ESC.Check && skipWiggleDelay <= 0f)
+            if ((Input.ESC.Pressed || Input.MenuCancel.Pressed) && skipWiggleDelay <= 0f)
             {
                 skipWiggle.Start();
                 skipWiggleDelay = 0.5f;
@@ -165,12 +138,12 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             {
                 float num = 0.5f;
                 string label = Dialog.Clean("XaphanHelper_UI_skip");
-                MTexture buttonTexture = Input.GuiButton(Input.ESC, "controls/keyboard/oemquestion");
+                MTexture buttonTexture = Input.GuiButton(Input.MenuCancel, "controls/keyboard/oemquestion");
                 int buttonTextureWidth = buttonTexture.Width;
-                float num3 = ButtonUI.Width(label, Input.ESC);
+                float num3 = ButtonUI.Width(label, Input.MenuCancel);
                 Vector2 position = new(0f, 1045f);
                 position.X = 1920 - num3 / 2 + buttonTextureWidth + (Settings.Instance.Language == "french" ? 19 : 0);
-                ButtonUI.Render(position, label, Input.ESC, num, 1f, skipWiggle.Value * 0.05f);
+                ButtonUI.Render(position, label, Input.MenuCancel, num, 1f, skipWiggle.Value * 0.05f);
             }
             base.Render();
         }
@@ -180,7 +153,17 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             if (!FromTitleScreen)
             {
                 Audio.SetMusicParam("fade", 0);
-                level.CompleteArea(spotlightWipe: false, skipScreenWipe: true, skipCompleteScreen: true);
+                if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
+                {
+                    XaphanModule.ModSettings.WatchedCredits = true;
+                    XaphanModule.SaveIconVisible = false;
+                    level.AutoSave();
+                    XaphanModule.ReturnToTitleScreen(level);
+                }
+                else
+                {
+                    level.CompleteArea(spotlightWipe: false, skipScreenWipe: true, skipCompleteScreen: true);
+                }
             }
             else
             {
@@ -228,12 +211,12 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/menu/credits");
             level.Session.Audio.Apply();
             yield return 1.5f;
-            credits = new CustomCredits(1.085f, FromTitleScreen: FromTitleScreen);
+            credits = new CustomCredits(1.085f, 0.7f, fromTitleScreen: FromTitleScreen);
             credits.AllowInput = false;
             credits.Enabled = true;
-            while (credits.BottomTimer <= 3f && !Skipped)
+            while (credits.BottomTimer <= 2f && !Skipped)
             {
-                if (Input.ESC.Pressed)
+                if (Input.ESC.Pressed || Input.MenuCancel.Pressed)
                 {
                     Skipped = true;
                 }
@@ -288,61 +271,43 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             }
             if (!FromTitleScreen)
             {
-                int TotalUpgradeCount = 0;
-                int TotalStrawberryCount = 0;
-                int TotalheartCount = 0;
-                int TotalCassetteCount = 0;
-                if (DashBootsCollected(level))
+                StatsFlags.GetStats(level.Session);
+                int currentTotalStrawberries = 0;
+                int currentTotalEnergyTanks = 0;
+                int currentTotalFireRateModules = 0;
+                int currentTotalMissiles = 0;
+                int currentTotalSuperMissiles = 0;
+                int maxTotalStrawberries = 0;
+                int maxTotalEnergyTanks = 0;
+                int maxTotalFireRateModules = 0;
+                int maxTotalMissiles = 0;
+                int maxTotalSuperMissiles = 0;
+
+                for (int i = 1; i <= (XaphanModule.SoCMVersion >= new Version(3, 0, 0) ? 5 : 2); i++)
                 {
-                    TotalUpgradeCount += 1;
+                    currentTotalStrawberries += (StatsFlags.CurrentStrawberries[i] - (level.Session.GetFlag("XaphanHelper_StatFlag_GoldenCh" + i + "-1") ? 1 : 0));
+                    currentTotalEnergyTanks += StatsFlags.CurrentEnergyTanks[i];
+                    currentTotalFireRateModules += StatsFlags.CurrentFireRateModules[i];
+                    currentTotalMissiles += StatsFlags.CurrentMissiles[i];
+                    currentTotalSuperMissiles += StatsFlags.CurrentSuperMissiles[i];
+                    maxTotalStrawberries += StatsFlags.TotalStrawberries[i];
+                    maxTotalEnergyTanks += StatsFlags.TotalEnergyTanks[i];
+                    maxTotalFireRateModules += StatsFlags.TotalFireRateModules[i];
+                    maxTotalMissiles += StatsFlags.TotalMissiles[i];
+                    maxTotalSuperMissiles += StatsFlags.TotalSuperMissiles[i];
                 }
-                if (PowerGripCollected(level))
-                {
-                    TotalUpgradeCount += 1;
-                }
-                if (ClimbingKitCollected(level))
-                {
-                    TotalUpgradeCount += 1;
-                }
-                if (BombsCollected(level))
-                {
-                    TotalUpgradeCount += 1;
-                }
-                if (SpaceJumpCollected(level))
-                {
-                    TotalUpgradeCount += 1;
-                }
-                foreach (AreaStats item in SaveData.Instance.Areas_Safe)
-                {
-                    if (item.LevelSet == "Xaphan/0")
-                    {
-                        AreaModeStats areaModeStats = item.Modes[0];
-                        int strawberryCount = 0;
-                        if (areaModeStats.TotalStrawberries > 0 || item.TotalStrawberries > 0)
-                        {
-                            strawberryCount = item.TotalStrawberries;
-                        }
-                        int heartCount = 0;
-                        if (areaModeStats.HeartGem)
-                        {
-                            heartCount += 1;
-                        }
-                        int cassetteCount = 0;
-                        if (item.Cassette)
-                        {
-                            cassetteCount += 1;
-                        }
-                        TotalStrawberryCount += strawberryCount;
-                        TotalheartCount += heartCount;
-                        TotalCassetteCount += cassetteCount;
-                    }
-                }
+
+                int currentTotalCassettes = StatsFlags.cassetteCount;
+                int currentTotalASideHearts = StatsFlags.heartCount;
+                int maxTotalCassettes = SaveData.Instance.GetLevelSetStatsFor(SaveData.Instance.LevelSet).MaxCassettes;
+                int maxTotalASideHearts = StatsFlags.TotalASideHearts;
                 TimeSpan timespan = TimeSpan.FromTicks(XaphanModule.ModSaveData.SavedTime.ContainsKey(SaveData.Instance.CurrentSession.Area.LevelSet) ? XaphanModule.ModSaveData.SavedTime[SaveData.Instance.CurrentSession.Area.LevelSet] : 0L);
                 string gameTime = ((int)timespan.TotalHours).ToString() + timespan.ToString("\\:mm\\:ss\\.fff");
                 float timeWidth = SpeedrunTimerDisplay.GetTimeWidth(gameTime);
                 TimeDisplay totaltime = new(gameTime, 960 - timeWidth / 2, Engine.Height / 2 + 146);
-                int TotalItemsCollected = TotalUpgradeCount + TotalStrawberryCount + TotalheartCount + TotalCassetteCount;
-                double ItemPercentage = Math.Round(TotalItemsCollected * 100f / TotalItems, 0, MidpointRounding.AwayFromZero);
+                int TotalItemsCollected = currentTotalStrawberries + currentTotalEnergyTanks + currentTotalFireRateModules + currentTotalMissiles + currentTotalSuperMissiles + currentTotalCassettes + currentTotalASideHearts + StatsFlags.CurrentUpgrades;
+                int TotalItems = maxTotalStrawberries + maxTotalEnergyTanks + maxTotalFireRateModules + maxTotalMissiles + maxTotalSuperMissiles + maxTotalCassettes + maxTotalASideHearts + StatsFlags.TotalUpgrades;
+                double ItemPercentage = Math.Truncate(TotalItemsCollected * 100f / TotalItems);
                 if (!Skipped)
                 {
                     Scene.Add(endTextA = new IntroText("Xaphan_0_Credits_ClearTime", "Middle", Engine.Height / 2 + 35, Color.DarkGreen, 1f, outline: true)
@@ -427,7 +392,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                         Show = true
                     });
                 }
-                while (!Input.ESC.Pressed && !Input.MenuConfirm.Pressed)
+                while (!Input.MenuCancel.Pressed && !Input.MenuConfirm.Pressed)
                 {
                     yield return null;
                 }

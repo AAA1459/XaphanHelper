@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Celeste.Mod.XaphanHelper.Managers;
 using Microsoft.Xna.Framework;
 using static Celeste.Mod.XaphanHelper.XaphanModuleSession;
 
@@ -29,7 +28,9 @@ namespace Celeste.Mod.XaphanHelper
 
         public Dictionary<string, int> ProgressMode = new();
 
-        public Dictionary<string, int> WorldMapProgressMode = new();
+        public Dictionary<string, HashSet<string>> Markers = new();
+
+        public Dictionary<string, bool> ShowMarkers = new();
 
         // Warps
 
@@ -245,14 +246,22 @@ namespace Celeste.Mod.XaphanHelper
 
         // Light Mode
 
-        public LightModes LightMode = LightModes.None;
+        public Dictionary<string, LightModes> LightMode = new();
 
         // Golden Strawberry
+
+        public int GoldenStartChapter = -999;
 
         public long PreGoldenTimer = 0;
 
         public HashSet<EntityID> PreGoldenDoNotLoad = new();
-        
+
+        public HashSet<string> PreGoldenFlags = new();
+
+        public HashSet<string> PreGoldenSavedFlags = new();
+
+        public HashSet<string> PreGoldenGlobalFlags = new();
+
         // Others
 
         public string CurrentSubArea = "";
@@ -263,6 +272,6 @@ namespace Celeste.Mod.XaphanHelper
 
         public bool LoadedPlayer = false;
 
-        public int SoCMVer = 0;
+        public string SoCMVer = "";
     }
 }

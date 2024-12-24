@@ -83,6 +83,10 @@ namespace Celeste.Mod.XaphanHelper
 
         public static int[] TotalLoreBookEntries;
 
+        public static int CurrentUpgrades;
+
+        public static int TotalUpgrades;
+
         public static int cassetteCount;
 
         public static bool useStatsFlagsController;
@@ -184,6 +188,8 @@ namespace Celeste.Mod.XaphanHelper
             heartCount = 0;
             cassetteCount = 0;
             TotalASideHearts = SaveData.Instance.GetLevelSetStatsFor(SaveData.Instance.LevelSet).MaxHeartGems;
+            CurrentUpgrades = getCurrentUpgrades(Prefix);
+            TotalUpgrades = 0;
             for (int i = !hasInterlude ? 1 : 0; i < maxChapters; i++)
             {
                 MapData MapData = AreaData.Areas[(SaveData.Instance.LevelSetStats.AreaOffset + i - (!hasInterlude ? 1 : 0))].Mode[0].MapData;
@@ -218,6 +224,7 @@ namespace Celeste.Mod.XaphanHelper
                         GetGoldenBerries(i, ModeMapData, j);
                     }
                 }
+                TotalUpgrades += getTotalUpgrades();
                 GetCurrentItems(i);
             }
             if (Prefix == "Xaphan/0")
@@ -781,6 +788,13 @@ namespace Celeste.Mod.XaphanHelper
                         string type = (char.ToLower(str[0]) + str.Substring(1));
                         EntitiesData.Add(new InGameMapEntitiesData(0, level.Name, level, type, new Vector2(entity.Position.X, entity.Position.Y), Vector2.Zero, MapData.Area, entity.ID));
                     }
+                    if (entity.Name == "XaphanHelper/UpgradeCollectable")
+                    {
+                        if (entity.Attr("upgrade") != "MapShard")
+                        {
+                            EntitiesData.Add(new InGameMapEntitiesData(0, level.Name, level, "upgrade-" + entity.Attr("upgrade"), new Vector2(entity.Position.X, entity.Position.Y), Vector2.Zero, MapData.Area, entity.ID));
+                        }
+                    }
                 }
             }
         }
@@ -1128,6 +1142,32 @@ namespace Celeste.Mod.XaphanHelper
                 }
             }
             return subAreaStrawberries;
+        }
+
+        public static int getCurrentUpgrades(string prefix)
+        {
+            int currentUpgrades = 0;
+            foreach (string flag in XaphanModule.ModSaveData.SavedFlags)
+            {
+                if (flag.Contains(prefix + "_Upgrade_"))
+                {
+                    currentUpgrades++;
+                }
+            }
+            return currentUpgrades;
+        }
+
+        public static int getTotalUpgrades()
+        {
+            int totalUpgrades = 0;
+            foreach (InGameMapEntitiesData entityData in EntitiesData)
+            {
+                if (entityData.Type.Contains("upgrade"))
+                {
+                    totalUpgrades++;
+                }
+            }
+            return totalUpgrades;
         }
     }
 }

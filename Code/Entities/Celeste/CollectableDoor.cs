@@ -337,7 +337,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Session session = SceneAs<Level>().Session;
             string Prefix = session.Area.LevelSet;
             int chapterIndex = session.Area.ChapterIndex;
-            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_Opened_Collectable_Door_" + doorID + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_Opened_Collectable_Door_" + doorID);
         }
 
         public CollectableDoor(EntityData data, Vector2 offset, EntityID id) : base(data.Position + offset)
@@ -560,10 +560,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 registerDoorOpenInSaveData();
             }
-            MiniMap minimap = SceneAs<Level>().Tracker.GetEntity<MiniMap>();
-            if (minimap != null && !level.Session.GetFlag("Map_Opened") && !level.InCutscene)
+            if (level.Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMShowMiniMap : XaphanModule.ModSettings.ShowMiniMap)
             {
-                minimap.mapDisplay.GenerateIcons();
+                MapDisplay mapDisplay = level.Tracker.GetEntity<MapDisplay>();
+                if (mapDisplay != null && !level.Session.GetFlag("Map_Opened") && !level.InCutscene)
+                {
+                    mapDisplay.GenerateIcons();
+                }
             }
             offset = 0f;
             yield return afterSliceDelay;
@@ -639,10 +642,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 registerDoorOpenInSaveData();
             }
-            MiniMap minimap = SceneAs<Level>().Tracker.GetEntity<MiniMap>();
-            if (minimap != null && !level.Session.GetFlag("Map_Opened") && !level.InCutscene)
+            if (level.Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMShowMiniMap : XaphanModule.ModSettings.ShowMiniMap)
             {
-                minimap.mapDisplay.GenerateIcons();
+                MapDisplay mapDisplay = level.Tracker.GetEntity<MapDisplay>();
+                if (mapDisplay != null && !level.Session.GetFlag("Map_Opened") && !level.InCutscene)
+                {
+                    mapDisplay.GenerateIcons();
+                }
             }
             offset = 0f;
             yield return afterSliceDelay;
@@ -678,13 +684,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_Opened_Collectable_Door_" + doorID))
             {
                 XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_Opened_Collectable_Door_" + doorID);
-            }
-            if (XaphanModule.PlayerHasGolden)
-            {
-                if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_Opened_Collectable_Door_" + doorID + "_GoldenStrawberry"))
-                {
-                    XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_Opened_Collectable_Door_" + doorID + "_GoldenStrawberry");
-                }
             }
         }
 

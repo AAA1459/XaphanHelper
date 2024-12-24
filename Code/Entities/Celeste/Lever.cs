@@ -47,7 +47,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Session session = SceneAs<Level>().Session;
             string Prefix = session.Area.LevelSet;
             int chapterIndex = session.Area.ChapterIndex;
-            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + Flag + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + Flag);
         }
 
         public Lever(Vector2 position, Vector2[] nodes, string directory, string flag, bool canSwapFlag, string side, bool registerInSaveData, bool saveDataOnlyAfterCheckpoint) : base(position)
@@ -147,17 +147,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             else if (self.SceneAs<Level>().Session.GetFlag(lever.Flag) && XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag))
                             {
                                 XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag);
-                            }
-                            if (XaphanModule.PlayerHasGolden)
-                            {
-                                if (self.SceneAs<Level>().Session.GetFlag(lever.Flag) && !XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag + "_GoldenStrawberry"))
-                                {
-                                    XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag + "_GoldenStrawberry");
-                                }
-                                else if (self.SceneAs<Level>().Session.GetFlag(lever.Flag) && XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag + "_GoldenStrawberry"))
-                                {
-                                    XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + lever.Flag + "_GoldenStrawberry");
-                                }
                             }
                         }
                     }
@@ -294,17 +283,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     else if (!SceneAs<Level>().Session.GetFlag(Flag) && XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + Flag))
                     {
                         XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + Flag);
-                    }
-                    if (XaphanModule.PlayerHasGolden)
-                    {
-                        if (SceneAs<Level>().Session.GetFlag(Flag) && !XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + Flag + "_GoldenStrawberry"))
-                        {
-                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + Flag + "_GoldenStrawberry");
-                        }
-                        else if (!SceneAs<Level>().Session.GetFlag(Flag) && XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + Flag + "_GoldenStrawberry"))
-                        {
-                            XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + Flag + "_GoldenStrawberry");
-                        }
                     }
                 }
             }

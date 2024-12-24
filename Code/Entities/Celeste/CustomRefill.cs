@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Celeste.Mod.Entities;
+using Celeste.Mod.XaphanHelper.Managers;
 using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -17,7 +18,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Sprite outline;
 
-        private Wiggler wiggler;
+        public Wiggler wiggler;
 
         private BloomPoint bloom;
 
@@ -25,7 +26,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Level level;
 
-        private SineWave sine;
+        public SineWave sine;
 
         public string type;
 
@@ -41,15 +42,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public float respawnTime;
 
-        public CustomRefill(Vector2 position, string type, bool oneUse, float respawnTime) : base(position)
+        public bool canCollect = true;
+
+        public CustomRefill(Vector2 position, string type, bool oneUse, float respawnTime, int airSections) : base(position)
         {
             Collider = new Hitbox(16f, 16f, -8f, -8f);
             Add(new PlayerCollider(OnPlayer));
             this.type = type;
-            this.oneUse = oneUse;
+            this.oneUse = type.Contains("Oxygen") ? true : oneUse;
             this.respawnTime = respawnTime;
             string path;
-            if (oneUse)
+            if (this.oneUse)
             {
                 string spriteStr = "";
                 switch (type)
@@ -66,8 +69,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     case "Super Missiles":
                         spriteStr = "SMissile";
                         break;
+                    case "Oxygen":
+                        spriteStr = "Oxygen";
+                        break;
+                    case "Oxygen Small":
+                        spriteStr = "OxygenSmall";
+                        break;
                 }
-                path = "objects/XaphanHelper/CustomRefill/refill" + spriteStr + "Once/";
+                path = "objects/XaphanHelper/CustomRefill/refill" + spriteStr + (type.Contains("Oxygen") ? "/" : "Once/");
                 p_shatter = new ParticleType(Refill.P_Shatter)
                 {
                     Color = Calc.HexToColor("DAECFA"),
@@ -135,7 +144,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 }
                 path = "objects/XaphanHelper/CustomRefill/refill" + spriteStr + "/";
             }
-            if (!oneUse)
+            if (!oneUse && !type.Contains("Oxygen"))
             {
                 Add(outline = new Sprite(GFX.Game, path + "outline"));
                 outline.AddLoop("idle", "", respawnTime / (type == "Missiles" ? 37f : (type == "Super Missiles" ? 35f : (type == "Two Dashes" ? 25f : 21f))));
@@ -166,7 +175,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Depth = -100;
         }
 
-        public CustomRefill(EntityData data, Vector2 offset) : this(data.Position + offset, data.Attr("type", "Max Dashes"), data.Bool("oneUse"), data.Float("respawnTime"))
+        public CustomRefill(EntityData data, Vector2 offset) : this(data.Position + offset, data.Attr("type", "Max Dashes"), data.Bool("oneUse"), data.Float("respawnTime"), data.Int("airSections", 5))
         {
 
         }
@@ -255,38 +264,52 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void OnPlayer(Player player)
         {
-            Drone drone = SceneAs<Level>().Tracker.GetEntity<Drone>();
-            int maxMissileCount = 10;
-            int maxSuperMissileCount = 5;
-            if (type.Contains("Missiles"))
+            if (canCollect)
             {
-                string Prefix = SceneAs<Level>().Session.Area.LevelSet;
-                foreach (string missileUpgrade in XaphanModule.PlayerHasGolden ? XaphanModule.ModSaveData.GoldenStrawberryDroneMissilesUpgrades : XaphanModule.ModSaveData.DroneMissilesUpgrades)
+                Drone drone = SceneAs<Level>().Tracker.GetEntity<Drone>();
+                int maxMissileCount = 10;
+                int maxSuperMissileCount = 5;
+                if (type.Contains("Missiles"))
                 {
-                    if (missileUpgrade.Contains(Prefix))
+                    string Prefix = SceneAs<Level>().Session.Area.LevelSet;
+                    foreach (string missileUpgrade in XaphanModule.PlayerHasGolden ? XaphanModule.ModSaveData.GoldenStrawberryDroneMissilesUpgrades : XaphanModule.ModSaveData.DroneMissilesUpgrades)
                     {
-                        maxMissileCount += 2;
+                        if (missileUpgrade.Contains(Prefix))
+                        {
+                            maxMissileCount += 2;
+                        }
+                    }
+                    foreach (string superMissileUpgrade in XaphanModule.PlayerHasGolden ? XaphanModule.ModSaveData.GoldenStrawberryDroneSuperMissilesUpgrades : XaphanModule.ModSaveData.DroneSuperMissilesUpgrades)
+                    {
+                        if (superMissileUpgrade.Contains(Prefix))
+                        {
+                            maxSuperMissileCount++;
+                        }
                     }
                 }
-                foreach (string superMissileUpgrade in XaphanModule.PlayerHasGolden ? XaphanModule.ModSaveData.GoldenStrawberryDroneSuperMissilesUpgrades : XaphanModule.ModSaveData.DroneSuperMissilesUpgrades)
+                BreathManager manager = SceneAs<Level>().Tracker.GetEntity<BreathManager>();
+                float airRegen = 0;
+                if (manager != null)
                 {
-                    if (superMissileUpgrade.Contains(Prefix))
+                    int airSections = (type == "Oxygen" ? 15 : 5);
+                    airRegen = manager.air + (airSections * manager.currentMaxAir / 15);
+                    if (airRegen > manager.currentMaxAir)
                     {
-                        maxSuperMissileCount++;
+                        airRegen = manager.currentMaxAir;
                     }
                 }
-            }
-            if (((type.Contains("Dashes") && player.Dashes < (type == "Two Dashes" ? 2 : player.MaxDashes)) || (type.Contains("Jumps") && SpaceJump.GetJumpBuffer() == 0)) && drone == null || (type.Contains("Missiles") && drone != null) || player.Stamina <= 20)
-            {
-                Audio.Play(type == "Two Dashes" ? "event:/new_content/game/10_farewell/pinkdiamond_touch" : "event:/game/general/diamond_touch", Position);
-                Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
-                Collidable = false;
-                Add(new Coroutine(RefillRoutine(player, drone, maxMissileCount, maxSuperMissileCount)));
-                respawnTimer = respawnTime;
+                if (((type.Contains("Dashes") && player.Dashes < (type == "Two Dashes" ? 2 : player.MaxDashes)) || (type.Contains("Jumps") && SpaceJump.GetJumpBuffer() == 0)) && drone == null || (type.Contains("Missiles") && drone != null) || (type.Contains("Oxygen") && manager != null && manager.air < manager.currentMaxAir && manager.air != -1) || (!type.Contains("Oxygen") && player.Stamina <= 20))
+                {
+                    Audio.Play(type == "Two Dashes" ? "event:/new_content/game/10_farewell/pinkdiamond_touch" : "event:/game/general/diamond_touch", Position);
+                    Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
+                    Collidable = false;
+                    Add(new Coroutine(RefillRoutine(player, drone, manager, maxMissileCount, maxSuperMissileCount, airRegen)));
+                    respawnTimer = respawnTime;
+                }
             }
         }
 
-        private IEnumerator RefillRoutine(Player player, Drone drone, int maxMissileCount, int maxSuperMissileCount)
+        private IEnumerator RefillRoutine(Player player, Drone drone, BreathManager manager, int maxMissileCount, int maxSuperMissileCount, float airRegen)
         {
             Celeste.Freeze(0.05f);
             yield return null;
@@ -329,6 +352,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     drone.CurrentSuperMissiles = maxSuperMissileCount;
                 }
+            }
+            else if (type.Contains("Oxygen"))
+            {
+                manager.air = airRegen;
             }
             SlashFx.Burst(Position, num);
             if (oneUse)

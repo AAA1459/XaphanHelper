@@ -111,10 +111,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Can_Open_Map");
             }
-            if (XaphanModule.PlayerHasGolden)
-            {
-                return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Upgrade_" + upgrade + "_GoldenStrawberry");
-            }
             return XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Upgrade_" + upgrade);
         }
 
@@ -269,6 +265,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     controlA = XaphanModule.ModSettings.UseBagItemSlot;
                     inputActionA = "XaphanHelper_Press";
                     break;
+                case "variaJacket":
+                    poemTextC = null;
+                    break;
                 case "GravityJacket":
                     poemTextC = null;
                     break;
@@ -320,11 +319,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (hasOtherMiscUpgrade)
                     {
                         select = true;
-                        inputActionA = "XaphanHelper_ThenHold";
+                        inputActionA = "XaphanHelper_ThenPress";
                     }
                     else
                     {
-                        inputActionA = "XaphanHelper_Hold";
+                        inputActionA = "XaphanHelper_Press";
                     }
                     break;
                 case "PortableStation":
@@ -332,11 +331,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (hasOtherMiscUpgrade)
                     {
                         select = true;
-                        inputActionA = "XaphanHelper_ThenHold";
+                        inputActionA = "XaphanHelper_ThenPress";
                     }
                     else
                     {
-                        inputActionA = "XaphanHelper_Hold";
+                        inputActionA = "XaphanHelper_Press";
                     }
                     break;
                 case "PulseRadar":
@@ -344,27 +343,21 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     if (hasOtherMiscUpgrade)
                     {
                         select = true;
-                        inputActionA = "XaphanHelper_ThenHold";
+                        inputActionA = "XaphanHelper_ThenPress";
                     }
                     else
                     {
-                        inputActionA = "XaphanHelper_Hold";
+                        inputActionA = "XaphanHelper_Press";
                     }
                     break;
                 case "JumpBoost":
                     controlA = Input.Jump;
                     inputActionA = "XaphanHelper_Hold";
                     break;
-                case "MissilesModule":
-                    poemTextC = null;
-                    break;
-                case "SuperMissilesModule":
-                    poemTextC = null;
-                    break;
                 default:
                     break;
             }
-            poem = new CustomPoem(inputActionA, poemTextA, inputActionB, poemTextB, poemTextC, nameColor, descColor, descColor, particleColor, sprite, 0.5f, controlA, controlB, select);
+            poem = new CustomPoem(inputActionA, poemTextA, inputActionB, poemTextB, poemTextC, nameColor, descColor, descColor, particleColor, sprite, 0f, 0f, 0.5f, controlA, controlB, select);
             poem.Alpha = 0f;
             Scene.Add(poem);
             for (float t2 = 0f; t2 < 1f; t2 += Engine.RawDeltaTime)
@@ -456,13 +449,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Upgrade_" + upgrade);
                     }
-                    if (XaphanModule.PlayerHasGolden)
-                    {
-                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Upgrade_" + upgrade + "_GoldenStrawberry"))
-                        {
-                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Upgrade_" + upgrade + "_GoldenStrawberry");
-                        }
-                    }
                 }
             }
         }
@@ -483,7 +469,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private void EndCutscene()
         {
             Level level = Scene as Level;
-            if (XaphanModule.ModSettings.ShowMiniMap)
+            if (level.Session.Area.LevelSet == "Xaphan/0" ? XaphanModule.ModSettings.SoCMShowMiniMap : XaphanModule.ModSettings.ShowMiniMap)
             {
                 MapDisplay mapDisplay = level.Tracker.GetEntity<MapDisplay>();
                 if (mapDisplay != null)

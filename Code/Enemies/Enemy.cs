@@ -77,6 +77,10 @@ namespace Celeste.Mod.XaphanHelper.Enemies
             {
                 Add(PowerBombIgnoreRoutine = new Coroutine(ImmuneToPowerBombSequence()));
             }
+            foreach (EnemyCollider enemyCollider in Scene.Tracker.GetComponents<EnemyCollider>())
+            {
+                enemyCollider.Check(this);
+            }
         }
 
         public void AfterUpdate()
@@ -230,19 +234,13 @@ namespace Celeste.Mod.XaphanHelper.Enemies
         {
             if (Health > 0)
             {
-                if (!missile.SuperMissile)
+                Health -= missile.damage;
+                if (missile.SuperMissile)
                 {
-                    Health -= missile.damage;
-                    Audio.Play(HitSound, Center);
-                    missile.RemoveSelf();
-                }
-                else
-                {
-                    Health -= missile.damage;
                     SceneAs<Level>().Shake(0.3f);
-                    Audio.Play(HitSound, Center);
-                    missile.RemoveSelf();
                 }
+                Audio.Play(HitSound, Center);
+                missile.RemoveSelf();
                 Add(new Coroutine(HitFlashingSequence()));
             }
             if (Health <= 0)

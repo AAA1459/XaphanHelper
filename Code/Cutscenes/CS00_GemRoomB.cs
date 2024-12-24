@@ -39,18 +39,11 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public override void OnEnd(Level level)
         {
-            if (level.Session.GetFlag("Upgrade_DashBoots") || XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
+            if (level.Session.GetFlag("Upgrade_DashBoots") || XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots"))
             {
                 if (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Can_Open_Map"))
                 {
                     XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_Can_Open_Map");
-                }
-                if (XaphanModule.PlayerHasGolden)
-                {
-                    if (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Can_Open_Map_GoldenStrawberry"))
-                    {
-                        XaphanModule.ModSaveData.SavedFlags.Add("Xaphan/0_Can_Open_Map_GoldenStrawberry");
-                    }
                 }
                 XaphanModule.ModSaveData.WatchedCutscenes.Add("Xaphan/0_Ch0_Gem_Room_B");
                 level.Session.SetFlag("CS_Ch0_Gem_Room_B");
@@ -73,7 +66,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             string poemTextB = Dialog.Clean("XaphanHelper_get_Map_Desc");
             string poemTextC = Dialog.Clean("XaphanHelper_get_Map_Desc_b");
             AreaKey area = level.Session.Area;
-            poem = new CustomPoem("XaphanHelper_Press", poemTextA, null, poemTextB, poemTextC, "AA00AA", "FFFFFF", "FFFFFF", "533467", "collectables/XaphanHelper/UpgradeCollectable/map", 0.5f, XaphanModule.ModSettings.OpenMap);
+            poem = new CustomPoem("XaphanHelper_Press", poemTextA, null, poemTextB, poemTextC, "AA00AA", "FFFFFF", "FFFFFF", "533467", "collectables/XaphanHelper/UpgradeCollectable/map", 0f, 0f, 0.5f, XaphanModule.ModSettings.OpenMap);
             poem.Alpha = 0f;
             Scene.Add(poem);
             for (float t2 = 0f; t2 < 1f; t2 += Engine.RawDeltaTime)
@@ -100,7 +93,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public IEnumerator Cutscene(Level level)
         {
-            if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
+            if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_DashBoots"))
             {
                 player.StateMachine.State = 11;
                 yield return Level.ZoomTo(new Vector2(160f, 110f), 1.5f, 1f);

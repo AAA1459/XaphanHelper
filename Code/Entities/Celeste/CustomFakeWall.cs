@@ -1,4 +1,6 @@
-﻿using Celeste.Mod.Entities;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -22,19 +24,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public TileGrid tiles;
 
-        private bool fade;
+        public bool fade;
 
-        private EffectCutout cutout;
+        public EffectCutout cutout;
 
         private float transitionStartAlpha;
 
         private bool transitionFade;
 
-        private EntityID eid;
+        public EntityID eid;
 
         private bool playRevealWhenTransitionedInto;
 
-        private int group;
+        public int group;
 
         private string flag;
 
@@ -107,7 +109,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
             tiles.Alpha = 0f;
             fade = true;
             cutout.Visible = false;
-            SceneAs<Level>().Session.DoNotLoad.Add(eid);
+            bool noLoad = true;
+            foreach (CustomExitBlock exitBlock in SceneAs<Level>().Tracker.GetEntities<CustomExitBlock>())
+            {
+                if (exitBlock.group == group)
+                {
+                    noLoad = false;
+                    break;
+                }
+            }
+            if (noLoad)
+            {
+                SceneAs<Level>().Session.DoNotLoad.Add(eid);
+            }
         }
 
         private void OnTransitionOutBegin()
@@ -153,16 +167,43 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        private bool CheckedExitBlocks;
+
+        private bool OverlapExitBlock;
+
         public override void Update()
         {
             base.Update();
             if (fade)
             {
-                tiles.Alpha = Calc.Approach(tiles.Alpha, 0f, 2f * Engine.DeltaTime);
-                cutout.Alpha = tiles.Alpha;
-                if (tiles.Alpha <= 0f)
+                if (!CheckedExitBlocks)
                 {
-                    RemoveSelf();
+                    List<Entity> exitBlocks = SceneAs<Level>().Tracker.GetEntities<CustomExitBlock>().ToList();
+                    foreach (CustomExitBlock exitBlock in exitBlocks)
+                    {
+                        exitBlock.Collidable = true;
+                    }
+                    foreach (CustomExitBlock exitBlock in SceneAs<Level>().Tracker.GetEntities<CustomExitBlock>())
+                    {
+                        if (exitBlock.group == group && CollideCheck(exitBlock))
+                        {
+                            OverlapExitBlock = true;
+                        }
+                    }
+                    foreach (CustomExitBlock exitBlock in exitBlocks)
+                    {
+                        exitBlock.Collidable = exitBlock.cutout.Alpha > 0;
+                    }
+                    CheckedExitBlocks = true;
+                }
+                if (!OverlapExitBlock)
+                {
+                    tiles.Alpha = Calc.Approach(tiles.Alpha, 0f, 2f * Engine.DeltaTime);
+                    cutout.Alpha = tiles.Alpha;
+                    if (tiles.Alpha <= 0f)
+                    {
+                        RemoveSelf();
+                    }
                 }
                 return;
             }

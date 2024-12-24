@@ -51,12 +51,12 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         public bool BossDefeated()
         {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Boss_Defeated" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Boss_Defeated");
         }
 
         public bool BossDefeatedCM()
         {
-            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Boss_Defeated_CM" + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Boss_Defeated_CM");
         }
 
         public bool HasGolden()
@@ -82,9 +82,9 @@ namespace Celeste.Mod.XaphanHelper.Events
             jumpThru4 = new JumpthruPlatform(bounds + new Vector2(335f, 152f), 32, "Xaphan/ruins_c", 8);
             jumpThru5 = new JumpthruPlatform(bounds + new Vector2(368f, 152f), 32, "Xaphan/ruins_c", 8);
             jumpThru6 = new JumpthruPlatform(bounds + new Vector2(401f, 152f), 32, "Xaphan/ruins_c", 8);
-            refill1 = new CustomRefill(jumpThru3.Position + new Vector2(47f, -64f), "Max Dashes", false, 2.5f);
-            refill2 = new CustomRefill(jumpThru2.Position + new Vector2(16f, -64f), "Max Jumps", false, 2.5f);
-            refill3 = new CustomRefill(jumpThru5.Position + new Vector2(16f, -64f), "Max Jumps", false, 2.5f);
+            refill1 = new CustomRefill(jumpThru3.Position + new Vector2(47f, -64f), "Max Dashes", false, 2.5f, 5);
+            refill2 = new CustomRefill(jumpThru2.Position + new Vector2(16f, -64f), "Max Jumps", false, 2.5f, 5);
+            refill3 = new CustomRefill(jumpThru5.Position + new Vector2(16f, -64f), "Max Jumps", false, 2.5f, 5);
             arrowDown1 = new Decal("Xaphan/Common/arrow_down00.png", jumpThru3.Position + new Vector2(16f, -16f), new Vector2(1f, 1f), 1);
             arrowDown2 = new Decal("Xaphan/Common/arrow_down00.png", jumpThru4.Position + new Vector2(16f, -16f), new Vector2(1f, 1f), 1);
             warningSign1 = new Decal("Xaphan/Common/warning00.png", jumpThru1.Position + new Vector2(16f, -16f), new Vector2(1f, 1f), 1);
@@ -118,7 +118,7 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         public IEnumerator Cutscene(Level level)
         {
-            if (!BossDefeated() || HasGolden() || (BossDefeated() && level.Session.GetFlag("boss_Normal_Mode")) || (BossDefeated() && level.Session.GetFlag("boss_Challenge_Mode")))
+            if (!BossDefeated() || (BossDefeated() && level.Session.GetFlag("boss_Normal_Mode")) || (BossDefeated() && level.Session.GetFlag("boss_Challenge_Mode")))
             {
                 if (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))
                 {
@@ -141,8 +141,12 @@ namespace Celeste.Mod.XaphanHelper.Events
                     }
                 }
                 level.Session.SetFlag("Torizo_Start", false);
-                if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch1_BossStart"))
+                if (!XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch1_BossStart") || HasGolden())
                 {
+                    if (HasGolden())
+                    {
+                        boss.Visible = true;
+                    }
                     Scene.Add(new CS01_BossStart(player, boss));
                     while (!level.Session.GetFlag("Torizo_Start"))
                     {
@@ -323,15 +327,15 @@ namespace Celeste.Mod.XaphanHelper.Events
                         refill3.RemoveSelf();
                     }
                     string Prefix = level.Session.Area.LevelSet;
-                    if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch1_Boss_Defeated"))
+                    if (!HasGolden() && !level.Session.GetFlag("boss_Normal_Mode") && !level.Session.GetFlag("boss_Challenge_Mode"))
                     {
-                        XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch1_Boss_Defeated");
+                        Scene.Add(new CS01_BossDefeated(player, boss));
                     }
-                    if (XaphanModule.PlayerHasGolden)
+                    else
                     {
-                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch1_Boss_Defeated_GoldenStrawberry"))
+                        if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch1_Boss_Defeated"))
                         {
-                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch1_Boss_Defeated_GoldenStrawberry");
+                            XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch1_Boss_Defeated");
                         }
                     }
                     if (level.Session.GetFlag("boss_Challenge_Mode"))
@@ -340,13 +344,6 @@ namespace Celeste.Mod.XaphanHelper.Events
                         if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch1_Boss_Defeated_CM"))
                         {
                             XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch1_Boss_Defeated_CM");
-                        }
-                        if (XaphanModule.PlayerHasGolden)
-                        {
-                            if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch1_Boss_Defeated_CM_GoldenStrawberry"))
-                            {
-                                XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch1_Boss_Defeated_CM_GoldenStrawberry");
-                            }
                         }
                     }
                     while (boss.Visible)
@@ -383,6 +380,16 @@ namespace Celeste.Mod.XaphanHelper.Events
                 level.Session.SetFlag("Boss_Defeated", true);
                 level.Session.SetFlag("Torizo_Wakeup", false);
                 level.Session.SetFlag("Torizo_Start", false);
+                if (XaphanModule.ModSettings.SoCMShowMiniMap)
+                {
+                    MapDisplay mapDisplay = SceneAs<Level>().Tracker.GetEntity<MapDisplay>();
+                    if (mapDisplay != null)
+                    {
+                        AreaKey area = SceneAs<Level>().Session.Area;
+                        int chapterIndex = area.ChapterIndex == -1 ? 0 : area.ChapterIndex;
+                        mapDisplay.GenerateIcons();
+                    }
+                }
             }
 
             // Do nothing anymore unless boss hits got reset

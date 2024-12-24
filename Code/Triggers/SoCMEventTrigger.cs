@@ -30,7 +30,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
             switch (Event)
             {
                 case "Ch1 - Bombs":
-                    Scene.Add(new E01_Bombs(player, level));
+                    Scene.Add(new E01_Bombs(player, level, Left));
                     break;
                 case "Ch1 - Boss":
                     Scene.Add(new E01_Boss(player, level));

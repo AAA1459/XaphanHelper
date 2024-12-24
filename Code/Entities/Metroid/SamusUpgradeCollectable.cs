@@ -234,7 +234,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     inputActionA = "XaphanHelper_Hold";
                     break;
             }
-            poem = new CustomPoem(inputActionA, poemTextA, null, poemTextB, poemTextC, nameColor, descColor, descColor, particleColor, sprite, 0.5f, controlA, null, select);
+            poem = new CustomPoem(inputActionA, poemTextA, null, poemTextB, poemTextC, nameColor, descColor, descColor, particleColor, sprite, 0f, 0f, 0.5f, controlA, null, select);
             poem.Alpha = 0f;
             Scene.Add(poem);
             for (float t2 = 0f; t2 < 1f; t2 += Engine.RawDeltaTime)

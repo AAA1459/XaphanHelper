@@ -48,7 +48,6 @@ namespace Celeste.Mod.XaphanHelper.Triggers
             if (!string.IsNullOrEmpty(conditionFlags))
             {
                 string[] flags = conditionFlags.Split(',');
-
                 foreach (string flag in flags)
                 {
                     if (!inverted)
@@ -82,13 +81,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                         if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
                         {
                             XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag);
-                        }
-                        if (XaphanModule.PlayerHasGolden)
-                        {
-                            if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry"))
-                            {
-                                XaphanModule.ModSaveData.SavedFlags.Add(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry");
-                            }
+                            SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + flag, true);
                         }
                     }
                     foreach (FlagDashSwitch dashSwitch in SceneAs<Level>().Tracker.GetEntities<FlagDashSwitch>())
@@ -106,7 +99,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                 foreach (string flag in falseFlags)
                 {
                     SceneAs<Level>().Session.SetFlag(flag, false);
-                    if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + SceneAs<Level>().Session.Area.ChapterIndex + "_" + flag + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")))
+                    if (!XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + SceneAs<Level>().Session.Area.ChapterIndex + "_" + flag))
                     {
                         SceneAs<Level>().Session.SetFlag(flag, false);
                     }
@@ -115,13 +108,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                         if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag))
                         {
                             XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + flag);
-                        }
-                        if (XaphanModule.PlayerHasGolden)
-                        {
-                            if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry"))
-                            {
-                                XaphanModule.ModSaveData.SavedFlags.Remove(Prefix + "_Ch" + chapterIndex + "_" + flag + "_GoldenStrawberry");
-                            }
+                            SceneAs<Level>().Session.SetFlag("Ch" + chapterIndex + "_" + flag, false);
                         }
                     }
                     foreach (FlagDashSwitch dashSwitch in SceneAs<Level>().Tracker.GetEntities<FlagDashSwitch>())

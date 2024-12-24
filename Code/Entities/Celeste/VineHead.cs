@@ -51,7 +51,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float PauseTime;
 
-        private bool WasHitByMissile;
+        private bool CheckedStartMode;
 
         public VineHead(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
@@ -179,158 +179,163 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
-            if ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)
-            {
-                SwapDirection = true;
-                Position = nodes[1];
-            }
-            if (Scene.CollideCheck<VinePath>(new Rectangle((int)X, (int)Y + 8, 1, 1)))
-            {
-                Sprite.Rotation = Position == nodes[0] ? (float)Math.PI : 0;
-            }
-            if (Scene.CollideCheck<VinePath>(new Rectangle((int)X + 8, (int)Y, 1, 1)))
-            {
-                Sprite.Rotation = Position == nodes[0] ? (float)Math.PI / 2 : -(float)Math.PI / 2;
-            }
-            if (Scene.CollideCheck<VinePath>(new Rectangle((int)X - 8, (int)Y, 1, 1)))
-            {
-                Sprite.Rotation = Position == nodes[0] ? -(float)Math.PI / 2 : (float)Math.PI / 2;
-            }
-            if (Scene.CollideCheck<VinePath>(new Rectangle((int)X, (int)Y - 8, 1, 1)))
-            {
-                Sprite.Rotation = Position == nodes[0] ? 0 : (float)Math.PI;
-            }
+            
         }
 
         public override void Update()
         {
             base.Update();
-                Scale.X = Calc.Approach(Scale.X, 1f, 1f * Engine.DeltaTime);
-                Scale.Y = Calc.Approach(Scale.Y, 1f, 1f * Engine.DeltaTime);
-                if (!StopMoving)
+            if (!CheckedStartMode)
+            {
+                if ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light)
                 {
-                    if (((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light) && Position == nodes[1])
+                    SwapDirection = true;
+                    Position = nodes[1];
+                }
+                if (Scene.CollideCheck<VinePath>(new Rectangle((int)X, (int)Y + 8, 1, 1)))
+                {
+                    Sprite.Rotation = Position == nodes[0] ? (float)Math.PI : 0;
+                }
+                if (Scene.CollideCheck<VinePath>(new Rectangle((int)X + 8, (int)Y, 1, 1)))
+                {
+                    Sprite.Rotation = Position == nodes[0] ? (float)Math.PI / 2 : -(float)Math.PI / 2;
+                }
+                if (Scene.CollideCheck<VinePath>(new Rectangle((int)X - 8, (int)Y, 1, 1)))
+                {
+                    Sprite.Rotation = Position == nodes[0] ? -(float)Math.PI / 2 : (float)Math.PI / 2;
+                }
+                if (Scene.CollideCheck<VinePath>(new Rectangle((int)X, (int)Y - 8, 1, 1)))
+                {
+                    Sprite.Rotation = Position == nodes[0] ? 0 : (float)Math.PI;
+                }
+                CheckedStartMode = true;
+            }
+            Scale.X = Calc.Approach(Scale.X, 1f, 1f * Engine.DeltaTime);
+            Scale.Y = Calc.Approach(Scale.Y, 1f, 1f * Engine.DeltaTime);
+            if (!StopMoving)
+            {
+                if (((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light) && Position == nodes[1])
+                {
+                    foreach (VinePath.VinePathSection section in SceneAs<Level>().Tracker.GetEntities<VinePath.VinePathSection>())
                     {
-                        foreach (VinePath.VinePathSection section in SceneAs<Level>().Tracker.GetEntities<VinePath.VinePathSection>())
+                        if (section.ID == ID)
                         {
-                            if (section.ID == ID)
-                            {
-                                section.SetGrownSprite(true);
-                            }
-                        }
-                    }
-
-                    if ((((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light) && !SwapDirection) || (((!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light) && SwapDirection))
-                    {
-                        SwapDirection = !SwapDirection;
-                        if (SequenceRoutine.Active)
-                        {
-                            SequenceRoutine.Cancel();
-                        }
-                        JustSwapped = true;
-                    }
-
-                    // At start and flag not set -> Wait
-                    if (Position == nodes[0] && ((!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light))
-                    {
-                        if (SequenceRoutine.Active)
-                        {
-                            SequenceRoutine.Cancel();
-                        }
-                        if (CanBounce)
-                        {
-                            Sprite.Play("open");
-                            CanBounce = false;
-                            BouncePlayer = false;
-                        }
-                    }
-
-                    else
-                    // Not at end and flag set -> Expand
-                    if (Position != nodes[1] && ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light))
-                    {
-                        if (!CanBounce)
-                        {
-                            Sprite.Play("close");
-                            CanBounce = true;
-                        }
-                        if (!SequenceRoutine.Active)
-                        {
-                            if (JustSwapped)
-                            {
-                                JustSwapped = false;
-                                PreviousDirection = -PreviousDirection;
-                            }
-                            StartSequence();
-                        }
-                        foreach (VinePath.VinePathSection pathSection in SceneAs<Level>().Tracker.GetEntities<VinePath.VinePathSection>())
-                        {
-                            if (Left >= pathSection.Left - 2 && Right <= pathSection.Right + 2 && Top >= pathSection.Top - 2 && Bottom <= pathSection.Bottom + 2)
-                            {
-                                pathSection.SetGrownSprite(true);
-                            }
-                        }
-                    }
-
-                    else
-                    // Not at start and flag not set -> Retract
-                    if (Position != nodes[0] && ((!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light))
-                    {
-                        if (!SequenceRoutine.Active)
-                        {
-                            if (JustSwapped)
-                            {
-                                JustSwapped = false;
-                                Add(SequenceRoutine = new Coroutine(GrowRoutine(PreviousDirection, true)));
-                            }
-                            else
-                            {
-                                StartSequence(true);
-                            }
-                        }
-                        foreach (VinePath.VinePathSection pathSection in SceneAs<Level>().Tracker.GetEntities<VinePath.VinePathSection>())
-                        {
-                            if (Left >= pathSection.Left - 2 && Right <= pathSection.Right + 2 && Top >= pathSection.Top - 2 && Bottom <= pathSection.Bottom + 2)
-                            {
-                                pathSection.SetGrownSprite(false);
-                            }
-                        }
-                    }
-
-                    else
-                    // At end and flag set -> Wait
-                    if (Position == nodes[1] && ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light))
-                    {
-                        if (SequenceRoutine.Active)
-                        {
-                            SequenceRoutine.Cancel();
+                            section.SetGrownSprite(true);
                         }
                     }
                 }
+
+                if ((((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light) && !SwapDirection) || (((!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light) && SwapDirection))
+                {
+                    SwapDirection = !SwapDirection;
+                    if (SequenceRoutine.Active)
+                    {
+                        SequenceRoutine.Cancel();
+                    }
+                    JustSwapped = true;
+                }
+
+                // At start and flag not set -> Wait
+                if (Position == nodes[0] && ((!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light))
+                {
+                    if (SequenceRoutine.Active)
+                    {
+                        SequenceRoutine.Cancel();
+                    }
+                    if (CanBounce)
+                    {
+                        Sprite.Play("open");
+                        CanBounce = false;
+                        BouncePlayer = false;
+                    }
+                }
+
                 else
+                // Not at end and flag set -> Expand
+                if (Position != nodes[1] && ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light))
+                {
+                    if (!CanBounce)
+                    {
+                        Sprite.Play("close");
+                        CanBounce = true;
+                    }
+                    if (!SequenceRoutine.Active)
+                    {
+                        if (JustSwapped)
+                        {
+                            JustSwapped = false;
+                            PreviousDirection = -PreviousDirection;
+                        }
+                        StartSequence();
+                    }
+                    foreach (VinePath.VinePathSection pathSection in SceneAs<Level>().Tracker.GetEntities<VinePath.VinePathSection>())
+                    {
+                        if (Left >= pathSection.Left - 2 && Right <= pathSection.Right + 2 && Top >= pathSection.Top - 2 && Bottom <= pathSection.Bottom + 2)
+                        {
+                            pathSection.SetGrownSprite(true);
+                        }
+                    }
+                }
+
+                else
+                // Not at start and flag not set -> Retract
+                if (Position != nodes[0] && ((!string.IsNullOrEmpty(flag) && !SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode != XaphanModuleSession.LightModes.Light))
+                {
+                    if (!SequenceRoutine.Active)
+                    {
+                        if (JustSwapped)
+                        {
+                            JustSwapped = false;
+                            Add(SequenceRoutine = new Coroutine(GrowRoutine(PreviousDirection, true)));
+                        }
+                        else
+                        {
+                            StartSequence(true);
+                        }
+                    }
+                    foreach (VinePath.VinePathSection pathSection in SceneAs<Level>().Tracker.GetEntities<VinePath.VinePathSection>())
+                    {
+                        if (Left >= pathSection.Left - 2 && Right <= pathSection.Right + 2 && Top >= pathSection.Top - 2 && Bottom <= pathSection.Bottom + 2)
+                        {
+                            pathSection.SetGrownSprite(false);
+                        }
+                    }
+                }
+
+                else
+                // At end and flag set -> Wait
+                if (Position == nodes[1] && ((!string.IsNullOrEmpty(flag) && SceneAs<Level>().Session.GetFlag(flag)) || XaphanModule.ModSession.LightMode == XaphanModuleSession.LightModes.Light))
                 {
                     if (SequenceRoutine.Active)
                     {
                         SequenceRoutine.Cancel();
                     }
                 }
+            }
+            else
+            {
+                if (SequenceRoutine.Active)
+                {
+                    SequenceRoutine.Cancel();
+                }
+            }
 
-                if (Sprite.Rotation == -(float)Math.PI / 2)
-                {
-                    Facing = Facings.Left;
-                }
-                else if (Sprite.Rotation == (float)Math.PI / 2)
-                {
-                    Facing = Facings.Right;
-                }
-                else if (Sprite.Rotation == (float)Math.PI)
-                {
-                    Facing = Facings.Down;
-                }
-                else if (Sprite.Rotation == 0)
-                {
-                    Facing = Facings.Up;
-                }
+            if (Sprite.Rotation == -(float)Math.PI / 2)
+            {
+                Facing = Facings.Left;
+            }
+            else if (Sprite.Rotation == (float)Math.PI / 2)
+            {
+                Facing = Facings.Right;
+            }
+            else if (Sprite.Rotation == (float)Math.PI)
+            {
+                Facing = Facings.Down;
+            }
+            else if (Sprite.Rotation == 0)
+            {
+                Facing = Facings.Up;
+            }
         }
 
         private void StartSequence(bool reverseSprite = false)

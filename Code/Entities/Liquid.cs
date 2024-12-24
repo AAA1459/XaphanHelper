@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Celeste.Mod.Entities;
 using Celeste.Mod.Helpers;
+using Celeste.Mod.XaphanHelper.Managers;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Celeste.Mod.XaphanHelper.Upgrades;
 using FMOD.Studio;
@@ -19,6 +21,57 @@ namespace Celeste.Mod.XaphanHelper.Entities
     [CustomEntity("XaphanHelper/Liquid")]
     class Liquid : Entity
     {
+        public class AirBubble : Actor
+        {
+            private Sprite sprite;
+
+            private Liquid liquid;
+
+            private SineWave sine;
+
+            private Collision onCollide;
+
+            public AirBubble(Vector2 position, Liquid sourceLquid) : base(position)
+            {
+                Collider = new Hitbox(4f, 4f);
+                Add(sprite = new Sprite(GFX.Game, "objects/XaphanHelper/liquid/"));
+                sprite.AddLoop("idle", "bubble", 0.08f, 0);
+                sprite.AddLoop("break", "bubble", 0.08f, 1);
+                sprite.Color = Color.White * 0.7f;
+                sprite.Play("idle");
+                liquid = sourceLquid;
+                Add(sine = new SineWave(0.44f, 0f).Randomize());
+                onCollide = OnCollide;
+            }
+
+            public override void Update()
+            {
+                base.Update();
+                sine.Update();
+                if (liquid != null && Top > liquid.Top)
+                {
+                    MoveV(-25f * Engine.DeltaTime, onCollide);
+                }
+                else
+                {
+                    Break();
+                }
+            }
+
+            private void OnCollide(CollisionData data)
+            {
+                Break();
+            }
+            private void Break()
+            {
+                sprite.Play("break");
+                sprite.OnLastFrame = delegate
+                {
+                    RemoveSelf();
+                };
+            }
+        }
+
         public int lowPosition;
 
         private Sprite liquidSprite;
@@ -61,7 +114,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private string color;
 
-        private float transparency;
+        private float outsideTransparency;
+
+        private float insideTransparency;
+
+        private float currentTransparency;
 
         private bool foreground;
 
@@ -82,6 +139,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private string riseFlag;
 
         private string riseEndFlag;
+
+        private string appearFlags;
 
         private string removeFlags;
 
@@ -109,13 +168,23 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Tween waveTween;
 
-        private bool visualOnly;
+        public bool visualOnly;
 
         private bool canSwim;
 
         private bool upsideDown;
 
         public DisplacementRenderHook Displacement;
+
+        public int group;
+
+        public bool groupLeader;
+
+        private Liquid leader;
+
+        public bool canDrown;
+
+        public float airTimer;
 
         public Liquid(EntityData data, Vector2 position, EntityID eid) : base(data.Position + position)
         {
@@ -126,7 +195,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
             lowPosition = data.Int("lowPosition");
             delay = data.Float("frameDelay");
             color = data.Attr("color");
-            transparency = data.Float("transparency");
+            outsideTransparency = data.Float("transparency");
+            insideTransparency = data.Float("insideTransparency", outsideTransparency);
             foreground = data.Bool("foreground");
             riseDelay = data.Float("riseDelay");
             riseDistance = data.Int("riseDistance");
@@ -134,6 +204,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             riseShake = data.Bool("riseShake");
             riseFlag = data.Attr("riseFlag");
             riseEndFlag = data.Attr("riseEndFlag");
+            appearFlags = data.Attr("appearFlags");
             removeFlags = data.Attr("removeFlags");
             riseSound = data.Bool("riseSound");
             directory = data.Attr("directory");
@@ -141,6 +212,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             visualOnly = data.Bool("visualOnly", false);
             canSwim = data.Bool("canSwim", false);
             upsideDown = data.Bool("upsideDown", false);
+            group = data.Int("group", -1);
+            canDrown = data.Bool("canDrown", false);
+            airTimer = data.Float("airTimer", 15f);
             StartPos = Position;
             FinalPos = Position - new Vector2(0, riseDistance);
             if (delay == 0)
@@ -175,13 +249,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         break;
                 }
             }
-            if (transparency == 0f)
+            if (outsideTransparency <= 0f)
             {
-                transparency = 0.65f;
+                outsideTransparency = 0.65f;
             }
-            if (transparency >= 1f)
+            if (outsideTransparency >= 1f)
             {
-                transparency = 1f;
+                outsideTransparency = 1f;
+            }
+            if (insideTransparency <= 0f || insideTransparency >= outsideTransparency)
+            {
+                insideTransparency = outsideTransparency;
             }
             Depth = foreground ? -19999 : -9999;
             if (liquidType == "lava")
@@ -230,7 +308,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             waterSplashIn.AddLoop("splash", "splash", 0.04f);
             Add(waterSplashOut = new Sprite(GFX.Game, "objects/XaphanHelper/liquid/water/"));
             waterSplashOut.AddLoop("splash", "splash", 0.04f);
-            liquidSprite.Color = waterSplashIn.Color = waterSplashOut.Color = Calc.HexToColor(color) * transparency;
             Add(pc = new PlayerCollider(OnCollide));
             if (upsideDown)
             {
@@ -242,6 +319,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public static void Load()
         {
+            On.Celeste.Level.Update += LevelOnUpdate;
             On.Celeste.Player.Update += PlayerOnUpdate;
             IL.Celeste.Player.NormalUpdate += modNormalUpdate;
             IL.Celeste.Player.Jump += modJump;
@@ -257,8 +335,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
             wallJumpHook = new ILHook(typeof(Player).GetMethod("orig_WallJump", BindingFlags.Instance | BindingFlags.NonPublic), modWallJump);
         }
 
+        private static void LevelOnUpdate(On.Celeste.Level.orig_Update orig, Level self)
+        {
+            if (self.Tracker.GetEntities<Liquid>().Count() > 0 && self.Tracker.GetEntities<BreathManager>().Count() == 0)
+            {
+                self.Add(new BreathManager());
+            }
+            orig(self);
+        }
+
         public static void Unload()
         {
+            On.Celeste.Level.Update -= LevelOnUpdate;
             On.Celeste.Player.Update -= PlayerOnUpdate;
             IL.Celeste.Player.NormalUpdate -= modNormalUpdate;
             IL.Celeste.Player.Jump -= modJump;
@@ -579,6 +667,18 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
+            if (!string.IsNullOrEmpty(appearFlags))
+            {
+                string[] flags = appearFlags.Split(',');
+                foreach (string flag in flags)
+                {
+                    if (!SceneAs<Level>().Session.GetFlag(flag))
+                    {
+                        RemoveSelf();
+                        break;
+                    }
+                }
+            }
             if (!string.IsNullOrEmpty(removeFlags))
             {
                 string[] flags = removeFlags.Split(',');
@@ -591,6 +691,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
+            liquidSprite.Color = waterSplashIn.Color = waterSplashOut.Color = Calc.HexToColor(color) * (PlayerCompletelyInside() ? insideTransparency : outsideTransparency);
             origLevelBottom = SceneAs<Level>().Bounds.Bottom;
             if (liquidType == "lava")
             {
@@ -613,6 +714,33 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     RemoveSelf();
                 }
             }
+            if (group != -1)
+            {
+                groupLeader = true;
+                foreach (Liquid liquid in SceneAs<Level>().Tracker.GetEntities<Liquid>())
+                {
+                    if (liquid != this && liquid.group == group)
+                    {
+                        groupLeader = false;
+                    }
+                }
+            }
+        }
+
+        public override void Awake(Scene scene)
+        {
+            base.Awake(scene);
+            if (!groupLeader)
+            {
+                foreach (Liquid liquid in SceneAs<Level>().Tracker.GetEntities<Liquid>())
+                {
+                    if (liquid.group == group && liquid.groupLeader)
+                    {
+                        leader = liquid;
+                        break;
+                    }
+                }
+            }
         }
 
         private IEnumerator ShakeLevel()
@@ -631,57 +759,64 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator RiseRoutine()
         {
-            while (SceneAs<Level>().Transitioning)
+            if (Position != FinalPos)
             {
-                yield return null;
-            }
-            if (riseSound)
-            {
-                riseSoundSource = Audio.Play("event:/game/xaphan/liquid_rise");
-            }
-            while (riseDelay > 0)
-            {
-                riseDelay -= Engine.DeltaTime;
-                yield return null;
-            }
-            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-            Vector2 start = Position;
-            float coef = riseSpeed / 8;
-            float num = Vector2.Distance(start, FinalPos) / 4f / coef;
-            Tween tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.SineInOut, num, start: true);
-            tween.OnUpdate = delegate (Tween t)
-            {
-                if (player != null)
+                if (riseShake)
                 {
-                    Position = Vector2.Lerp(start, FinalPos, t.Eased);
+                    Add(new Coroutine(ShakeLevel()));
                 }
-            };
-            Add(tween);
-            while (Position != FinalPos)
-            {
-                if (liquidType == "water" && Displacement != null)
+                while (SceneAs<Level>().Transitioning)
                 {
-                    Displacement.RemoveSelf();
-                    grid = new bool[(int)(Collider.Width / 8f), (int)(Collider.Height / 8f)];
-                    CheckSolidsForDisplacement();
-                    Add(Displacement = new DisplacementRenderHook(RenderDisplacement));
+                    yield return null;
                 }
-                if (SceneAs<Level>().Transitioning)
+                if (riseSound)
                 {
-                    tween.Stop();
-                    stopRiseSound = true;
-                    rising = false;
-                    riseEnd = true;
-                    break;
+                    riseSoundSource = Audio.Play("event:/game/xaphan/liquid_rise");
                 }
-                yield return null;
+                while (riseDelay > 0)
+                {
+                    riseDelay -= Engine.DeltaTime;
+                    yield return null;
+                }
+                Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+                Vector2 start = Position;
+                float coef = riseSpeed / 8;
+                float num = Vector2.Distance(start, FinalPos) / 4f / coef;
+                Tween tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.SineInOut, num, start: true);
+                tween.OnUpdate = delegate (Tween t)
+                {
+                    if (player != null)
+                    {
+                        Position = Vector2.Lerp(start, FinalPos, t.Eased);
+                    }
+                };
+                Add(tween);
+                while (Position != FinalPos)
+                {
+                    if (liquidType == "water" && Displacement != null)
+                    {
+                        Displacement.RemoveSelf();
+                        grid = new bool[(int)(Collider.Width / 8f), (int)(Collider.Height / 8f)];
+                        CheckSolidsForDisplacement();
+                        Add(Displacement = new DisplacementRenderHook(RenderDisplacement));
+                    }
+                    if (SceneAs<Level>().Transitioning)
+                    {
+                        tween.Stop();
+                        stopRiseSound = true;
+                        rising = false;
+                        riseEnd = true;
+                        break;
+                    }
+                    yield return null;
+                }
+                if (riseSoundSource != null)
+                {
+                    riseSoundSource.stop(STOP_MODE.ALLOWFADEOUT);
+                }
+                rising = false;
+                riseEnd = true;
             }
-            if (riseSoundSource != null)
-            {
-                riseSoundSource.stop(STOP_MODE.ALLOWFADEOUT);
-            }
-            rising = false;
-            riseEnd = true;
         }
 
         public void ReturnToOrigPosition()
@@ -762,6 +897,35 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             base.Update();
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+            if (player != null)
+            {
+                if (PlayerInside())
+                {
+                    OnCollide(player);
+                }
+                if (!PlayerCompletelyInside())
+                {
+                    currentTransparency = Calc.Approach(currentTransparency, outsideTransparency, Engine.DeltaTime * 2f);
+                }
+                else
+                {
+                    if (group == -1 || groupLeader)
+                    {
+                        currentTransparency = Calc.Approach(currentTransparency, insideTransparency, Engine.DeltaTime * 2f);
+                    }
+                    else
+                    {
+                        foreach (Liquid liquid in SceneAs<Level>().Tracker.GetEntities<Liquid>())
+                        {
+                            if (leader != null && liquid.group == group)
+                            {
+                                currentTransparency = leader.currentTransparency;
+                            }
+                        }
+                    }
+                }
+            }
+            liquidSprite.Color = waterSplashIn.Color = waterSplashOut.Color = Calc.HexToColor(color) * currentTransparency;
             if ((liquidType == "lava" && GravityJacket.determineIfInLava() && !GravityJacket.Active(SceneAs<Level>())) || (liquidType.Contains("acid") && GravityJacket.determineIfInAcid()))
             {
                 FlashingRed = true;
@@ -794,14 +958,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Collider = new Hitbox(Width, (origLevelBottom - Position.Y), 0f, 0f);
             }
-            if (playerHasMoved && !riseEnd && !rising && riseDistance != 0 && (string.IsNullOrEmpty(riseFlag) || SceneAs<Level>().Session.GetFlag(riseFlag)) && (string.IsNullOrEmpty(riseEndFlag) || !SceneAs<Level>().Session.GetFlag(riseEndFlag)))
+            if (playerHasMoved && !riseEnd && !rising && riseDistance != 0 && (string.IsNullOrEmpty(riseFlag) || SceneAs<Level>().Session.GetFlag(riseFlag)) && (string.IsNullOrEmpty(riseEndFlag) || !SceneAs<Level>().Session.GetFlag(riseEndFlag) || riseEndFlag == riseFlag))
             {
                 rising = true;
                 Add(new Coroutine(RiseRoutine()));
-                if (riseShake)
-                {
-                    Add(new Coroutine(ShakeLevel()));
-                }
             }
             else if (!rising && !waving && lowPosition != 0)
             {
@@ -858,7 +1018,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             {
                                 Audio.Play("event:/char/madeline/water_dash_out", bounds.Center.ToVector2(), "deep", num);
                             }
-                            else
+                            else if (!SceneAs<Level>().Transitioning && player != null && player.Bottom >= Top)
                             {
                                 Audio.Play("event:/char/madeline/water_out", bounds.Center.ToVector2(), "deep", num);
                             }
@@ -870,7 +1030,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             {
                                 Audio.Play("event:/char/madeline/water_dash_in", bounds.Center.ToVector2(), "deep", num);
                             }
-                            else
+                            else if (!SceneAs<Level>().Transitioning && player != null && player.Top < Top)
                             {
                                 Audio.Play("event:/char/madeline/water_in", bounds.Center.ToVector2(), "deep", num);
                             }
@@ -1090,6 +1250,32 @@ namespace Celeste.Mod.XaphanHelper.Entities
             return false;
         }
 
+        public bool PlayerCompletelyInside()
+        {
+            foreach (Player player in SceneAs<Level>().Tracker.GetEntities<Player>())
+            {
+                if (group == -1)
+                {
+                    if (CollideCheck(player) && (upsideDown ? player.Bottom <= Bottom - 4 : player.Top >= Top + 4) && player.Left >= Left && player.Right <= Right)
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    foreach (Liquid liquid in SceneAs<Level>().Tracker.GetEntities<Liquid>())
+                    {
+                        if (liquid.CollideCheck(player) && (liquid.upsideDown ? player.Bottom <= liquid.Bottom - 4 : player.Top >= liquid.Top + 4))
+                        {
+                            return true;
+                        }
+                    }
+
+                }
+            }
+            return false;
+        }
+
         private void OnCollide(Player player)
         {
             if (!visualOnly)
@@ -1113,7 +1299,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                     else
                     {
-                        if (!XaphanModule.useMetroidGameplay ? !VariaJacket.Active(SceneAs<Level>()) : !GravityJacket.Active(SceneAs<Level>()))
+                        if (!XaphanModule.useMetroidGameplay ? /* To allow Varia Jacket in lava : !VariaJacket.Active(SceneAs<Level>())*/ !player.JustRespawned : !GravityJacket.Active(SceneAs<Level>()))
                         {
                             if (!XaphanModule.PlayerIsControllingRemoteDrone())
                             {
@@ -1132,7 +1318,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                     }
                                 }
                             }
-                            else
+                            /*else -- Kill the drone in dummy state ??? Why ?
                             {
                                 Drone drone = SceneAs<Level>().Tracker.GetEntity<Drone>();
                                 if (player.StateMachine.State == 11 && drone != null && !drone.dead)
@@ -1140,7 +1326,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                     player.Die(new Vector2(0f, -1f));
                                     Add(new Coroutine(drone.Destroy(true, true)));
                                 }
-                            }
+                            }*/
                         }
                     }
                 }
@@ -1191,8 +1377,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private IEnumerator LiquidDamage(string liquidType)
         {
             HealthDisplay healthDisplay = SceneAs<Level>().Tracker.GetEntity<HealthDisplay>();
-            HeatIndicator indicator = SceneAs<Level>().Tracker.GetEntity<HeatIndicator>();
-            if (indicator == null || (indicator != null && !indicator.HeatDamageRoutine.Active))
+            HeatManager manager = SceneAs<Level>().Tracker.GetEntity<HeatManager>();
+            if (manager == null || (manager != null && !manager.HeatDamageRoutine.Active))
             {
                 healthDisplay.playDamageSfx();
             }
@@ -1207,7 +1393,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     yield return null;
                 }
             }
-            if (indicator == null || (indicator != null && !indicator.HeatDamageRoutine.Active))
+            if (manager == null || (manager != null && !manager.HeatDamageRoutine.Active))
             {
                 healthDisplay.stopDamageSfx();
             }

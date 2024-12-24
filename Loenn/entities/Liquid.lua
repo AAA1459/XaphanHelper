@@ -13,7 +13,7 @@ Liquid.depth = function(room, entity)
     return depth
 end
 Liquid.fieldOrder = {
-    "x", "y", "width", "height", "liquidType", "directory", "surfaceHeight", "lowPosition", "color", "transparency", "frameDelay", "riseDistance", "riseDelay", "riseSpeed", "riseFlag", "riseEndFlag", "removeFlags", "riseShake", "riseSound", "canSwim", "visualOnly", "foreground", "upsideDown"
+    "x", "y", "width", "height", "liquidType", "directory", "surfaceHeight", "lowPosition", "color", "group", "transparency", "insideTransparency", "frameDelay", "riseDistance", "riseDelay", "riseSpeed", "riseFlag", "riseEndFlag", "appearFlags", "removeFlags", "airTimer", "riseShake", "riseSound", "canSwim", "canDrown", "visualOnly", "foreground", "upsideDown"
 }
 Liquid.fieldInformation = {
     lowPosition = {
@@ -35,7 +35,11 @@ Liquid.fieldInformation = {
     surfaceHeight = {
         fieldType = "integer",
         minimumValue = 0
-        }
+    },
+    group = {
+        fieldType = "integer",
+        minimumValue = -1
+    }
 }
 Liquid.placements = {
     name = "Liquid",
@@ -47,6 +51,7 @@ Liquid.placements = {
         frameDelay = 0.15,
         color = "88C098",
         transparency = 0.65,
+        insideTransparency = 0.65,
         foreground = false,
         riseDelay = 0.00,
         riseDistance = 0,
@@ -59,8 +64,12 @@ Liquid.placements = {
         surfaceHeight = 0,
         canSwim = false,
         visualOnly = false,
+        appearFlags = "",
         removeFlags = "",
-        upsideDown = false
+        upsideDown = false,
+        group = -1,
+        canDrown = false,
+        airTimer = 15
     }
 }
 
@@ -72,7 +81,7 @@ local function getEntityColor(entity)
         quicksand = "C8B078",
         water = "669CEE"
     }
-    
+
     local rawColor = nil
     if not entity.color or entity.color == "" then
         rawColor = defaults[entity.liquidType or "acid"] or "FFFFFF"

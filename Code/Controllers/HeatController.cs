@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Celeste.Mod.Entities;
-using Celeste.Mod.XaphanHelper.UI_Elements;
+using Celeste.Mod.XaphanHelper.Managers;
 using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -13,6 +13,8 @@ namespace Celeste.Mod.XaphanHelper.Controllers
     [CustomEntity("XaphanHelper/HeatController")]
     class HeatController : Entity
     {
+        private static FieldInfo playerFlash = typeof(Player).GetField("flash", BindingFlags.NonPublic | BindingFlags.Instance);
+
         public float maxDuration;
 
         public static bool Flashing;
@@ -24,8 +26,6 @@ namespace Celeste.Mod.XaphanHelper.Controllers
         private bool[,] grid;
 
         public string inactiveFlag;
-
-        private static FieldInfo playerFlash = typeof(Player).GetField("flash", BindingFlags.NonPublic | BindingFlags.Instance);
 
         public HeatController(EntityData data, Vector2 offset) : base(data.Position + offset)
         {
@@ -73,14 +73,7 @@ namespace Celeste.Mod.XaphanHelper.Controllers
                 grid = new bool[SceneAs<Level>().Bounds.Width / 8, SceneAs<Level>().Bounds.Height / 8];
                 Add(new DisplacementRenderHook(RenderDisplacement));
             }
-            if (SceneAs<Level>().Tracker.GetEntity<HeatIndicator>() == null)
-            {
-                SceneAs<Level>().Add(new HeatIndicator(maxDuration, inactiveFlag));
-            }
-            else
-            {
-                SceneAs<Level>().Tracker.GetEntity<HeatIndicator>().updateMaxDuration(maxDuration);
-            }
+            SceneAs<Level>().Add(new HeatManager(maxDuration, inactiveFlag));
             if (heatEffect)
             {
                 int i = 0;
@@ -97,13 +90,11 @@ namespace Celeste.Mod.XaphanHelper.Controllers
 
         public static void Load()
         {
-            IL.Celeste.Player.Render += modILPlayerRender;
             On.Celeste.Player.Render += modPlayerRender;
         }
 
         public static void Unload()
         {
-            IL.Celeste.Player.Render -= modILPlayerRender;
             On.Celeste.Player.Render -= modPlayerRender;
         }
 
@@ -116,25 +107,7 @@ namespace Celeste.Mod.XaphanHelper.Controllers
             }
         }
 
-        private static void modILPlayerRender(ILContext il)
-        {
-            ILCursor cursor = new(il);
-
-            if (cursor.TryGotoNext(instr => instr.MatchCallvirt<StateMachine>("get_State"), instr => instr.MatchLdcI4(19)))
-            {
-                cursor.Index++;
-                cursor.EmitDelegate<Func<int, int>>(orig =>
-                {
-                    if (determineifHeatController())
-                    {
-                        return 19;
-                    }
-                    return orig;
-                });
-            }
-        }
-
-        private static bool determineifHeatController()
+        public static bool determineifHeatController()
         {
             if (Engine.Scene is Level)
             {
@@ -157,7 +130,7 @@ namespace Celeste.Mod.XaphanHelper.Controllers
             Player player = Scene.Tracker.GetEntity<Player>();
             if (player != null && !player.Dead)
             {
-                if (!VariaJacket.Active(SceneAs<Level>()) && !SceneAs<Level>().Session.GetFlag(inactiveFlag) && !XaphanModule.PlayerIsControllingRemoteDrone())
+                if (!VariaJacket.Active(SceneAs<Level>()) && (string.IsNullOrEmpty(inactiveFlag) || (!string.IsNullOrEmpty(inactiveFlag) && !SceneAs<Level>().Session.GetFlag(inactiveFlag))) && !XaphanModule.PlayerIsControllingRemoteDrone())
                 {
                     if (Scene.OnRawInterval(0.06f))
                     {
@@ -172,7 +145,7 @@ namespace Celeste.Mod.XaphanHelper.Controllers
                         FlashingRed = false;
                     }
                 }
-                if (VariaJacket.Active(SceneAs<Level>()) || SceneAs<Level>().Session.GetFlag(inactiveFlag) || XaphanModule.PlayerIsControllingRemoteDrone())
+                if (VariaJacket.Active(SceneAs<Level>()) || (!string.IsNullOrEmpty(inactiveFlag) && SceneAs<Level>().Session.GetFlag(inactiveFlag)) || XaphanModule.PlayerIsControllingRemoteDrone())
                 {
                     if (player.Sprite.Color == Color.Red)
                     {

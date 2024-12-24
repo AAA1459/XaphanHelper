@@ -151,10 +151,9 @@
 
 #Common Upgrades
 	XaphanHelper_get_VariaJacket_Name= VESTE VARIA
-	XaphanHelper_get_VariaJacket_Desc= Permet de survivre dans la lave
-	XaphanHelper_get_VariaJacket_Desc_b= et protège des températures extrêmes
+	XaphanHelper_get_VariaJacket_Desc= Permet de survivre aux températures extrêmes
 	XaphanHelper_get_GravityJacket_Name= VESTE DE GRAVITÉ
-	XaphanHelper_get_GravityJacket_Desc= Permet de se déplacer librement dans les liquides
+	XaphanHelper_get_GravityJacket_Desc= Permet de se déplacer librement dans l'eau
 	XaphanHelper_get_LongBeam_Name= RAYON LONG
 	XaphanHelper_get_LongBeam_Desc= Permet aux rayons d'atteindre les cibles éloignées
 	XaphanHelper_get_LongBeam_Desc_drone= Permet au rayon du drone d'atteindre les cibles éloignées
@@ -194,12 +193,15 @@
 	ModOptions_XaphanModule_80= 80%
 	ModOptions_XaphanModule_90= 90%
 	ModOptions_XaphanModule_100= 100%
-	ModOptions_XaphanModule_ShowHeatLevel= Afficher le niveau de chaleur
-	ModOptions_XaphanModule_ShowHeatLevel_Desc= Affiche le temps restant avant de mourrir dans les salles chauffées
 	ModOptions_XaphanModule_SpaceJumpIndicator= Indicateur du Saut Spacial
 	ModOptions_XaphanModule_SpaceJumpIndicator_None= Aucun
 	ModOptions_XaphanModule_SpaceJumpIndicator_Small= Petit
 	ModOptions_XaphanModule_SpaceJumpIndicator_Large= Grand
+	ModOptions_XaphanModule_StaminaIndicator= Indicateur d'endurance
+	ModOptions_XaphanModule_StaminaIndicator_UI_Only= Haut de l'écran
+	ModOptions_XaphanModule_StaminaIndicator_Player_Only= Près du joueur
+	ModOptions_XaphanModule_StaminaIndicator_Both= Les deux
+	ModOptions_XaphanModule_OxygenIndicator= Indicateur d'oxygène
 	ModOptions_XaphanModule_ShowCompleteSlopesHitboxes= Afficher la collision complète des pentes
 	ModOptions_XaphanModule_ShowCompleteSlopesHitboxes_Desc= Affiche la zone de collision des platformes invisibles utilisées par les pentes{n}pour déplacer le joueur - Peux être utile pour les TAS
 
@@ -208,10 +210,9 @@
 	ModOptions_XaphanModule_SelectItem= Sélectionner la capacité équipée
 	ModOptions_XaphanModule_UseBagItemSlot= Utiliser la capacité équipée dans l'emplacement Sac
 	ModOptions_XaphanModule_UseMiscItemSlot= Utiliser la capacité équipée dans l'emplacement Divers
-	ModOptions_XaphanModule_MapScreenShowProgressDisplay= Écran carte - Séléctionner type de progression
 	ModOptions_XaphanModule_MapScreenShowMapOrWorldMap= Écran carte - Permuter entre carte de la zone et carte du monde
-	ModOptions_XaphanModule_MapScreenShowHints= Écran carte - Afficher / chacher les indices
-
+	ModOptions_XaphanModule_MapScreenDisplayOptions= Écran carte - Personnaliser les options d'affichage
+	ModOptions_XaphanModule_MapScreenPlaceMarker= Écran carte - Placer marqueur
 #UI
 	XaphanHelper_UI_ActiveCM_title= PRÊT POUR UN DEFI ?
 	XaphanHelper_UI_CM_note1= Vous pouvez rejouer cette rencontre de boss{n} ou jouer à une version plus difficile
@@ -241,16 +242,20 @@
 	XaphanHelper_UI_abilities= Capacités
 	XaphanHelper_UI_activate= Activer
 	XaphanHelper_UI_deactivate= Désactiver
+	XaphanHelper_UI_displayOptions= Options d'affichage
 	XaphanHelper_UI_showhints= Afficher indices
-	XaphanHelper_UI_hidehints= Cacher indices
-	XaphanHelper_UI_showProgress= Afficher progression
-	XaphanHelper_UI_changeProgress= Changer progression
-	XaphanHelper_UI_hideProgress= Cacher progression
-	XaphanHelper_UI_progress_allareas= Progression  Toutes les zones
-	XaphanHelper_UI_progress_area= Progression : zone actuelle
-	XaphanHelper_UI_progress_subarea= Progression : sous-zone actuelle
+	XaphanHelper_UI_showmarkers= Afficher marqueurs
+	XaphanHelper_UI_progress= Progression
+	XaphanHelper_UI_progres_display= Progression :
+	XaphanHelper_UI_progress_allareas= Toutes les zones
+	XaphanHelper_UI_progress_area= Zone actuelle
+	XaphanHelper_UI_progress_subarea= Sous-zone actuelle
 	XaphanHelper_UI_showWorldMap= Afficher carte du monde
 	XaphanHelper_UI_showAreaMap= Afficher carte de la zone
+	XaphanHelper_UI_markers= Ajouter / Supprimer marqueur
+	XaphanHelper_UI_markers_place= Placer marqueur
+	XaphanHelper_UI_markers_remove= Supprimer marqueur
+	XaphanHelper_UI_markers_select= Sélectionnez un marqueur
 	XaphanHelper_UI_confirm= Confirmer
 	XaphanHelper_UI_achievements= Succès
 	Xaphanhelper_UI_Arms= BRAS
@@ -292,6 +297,7 @@
 	XaphanHelper_UI_Informations= INFORMATIONS
 	XaphanHelper_UI_LorebookEntry_Locked= Vous n'avez pas encore découvert cette entrée
 	XaphanHelper_UI_LorebookNewEntry= Nouvelle entrée !
+	Xaphanhelper_UI_Breath= OXYGENE
 
 #Metroid UI
 	XaphanHelper_UI_Save_Game= SOUHAITEZ-VOUS SAUVEGARDER ?
@@ -304,6 +310,3 @@
 	XaphanHelper_chapter_not_exist= Le chapitre spécifié n'existe pas
 	XaphanHelper_room_not_exist= La salle spécifiée n'existe pas
 	XaphanHelper_room_name_empty= Le nom de la salle spécifiée est vide
-
-#Temporary
-	LorebookEntry_Boss_2_1_Name= Monstre des ombres

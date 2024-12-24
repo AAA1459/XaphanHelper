@@ -82,7 +82,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private static void PlayerSpritePlayHook(On.Monocle.Sprite.orig_Play orig, Sprite self, string id, bool restart = false, bool randomizeFrame = false)
         {
-            if (self.Entity is Player && self.Scene is Level level && !XaphanModule.PlayerIsControllingRemoteDrone())
+            if (self.Entity is Player player && player.Sprite == self && self.Scene is Level level && !XaphanModule.PlayerIsControllingRemoteDrone())
             {
                 foreach (BigScreen screen in level.Tracker.GetEntities<BigScreen>())
                 {
@@ -109,8 +109,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     Add(talk = new TalkComponent(new Rectangle(28, 80, 24, 16), new Vector2(40f, 64f), Interact));
                     talk.PlayerMustBeFacing = false;
                 }
-                showPortrait = isOn = SceneAs<Level>().Session.GetFlag(Prefix + "_Ch" + chapterIndex + "_" + SceneAs<Level>().Session.Level + "_" + ID.ID + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : ""));
-                if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + SceneAs<Level>().Session.Level + "_" + ID.ID + (XaphanModule.PlayerHasGolden ? "_GoldenStrawberry" : "")) || alwaysOn)
+                showPortrait = isOn = SceneAs<Level>().Session.GetFlag(Prefix + "_Ch" + chapterIndex + "_" + SceneAs<Level>().Session.Level + "_" + ID.ID);
+                if (XaphanModule.ModSaveData.SavedFlags.Contains(Prefix + "_Ch" + chapterIndex + "_" + SceneAs<Level>().Session.Level + "_" + ID.ID) || alwaysOn)
                 {
                     showPortrait = true;
                     isOn = true;

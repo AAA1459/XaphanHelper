@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Celeste.Mod.XaphanHelper.Effects;
@@ -111,10 +112,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
         }
 
+        public static bool AtEndOfTransition;
 
         private static IEnumerator TranstionRoutine(Level level)
         {
+            AtEndOfTransition = true;
             yield return 0.35f;
+            AtEndOfTransition = false;
             LevelTransition.SetValue(level, null);
         }
 
@@ -132,6 +136,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
             Drone drone = SceneAs<Level>().Tracker.GetEntity<Drone>();
+            List<Entity> bombs = SceneAs<Level>().Tracker.GetEntities<Bomb>();
             if (player != null)
             {
                 if (SceneAs<Level>().Transitioning)
@@ -142,6 +147,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (drone != null)
             {
                 drone.Depth = Depth - 1;
+            }
+            foreach (Entity entity in bombs)
+            {
+                if (entity.GetType() == typeof(Bomb))
+                {
+                    Bomb bomb = (Bomb)entity;
+                    if (bomb.Hold.IsHeld)
+                    {
+                        bomb.Depth = Depth - 1;
+                    }
+                }
             }
             float fadeTimer = 0.35f;
             while (fadeTimer > 0)
@@ -171,13 +187,16 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 alpha = Math.Max(0f, alpha);
                 foreach (Backdrop backdrop in SceneAs<Level>().Foreground.Backdrops)
                 {
-                    if (backdrop is HeatParticles)
+                    if (backdrop.OnlyIn.Contains(SceneAs<Level>().Session.Level))
                     {
-                        backdrop.Color.A = (byte)((Math.Max(0, 1 - alpha)) * 255);
-                    }
-                    else
-                    {
-                        backdrop.FadeAlphaMultiplier = (Math.Max(0, 1 - alpha));
+                        if (backdrop is HeatParticles)
+                        {
+                            backdrop.Color.A = (byte)((Math.Max(0, 1 - alpha)) * 255);
+                        }
+                        else
+                        {
+                            backdrop.FadeAlphaMultiplier = (Math.Max(0, 1 - alpha));
+                        }
                     }
                 }
                 yield return null;
@@ -189,6 +208,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (drone != null)
             {
                 drone.Depth = 0;
+            }
+            foreach (Entity entity in bombs)
+            {
+                if (entity.GetType() == typeof(Bomb))
+                {
+                    Bomb bomb = (Bomb)entity;
+                    if (bomb.Hold.IsHeld)
+                    {
+                        bomb.Depth = 0;
+                    }
+                }
             }
             RemoveSelf();
         }

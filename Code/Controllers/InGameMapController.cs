@@ -23,13 +23,6 @@ namespace Celeste.Mod.XaphanHelper.Controllers
                 {
                     XaphanModule.ModSaveData.SavedFlags.Add(SceneAs<Level>().Session.Area.LevelSet + "_Can_Open_Map");
                 }
-                if (XaphanModule.PlayerHasGolden)
-                {
-                    if (!XaphanModule.ModSaveData.SavedFlags.Contains(SceneAs<Level>().Session.Area.LevelSet + "_Can_Open_Map_GoldenStrawberry"))
-                    {
-                        XaphanModule.ModSaveData.SavedFlags.Add(SceneAs<Level>().Session.Area.LevelSet + "_Can_Open_Map_GoldenStrawberry");
-                    }
-                }
             }
         }
     }

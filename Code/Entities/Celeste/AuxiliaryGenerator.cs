@@ -100,7 +100,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private static void PlayerSpritePlayHook(On.Monocle.Sprite.orig_Play orig, Sprite self, string id, bool restart = false, bool randomizeFrame = false)
         {
-            if (self.Entity is Player && self.Scene is Level level && !XaphanModule.PlayerIsControllingRemoteDrone())
+            if (self.Entity is Player player && player.Sprite == self && self.Scene is Level level && !XaphanModule.PlayerIsControllingRemoteDrone())
             {
                 foreach (AuxiliaryGenerator generator in level.Tracker.GetEntities<AuxiliaryGenerator>())
                 {
@@ -133,7 +133,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (SceneAs<Level>().Session.GetFlag("Ch4_Main_Power_Off"))
                 {
-                    talk.Enabled = true;
+                    talk.Enabled = XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch5_Generator");
                     if (!ActivationRoutine.Active)
                     {
                         Sprite.Play("off");
@@ -168,6 +168,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 yield return null;
             }
+            player.Facing = Facings.Right;
             SceneAs<Level>().Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_5_geothermal_active");
             SceneAs<Level>().Session.Audio.Apply(forceSixteenthNoteHack: false);
             Sprite.Play("on");
@@ -189,6 +190,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             SceneAs<Level>().Session.SetFlag("Ch5_Auxiliary_Power", true);
             player.Sprite.OnLastFrame = resumeSprite;
+            if (XaphanModule.ModSaveData.WatchedCutscenes.Contains("Xaphan/0_Ch5_Generator2") || XaphanModule.PlayerHasGolden)
+            {
+                yield return 0.2f;
+                player.StateMachine.State = 0;
+            }
         }
 
         public void stopSprite(string s)
@@ -204,10 +210,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public void resumeSprite(string s)
         {
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-            if (player != null)
-            {
-                player.StateMachine.State = 0;
-            }
             PlayerPose = "";
             player.Sprite.OnLastFrame = resetSprite;
         }

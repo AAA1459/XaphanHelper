@@ -145,6 +145,14 @@ entities.XaphanHelper/CustomCollectable.attributes.description.loopBurst=If true
 entities.XaphanHelper/CustomCollectable.attributes.description.staticTime=Time in seconds between each sprite loop during which the sprite will pause on its first frame. 0 = no pause.
 entities.XaphanHelper/CustomCollectable.attributes.description.particlesColor=Hexadecimal code for the color of the particles. Leave blank for no particles.
 entities.XaphanHelper/CustomCollectable.attributes.description.wiggle=If true, the collectable will slowly wiggle up and down.
+entities.XaphanHelper/CustomCollectable.attributes.description.animationSpeed= Delay between each frame of the animation. Default: 0.08.
+entities.XaphanHelper/CustomCollectable.attributes.description.poem= If true, the collectable will show a poem on screen (like crystal hears do) when collected.
+entities.XaphanHelper/CustomCollectable.attributes.description.poemName= Name of the poem that is displayed when the collectable is collected. No effect if Poem is not true.
+entities.XaphanHelper/CustomCollectable.attributes.description.poemColor= Color of the name of the poem that is displayed when the collectable is collected. No effect if Poem is not true.
+entities.XaphanHelper/CustomCollectable.attributes.description.poemParticlesColor= Colors of the particles displayed when the collectable is collected. No effect if Poem is not true.
+entities.XaphanHelper/CustomCollectable.attributes.description.poemSprite= The full path to the sprite that is displayed behind the poem, relative to Atlases/Gui/. No effect if Poem is not true.
+entities.XaphanHelper/CustomCollectable.attributes.description.poemSpriteAnimationSpeed=Delay between each frame of the animation of the sprite that is displayed behind the poem. No effect if Poem is not true.
+entities.XaphanHelper/CustomCollectable.attributes.description.poemSpriteAnimationPause= The number of frames to wait between each loop of the sprite that is displayed behind the poem. No effect if Poem is not true.
 
 # CustomCoverupWall
 entities.XaphanHelper/CustomCoverupWall.placements.name.CustomCoverupWall=Custom Coverup Wall
@@ -480,8 +488,13 @@ entities.XaphanHelper/Liquid.attributes.description.directory=The directory from
 entities.XaphanHelper/Liquid.attributes.description.surfaceHeight=Number of tiles in your custom sprites for the height of the surface of the liquid.\nThis correspond to the number of tiles at the top of your custom sprites that will be drawn only once.\nIf not using custom sprites, leave this to 0 to use default values based on the liquid type.
 entities.XaphanHelper/Liquid.attributes.description.visualOnly=If true, the liquid will have no effect on the player physics nor will be able to kill them.
 entities.XaphanHelper/Liquid.attributes.description.canSwim=If true, the player will be able to swim in the liquid just like vanilla water.
-entities.XaphanHelper/Liquid.attributes.description.removeFlags=If any of these flags are set, the liquid will not appear. Flags must be separated by a comma (,).
+entities.XaphanHelper/Liquid.attributes.description.appearFlags = The liquid can appear only if all of these flags are set. Flags must be separated by a comma (,).\nLeave blank to not check any flags.
+entities.XaphanHelper/Liquid.attributes.description.removeFlags=If any of these flags are set, the liquid will not appear. Flags must be separated by a comma (,).\nLeave blank to not check any flags.
 entities.XaphanHelper/Liquid.attributes.description.upsideDown=If true, the liquid will render upside down.
+entities.XaphanHelper/Liquid.attributes.description.insideTransparency= Transparency of the liquid when the player is completely inside. Values can be 0.01 to 1 and must be lower or equal than the normal Transparancy. The closest to 1, the more opaque the liquid will be.\nSetting this to 0 will use the same value as the normal transparency value.
+entities.XaphanHelper/Liquid.attributes.description.group=Id of the group this liquid is part of.\nAll liquids in the same group will use the transparency set in "inside Transparency" when the player in side of any of them.\n-1 = no group.
+entities.XaphanHelper/Liquid.attributes.description.canDrown=If true, the player will die if they stay inside the liquid for longer than the time specified in Air Timer.
+entities.XaphanHelper/Liquid.attributes.description.airTimer=Time (in seconds) that the player can stay in the liquid before dying, if Can Drown is true and Visual Only is false.
 
 # MagneticCeiling
 entities.XaphanHelper/MagneticCeiling.placements.name.MagneticCeiling=Magnetic Ceiling

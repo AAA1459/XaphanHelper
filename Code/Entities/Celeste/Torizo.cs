@@ -591,6 +591,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Sprite.Play("standUpEnd");
                 Activated = true;
+                CannotJumpDelay = 0.5f;
                 CannotSwipeDelay = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 1f : 5f;
                 SceneAs<Level>().Session.SetFlag("Torizo_Start", false);
             }
@@ -605,7 +606,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     if ((Facing == Facings.Right && player.Center.X > Center.X) || (Facing == Facings.Left && player.Center.X < Center.X)) // If player is in front of Torizo
                     {
-                        if (SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? MustJumpAway : Math.Abs(player.Center.X - Center.X) < 80 && CannotJumpDelay <= 0f)
+                        if ((SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? MustJumpAway : Math.Abs(player.Center.X - Center.X) < 80) && CannotJumpDelay <= 0f)
                         {
                             MustJumpAway = false;
                             Add(Routine = new Coroutine(JumpBackRoutine()));

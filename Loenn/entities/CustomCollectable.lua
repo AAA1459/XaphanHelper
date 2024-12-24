@@ -6,7 +6,7 @@ local CustomCollectable = {}
 CustomCollectable.name = "XaphanHelper/CustomCollectable"
 CustomCollectable.depth = 0
 CustomCollectable.fieldOrder = {
-    "x", "y", "sprite", "particlesColor", "lightColor", "flag", "collectSound", "loopSound", "staticTime", "newMusic", "mapIcon", "wiggle", "collectGoldenStrawberry", "mustDash", "canRespawn", "loopBurst", "changeMusic", "endChapter", "registerInSaveData", "ignoreGolden"
+    "x", "y", "sprite", "animationSpeed", "particlesColor", "lightColor", "flag", "collectSound", "loopSound", "staticTime", "newMusic", "mapIcon", "poemName", "poemColor", "poemParticlesColor", "poemSprite", "poemSpriteAnimationSpeed", "poemSpriteAnimationPause", "poem", "wiggle", "collectGoldenStrawberry", "mustDash", "canRespawn", "loopBurst", "changeMusic", "endChapter", "registerInSaveData", "ignoreGolden"
 }
 CustomCollectable.fieldInformation = {
     particlesColor = {
@@ -16,6 +16,18 @@ CustomCollectable.fieldInformation = {
     lightColor = {
         fieldType = "color",
         allowEmpty = true
+    },
+    poemColor = {
+        fieldType = "color",
+        allowEmpty = true
+    },
+    poemParticlesColor = {
+        fieldType = "color",
+        allowEmpty = true
+    },
+    poemSpriteAnimationPause = {
+        fieldType = "integer",
+        minimumValue = 0
     }
 }
 CustomCollectable.placements = {
@@ -38,7 +50,15 @@ CustomCollectable.placements = {
         staticTime = 0.8,
         particlesColor = "",
         lightColor = "",
-        wiggle = false
+        wiggle = false,
+        animationSpeed = 0.08;
+        poem = false,
+        poemName = "",
+        poemColor = "FFFFFF",
+        poemParticlesColor = "FFFFFF",
+        poemSprite = "collectables/heartgem/0/spin",
+        poemSpriteAnimationSpeed = 0.08,
+        poemSpriteAnimationPause = 0
     }
 }
 

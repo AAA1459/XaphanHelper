@@ -47,7 +47,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             yield return new SwapImmediately(orig(self, player));
             if (self is Binocular)
             {
-                player.SceneAs<Level>().Displacement.AddBurst(player.Center, 0.5f, 8f, 32f, 0.5f);
+                self.SceneAs<Level>().Displacement.AddBurst(self.Center - Vector2.UnitY * 3.5f, 0.5f, 8f, 32f, 0.5f);
                 self.RemoveSelf();
             }
         }

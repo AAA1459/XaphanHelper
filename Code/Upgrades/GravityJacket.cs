@@ -182,7 +182,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             if (Engine.Scene is Level)
             {
                 Level level = (Level)Engine.Scene;
-                if (determineIfInLiquid() && (!Active(level) || XaphanModule.PlayerIsControllingRemoteDrone()))
+                if (determineIfInLiquid() && (!Active(level)))
                 {
                     return 2f;
                 }
@@ -195,7 +195,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             if (Engine.Scene is Level)
             {
                 Level level = (Level)Engine.Scene;
-                if (determineIfInLiquid() && (!Active(level) || XaphanModule.PlayerIsControllingRemoteDrone()))
+                if (determineIfInLiquid() && (!Active(level)))
                 {
                     return 2f;
                 }
@@ -228,7 +228,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             if (Engine.Scene is Level)
             {
                 Level level = (Level)Engine.Scene;
-                if (determineIfInLiquid() && (!Active(level) || XaphanModule.PlayerIsControllingRemoteDrone()))
+                if (determineIfInLiquid() && (!Active(level)))
                 {
                     float lastDashDuration = SaveData.Instance.Assists.SuperDashing ? 0.3f : 0.15f;
                     return (int)Math.Round(lastDashDuration * 4) - 1;
@@ -242,7 +242,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             if (Engine.Scene is Level)
             {
                 Level level = (Level)Engine.Scene;
-                if (determineIfInLiquid() && (!Active(level) || XaphanModule.PlayerIsControllingRemoteDrone()))
+                if (determineIfInLiquid() && (!Active(level)))
                 {
                     return 0.7f;
                 }
@@ -255,7 +255,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             if (Engine.Scene is Level)
             {
                 Level level = (Level)Engine.Scene;
-                if (determineIfInLiquid() && (!Active(level) || XaphanModule.PlayerIsControllingRemoteDrone()))
+                if (determineIfInLiquid() && (!Active(level)))
                 {
                     return 0.6f;
                 }
@@ -268,7 +268,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             if (Engine.Scene is Level)
             {
                 Level level = (Level)Engine.Scene;
-                if (determineIfInLiquid() && (!Active(level) || XaphanModule.PlayerIsControllingRemoteDrone()))
+                if (determineIfInLiquid() && (!Active(level)))
                 {
                     return 0.5f;
                 }
@@ -329,10 +329,6 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             if (Engine.Scene is Level)
             {
                 Level level = (Level)Engine.Scene;
-                if (!XaphanModule.useMetroidGameplay)
-                {
-                    return determineIfInWater() || (VariaJacket.Active(level) && determineIfInLava());
-                }
                 return determineIfInWater() || determineIfInLava() || determineIfInAcid();
             }
             return false;

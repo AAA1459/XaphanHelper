@@ -54,12 +54,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             public override void Render(Vector2 position, float alignment = 0.5f, float scale = 1f)
             {
                 position.Y += TopPadding * scale;
-                ActiveFont.DrawOutline(Title, position.Floor() - new Vector2(860 + (ActiveFont.Measure(Title).X * 1.4f) / 2, 0), new Vector2(0f, 0f), Vector2.One * 1.4f * scale, TitleColor, 2f, BorderColor);
+                ActiveFont.DrawOutline(Title, position.Floor() - new Vector2(860 + (ActiveFont.Measure(Title).X * 1.4f * scale) / 2, 0), new Vector2(0f, 0f), Vector2.One * 1.4f * scale, TitleColor, 2f, BorderColor);
                 position.Y += (LineHeight * 1.4f + 8f + Spacing) * scale;
                 for (int i = 0; i < Credits.Length; i++)
                 {
                     PixelFont font = Font;
-                    ActiveFont.DrawOutline(Credits[i], position.Floor() - new Vector2(860 + (ActiveFont.Measure(Credits[i]).X * 1.15f) / 2, 0), new Vector2(0f, 0f), Vector2.One * 1.15f * scale, CreditsColor, 2f, BorderColor);
+                    ActiveFont.DrawOutline(Credits[i], position.Floor() - new Vector2(860 + (ActiveFont.Measure(Credits[i]).X * 1.15f * scale) / 2, 0), new Vector2(0f, 0f), Vector2.One * 1.15f * scale, CreditsColor, 2f, BorderColor);
                     position.Y += (LineHeight * 1.15f + Spacing) * scale;
                 }
             }
@@ -122,17 +122,17 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             public override void Render(Vector2 position, float alignment = 0.5f, float scale = 1f)
             {
                 position.Y += TopPadding * scale;
-                ActiveFont.DrawOutline(Title, position.Floor() - new Vector2(860 + (ActiveFont.Measure(Title).X * 1.4f) / 2, 0), new Vector2(0f, 0f), Vector2.One * 1.4f * scale, TitleColor, 2f, BorderColor);
+                ActiveFont.DrawOutline(Title, position.Floor() - new Vector2(860 + (ActiveFont.Measure(Title).X * 1.4f * scale) / 2, 0), new Vector2(0f, 0f), Vector2.One * 1.4f * scale, TitleColor, 2f, BorderColor);
                 position.Y += (LineHeight * 1.4f + 8f + Spacing) * scale;
                 for (int i = 0; i < Sections.Length; i++)
                 {
                     Section section = Sections[i];
                     string subtitle = section.Subtitle;
-                    ActiveFont.DrawOutline(section.Subtitle, position.Floor() - new Vector2(860 + (ActiveFont.Measure(section.Subtitle).X * 0.7f) / 2, 0), new Vector2(0f, 0f), Vector2.One * 0.7f * scale, SubtitleColor, 2f, BorderColor);
+                    ActiveFont.DrawOutline(section.Subtitle, position.Floor() - new Vector2(860 + (ActiveFont.Measure(section.Subtitle).X * 0.7f * scale) / 2, 0), new Vector2(0f, 0f), Vector2.One * 0.7f * scale, SubtitleColor, 2f, BorderColor);
                     position.Y += (section.SubtitleLines * LineHeight * 0.7f + Spacing) * scale;
                     for (int j = 0; j < section.Credits.Length; j++)
                     {
-                        ActiveFont.DrawOutline(section.Credits[j], position.Floor() - new Vector2(860 + (ActiveFont.Measure(section.Credits[j]).X * 1.15f) / 2, 0), new Vector2(0f, 0f), Vector2.One * 1.15f * scale, CreditsColor, 2f, BorderColor);
+                        ActiveFont.DrawOutline(section.Credits[j], position.Floor() - new Vector2(860 + (ActiveFont.Measure(section.Credits[j]).X * 1.15f * scale) / 2, 0), new Vector2(0f, 0f), Vector2.One * 1.15f * scale, CreditsColor, 2f, BorderColor);
                         position.Y += (LineHeight * 1.15f + Spacing) * scale;
                     }
                     position.Y += (32f + SectionSpacing) * scale;
@@ -308,9 +308,9 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private List<CreditNode> credits;
 
-        public float AutoScrollSpeedMultiplier = 0.55f;
+        public float AutoScrollSpeedMultiplier;
 
-        private float scrollSpeed = 50f;
+        private float scrollSpeed = 80f;
 
         private float scroll = 0f;
 
@@ -336,7 +336,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public static float LineHeight;
 
-        private static List<CreditNode> CreateCredits(bool title, bool polaroids, bool FromTitleScreen)
+        private List<CreditNode> CreateCredits(bool title, bool polaroids, bool FromTitleScreen)
         {
             List<CreditNode> list = new();
             if (title)
@@ -350,23 +350,89 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     logoPath = "vignette/Xaphan/logo-english";
                 }
-                list.Add(new Image(GFX.Gui, logoPath, 320f, 0, true));
+                list.Add(new Image(GFX.Gui, logoPath, 50f, 0, true));
             }
             // org 97 for padding and 0 for spacings
-            float spacing = 15f;
-            float sectionSpacing = 15f;
-            int padding = 123;
-            list.Add(new Thanks(0, spacing, "Created by", "Xaphan"));
-            list.Add(new Thanks(padding, spacing, "Inspired by", "Another Metroid 2 Remake fangame (AM2R)", "Metroid", "Super Metroid"));
-            list.Add(new Thanks(padding, spacing, "Custom Tilesets and Graphics", "AM2R", "Little Water Studio", "Meowsmith", "pyxelbit", "Super Metroid"));
-            list.Add(new MultiCredit(padding, spacing, sectionSpacing, "Custom Musics and effects", new MultiCredit.Section("AM2R tracks", "\"Ancient Power\"", "\"Flooded Complex\"", "\"Power Plant\"", "\"The Tower\"", "\"Transport Room\"", "by Milton \"DoctorM64\" Guasti, Darren Kerwin", "and Torbjørn \"Falcool\" Brandrud"), new MultiCredit.Section("Harmony of a Hunter tracks", "\"Danger in Old Tourian\" by DoctorM64", "\"In the Begining\" by Mercury Adept"), new MultiCredit.Section("Others tracks", "\"Arrival on Crateria (Remastered/Cover)\" by Maned Wolf", "\"Crateria - First Landing\" by Aaron Talbert", "\"Ending and Credits\" by DJ @tomnium", "\"Super Metroid Title Screen Theme\" by nikori", "\"Torizo Battle\" by DJ @tomnium"), new MultiCredit.Section("B-Sides tracks", "\"New Strong Resistance\" by Caluctor")));
-            list.Add(new Thanks(padding, spacing, "Playtesters", "Alex Tholen", "iamdadbod", "lennygold"));
-            list.Add(new Thanks(padding, spacing, "English dialogs revision", "Accelyte", "JorgeDelLanis"));
-            list.Add(new Thanks(padding, spacing, "Korean translation", "Prime "));
-            list.Add(new Thanks(padding, spacing, "Special Thanks", "0x0ade", "Cruor", "The Devs of Celeste", "The FMod Celeste Project", "The Mt. Celeste Climbing Association Discord", "Vexatos"));
+            float spacing = 15f * scale;
+            float sectionSpacing = 15f * scale;
+            int padding = (int)(123 * scale);
+            list.Add(new Thanks(0, spacing,"Author",
+                "Xaphan"));
+            list.Add(new Thanks(0, spacing, "Co-author",
+                "Spekio"));
+            list.Add(new Thanks(padding, spacing, "Inspiration",
+                "Another Metroid 2 Remake fangame (AM2R)",
+                "The Metroid series"));
+            list.Add(new Thanks(padding, spacing, "World Design, Gameplay Polish, Camera, Decoration and Code",
+                "Xaphan"));
+            list.Add(new Thanks(0, spacing, "Gameplay, Dialogs and Custom Entities Ideas",
+                "Spekio"));
+            list.Add(new Thanks(padding, spacing, "Custom Tilesets and Graphics",
+                "AM2R",
+                "Flagpole1up",
+                "Klyaksun",
+                "Little Water Studio",
+                "Meowsmith",
+                "Moretti93",
+                "Pyxelbit",
+                "Spooooky"));
+            list.Add(new MultiCredit(padding, spacing, sectionSpacing, "Custom Musics and effects",
+                new MultiCredit.Section("AM2R Tracks",
+                    "\"Ancient Guardian\"",
+                    "\"Ancient Power\"",
+                    "\"Flooded Complex\"",
+                    "\"Genesis\"",
+                    "\"Initial Descent\"",
+                    "\"Power Plant\"",
+                    "\"The Tower\"",
+                    "\"Thoth\"",
+                    "\"Transport Room\"",
+                    "by Milton \"DoctorM64\" Guasti, Darren Kerwin",
+                    "and Torbjørn \"Falcool\" Brandrud"),
+                new MultiCredit.Section("Harmony of a Hunter tracks",
+                    "\"Danger in Old Tourian\" by DoctorM64",
+                    "\"In the Begining\" by Mercury Adept",
+                    "\"Path of Ruin\" by Darkesword"),
+                new MultiCredit.Section("Other Tracks",
+                    "\"Arrival on Crateria (Remastered/Cover)\" by Maned Wolf",
+                    "\"Chozo Laboratory - Remix Cover\" by Vetom",
+                    "\"Chozo Ruins - Metroid Prime Remix\" by ArizonaPlus Music",
+                    "\"Crateria - First Landing\" by Aaron Talbert",
+                    "\"Credits - Metroid (NES)\" by Red_OWLdeer",
+                    "\"It's Around the Corner\" by Caluctor",
+                    "\"Lower Maridia (Super Metroid - Remix)\" by Daibu the Man",
+                    "\"Metroid Dread - Artaria (Bustello Remix)\" by Bustello",
+                    "\"Metroid Fusion - Environmental Mystery (Korg Minilogue Cover)\" by Andrew Wukusick",
+                    "\"Red Streaming Rivers\" by Caluctor",
+                    "\"Ridley [Fusion Remix]\" by Achiro`s Game Fusion Remixes",
+                    "\"Sector 1 [SRX] (Arranged) - Metroid Fusion\" by Gencoil",
+                    "\"Super Metroid 'Norfair (Frailty Awaiting)\" by Children of the Monkey Machine",
+                    "\"Super Metroid Orchestrated - Norfair: Hot Lava Area / Upper Norfair\" by 1ucasvb",
+                    "\"Super Metroid Title Theme Remix (Remastered/Remake/Rearrangement)\" by Jorge Constantini",
+                    "\"Torizo Battle\" by DJ @tomnium"),
+                new MultiCredit.Section("B-Sides Tracks",
+                    "\"New Strong Resistance\" by Caluctor")));
+            list.Add(new Thanks(padding, spacing, "Playtesters",
+                "Alex Tholen",
+                "Iamdadbod",
+                "lennygold",
+                "Spekio",
+                "Xaphan"));
+            list.Add(new Thanks(padding, spacing, "English dialogs revision",
+                "Accelyte",
+                "JorgeDelLanis"));
+            list.Add(new Thanks(padding, spacing, "Korean translation",
+                "Prime "));
+            list.Add(new Thanks(padding, spacing, "Special Thanks",
+                "0x0ade",
+                "Cruor",
+                "The Devs of Celeste",
+                "The FMod Celeste Project",
+                "The Mt. Celeste Climbing Association Discord",
+                "Vexatos"));
             list.Add(new Thanks(padding, spacing, Dialog.Clean("Xaphan_0_Credits_End_Message")));
-            list.Add(new Thanks(padding - 135, spacing, Dialog.Clean("Xaphan_0_Credits_End_Message_b")));
-            list.Add(new Break(FromTitleScreen ? 475f : 540f));
+            list.Add(new Thanks(padding - (int)(135 * scale), spacing, Dialog.Clean("Xaphan_0_Credits_End_Message_b")));
+            list.Add(new Break(FromTitleScreen ? 685f : 750f));
             if (!FromTitleScreen)
             {
                 list.Add(new Ending(Dialog.Clean("CREDITS_THANKYOU"), !polaroids));
@@ -374,11 +440,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             return list;
         }
 
-        public CustomCredits(float alignment = 0.5f, float scale = 1f, bool haveTitle = true, bool havePolaroids = false, bool FromTitleScreen = false)
+        public CustomCredits(float alignment = 0.5f, float scale = 1f, bool haveTitle = true, bool havePolaroids = false, bool fromTitleScreen = false)
         {
             this.alignment = alignment;
             this.scale = scale;
-            credits = CreateCredits(haveTitle, havePolaroids, FromTitleScreen);
+            credits = CreateCredits(haveTitle, havePolaroids, fromTitleScreen);
             Font = Dialog.Languages["english"].Font;
             FontSize = Dialog.Languages["english"].FontFaceSize;
             LineHeight = Font.Get(FontSize).LineHeight;
@@ -387,11 +453,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 height += credit.Height(scale) + 64f * scale;
             }
-            height += 476f;
+            height += 506f;
             if (havePolaroids)
             {
                 height -= 280f;
             }
+            AutoScrollSpeedMultiplier = fromTitleScreen ? 0.78f : 1f;
         }
 
         public void Update()
