@@ -19,6 +19,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool CanSlide;
 
+        private bool ForceSlide;
+
         public bool UpsideDown;
 
         public bool StickyDash;
@@ -41,7 +43,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public bool CollidableForPlayer;
 
-        public PlayerPlatform(Vector2 position, int width, bool gentle, string side, int soundIndex, int slopeHeight, bool canSlide, float top, bool affectPlayerSpeed, bool upsideDown = false, bool stickyDash = false, bool canJumpThrough = false) : base(position, width, 4, true)
+        public PlayerPlatform(Vector2 position, int width, bool gentle, string side, int soundIndex, int slopeHeight, bool canSlide, bool forceSlide, float top, bool affectPlayerSpeed, bool upsideDown = false, bool stickyDash = false, bool canJumpThrough = false) : base(position, width, 4, true)
         {
             AllowStaticMovers = false;
             Gentle = gentle;
@@ -52,6 +54,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             SlopeHeight = slopeHeight;
             platfromWidth = width;
             CanSlide = canSlide;
+            ForceSlide = forceSlide;
             slopeTop = top;
             AffectPlayerSpeed = affectPlayerSpeed;
             StickyDash = stickyDash;
@@ -236,7 +239,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             }
                             if (Side == "Left")
                             {
-                                if (CanSlide && drone == null && player.IsRiding(this) && Input.MoveY == 1 && Input.MoveX != -1 && player.Left >= Left && !XaphanModule.UIOpened)
+                                if (CanSlide && drone == null && player.IsRiding(this) && (ForceSlide || (Input.MoveY == 1 && Input.MoveX != -1)) && player.Left >= Left && !XaphanModule.UIOpened)
                                 {
                                     Sliding = true;
                                     PlayerPose = "XaphanHelper_slopeSlide";
@@ -248,7 +251,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                     }
                                     if (player.Speed.X <= 250f - (Gentle ? 15f : 18f))
                                     {
-                                        player.Speed.X += Gentle ? 15f : 18f;
+                                        player.Speed.X += ForceSlide ? (Gentle ? 30f : 28f) : (Gentle ? 15f : 18f);
                                     }
                                     else
                                     {
@@ -263,7 +266,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                             }
                             else if (Side == "Right")
                             {
-                                if (CanSlide && drone == null && player.IsRiding(this) && Input.MoveY == 1 && Input.MoveX != 1 && player.Right <= Right && !XaphanModule.UIOpened)
+                                if (CanSlide && drone == null && player.IsRiding(this) && (ForceSlide || (Input.MoveY == 1 && Input.MoveX != 1)) && player.Right <= Right && !XaphanModule.UIOpened)
                                 {
                                     Sliding = true;
                                     PlayerPose = "XaphanHelper_slopeSlide";
@@ -275,7 +278,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                     }
                                     if (player.Speed.X >= -250f + (Gentle ? 15f : 18f))
                                     {
-                                        player.Speed.X -= Gentle ? 15f : 18f;
+                                        player.Speed.X -= ForceSlide ? (Gentle ? 30f : 28f) : (Gentle ? 15f : 18f);
                                     }
                                     else
                                     {

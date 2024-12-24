@@ -524,6 +524,7 @@ entities.XaphanHelper/Slope.attributes.description.flagCustomDirectory=Same as t
 entities.XaphanHelper/Slope.attributes.description.texture=Texture of the slope. Type your custom texture name here if you have set a custom directory.
 entities.XaphanHelper/Slope.attributes.description.flagTexture=Same as the Texture field. Used instead if the flag is set.
 entities.XaphanHelper/Slope.attributes.description.canSlide=If true, the player can slide on the slope by holding down on it.
+entities.XaphanHelper/Slope.attributes.description.forceSlide=If true, the player will automatically slide on the slope. No effect if Can Slide is false.
 entities.XaphanHelper/Slope.attributes.description.upsideDown=Flip the slope so that it can be used on ceilings instead of the ground.
 entities.XaphanHelper/Slope.attributes.description.noRender=If true, the slope will be invisible.
 entities.XaphanHelper/Slope.attributes.description.stickyDash=If true, the player will stick to the slope while dashing away from it.
