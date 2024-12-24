@@ -25,13 +25,13 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         public IEnumerator Cutscene(Level level)
         {
-            if (!level.Session.GetFlag("Torizo_Defeated") && !level.Session.GetFlag("D-U0_Gate_1"))
+            if (!level.Session.GetFlag("Torizo_Defeated") && !level.Session.GetFlag("D-06_Gate_1"))
             {
                 while (!level.Session.GetFlag("Upgrade_Bombs") || player.Right > left - 16f)
                 {
                     yield return null;
                 }
-                level.Session.SetFlag("D-U0_Gate_1");
+                level.Session.SetFlag("D-06_Gate_1");
                 level.Session.Audio.Music.Event = SFX.EventnameByHandle("event:/music/xaphan/lvl_0_tension");
                 level.Session.Audio.Apply();
                 while (!player.OnSafeGround)
