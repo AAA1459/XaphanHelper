@@ -219,7 +219,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             if (!isFading)
             {
                 totalDisplays = level.Tracker.GetEntities<BagDisplay>().Count;
-                if (XaphanModule.minimapEnabled)
+                if (XaphanModule.minimapEnabled && level.Tracker.GetEntity<MiniMap>() != null)
                 {
                     if (totalDisplays == 2 && type == "bag")
                     {
