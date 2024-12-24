@@ -401,7 +401,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     "\"Credits - Metroid (NES)\" by Red_OWLdeer",
                     "\"It's Around the Corner\" by Caluctor",
                     "\"Lower Maridia (Super Metroid - Remix)\" by Daibu the Man",
-                    "\"Metroid Dread - Artaria (Bustello Remix)\" by Bustello",
+                    "\"Metroid Dread [RE-IMAGINED]: Dairon\" by Arcade Redux",
                     "\"Metroid Fusion - Environmental Mystery (Korg Minilogue Cover)\" by Andrew Wukusick",
                     "\"Red Streaming Rivers\" by Caluctor",
                     "\"Ridley [Fusion Remix]\" by Achiro`s Game Fusion Remixes",
