@@ -495,6 +495,7 @@ entities.XaphanHelper/Liquid.attributes.description.insideTransparency= Transpar
 entities.XaphanHelper/Liquid.attributes.description.group=Id of the group this liquid is part of.\nAll liquids in the same group will use the transparency set in "inside Transparency" when the player in side of any of them.\n-1 = no group.
 entities.XaphanHelper/Liquid.attributes.description.canDrown=If true, the player will die if they stay inside the liquid for longer than the time specified in Air Timer.
 entities.XaphanHelper/Liquid.attributes.description.airTimer=Time (in seconds) that the player can stay in the liquid before dying, if Can Drown is true and Visual Only is false.
+entities.XaphanHelper/Liquid.attributes.description.variaPreventDying= If true, the player can walk in the liquid even if it is set to Lava or Acid, if the player have the Varia Jacket upgrade.
 
 # MagneticCeiling
 entities.XaphanHelper/MagneticCeiling.placements.name.MagneticCeiling=Magnetic Ceiling

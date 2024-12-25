@@ -186,6 +186,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public float airTimer;
 
+        public bool VariaPreventDying;
+
         public Liquid(EntityData data, Vector2 position, EntityID eid) : base(data.Position + position)
         {
             Tag = Tags.TransitionUpdate;
@@ -215,6 +217,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             group = data.Int("group", -1);
             canDrown = data.Bool("canDrown", false);
             airTimer = data.Float("airTimer", 15f);
+            VariaPreventDying = data.Bool("variaPreventDying", false);
             StartPos = Position;
             FinalPos = Position - new Vector2(0, riseDistance);
             if (delay == 0)
@@ -1327,7 +1330,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                     else
                     {
-                        if (!XaphanModule.useMetroidGameplay ? /* To allow Varia Jacket in lava : !VariaJacket.Active(SceneAs<Level>())*/ !player.JustRespawned : !GravityJacket.Active(SceneAs<Level>()))
+                        if (!XaphanModule.useMetroidGameplay ? (VariaJacket.Active(SceneAs<Level>()) ? (!VariaPreventDying && !player.JustRespawned) : !player.JustRespawned) : !GravityJacket.Active(SceneAs<Level>()))
                         {
                             if (!XaphanModule.PlayerIsControllingRemoteDrone())
                             {
@@ -1377,7 +1380,20 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         if (!XaphanModule.useMetroidGameplay)
                         {
-                            player.Die(new Vector2(0f, -1f));
+                            if (VariaJacket.Active(SceneAs<Level>()))
+                            {
+                                if (!VariaPreventDying && !player.JustRespawned)
+                                {
+                                    player.Die(new Vector2(0f, -1f));
+                                }
+                            }
+                            else
+                            {
+                                if (!player.JustRespawned)
+                                {
+                                    player.Die(new Vector2(0f, -1f));
+                                }
+                            }
                         }
                         else
                         {

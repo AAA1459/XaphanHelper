@@ -13,7 +13,7 @@ Liquid.depth = function(room, entity)
     return depth
 end
 Liquid.fieldOrder = {
-    "x", "y", "width", "height", "liquidType", "directory", "surfaceHeight", "lowPosition", "color", "group", "transparency", "insideTransparency", "frameDelay", "riseDistance", "riseDelay", "riseSpeed", "riseFlag", "riseEndFlag", "appearFlags", "removeFlags", "airTimer", "riseShake", "riseSound", "canSwim", "canDrown", "visualOnly", "foreground", "upsideDown"
+    "x", "y", "width", "height", "liquidType", "directory", "surfaceHeight", "lowPosition", "color", "group", "transparency", "insideTransparency", "frameDelay", "riseDistance", "riseDelay", "riseSpeed", "riseFlag", "riseEndFlag", "appearFlags", "removeFlags", "airTimer", "variaPreventDying", "riseShake", "riseSound", "canSwim", "canDrown", "visualOnly", "foreground", "upsideDown"
 }
 Liquid.fieldInformation = {
     lowPosition = {
@@ -69,7 +69,8 @@ Liquid.placements = {
         upsideDown = false,
         group = -1,
         canDrown = false,
-        airTimer = 15
+        airTimer = 15,
+        variaPreventDying = false
     }
 }
 
