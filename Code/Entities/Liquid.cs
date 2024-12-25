@@ -741,6 +741,31 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     }
                 }
             }
+            Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
+            if (player != null)
+            {
+                if (!PlayerCompletelyInside(true))
+                {
+                    currentTransparency = outsideTransparency;
+                }
+                else
+                {
+                    if (group == -1 || groupLeader)
+                    {
+                        currentTransparency = insideTransparency;
+                    }
+                    else
+                    {
+                        foreach (Liquid liquid in SceneAs<Level>().Tracker.GetEntities<Liquid>())
+                        {
+                            if (leader != null && liquid.group == group)
+                            {
+                                currentTransparency = leader.currentTransparency;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private IEnumerator ShakeLevel()
@@ -897,29 +922,32 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             base.Update();
             Player player = SceneAs<Level>().Tracker.GetEntity<Player>();
-            if (player != null)
+            if (!SceneAs<Level>().Transitioning)
             {
-                if (PlayerInside())
+                if (player != null)
                 {
-                    OnCollide(player);
-                }
-                if (!PlayerCompletelyInside())
-                {
-                    currentTransparency = Calc.Approach(currentTransparency, outsideTransparency, Engine.DeltaTime * 2f);
-                }
-                else
-                {
-                    if (group == -1 || groupLeader)
+                    if (PlayerInside())
                     {
-                        currentTransparency = Calc.Approach(currentTransparency, insideTransparency, Engine.DeltaTime * 2f);
+                        OnCollide(player);
+                    }
+                    if (!PlayerCompletelyInside())
+                    {
+                        currentTransparency = Calc.Approach(currentTransparency, outsideTransparency, Engine.DeltaTime * 2f);
                     }
                     else
                     {
-                        foreach (Liquid liquid in SceneAs<Level>().Tracker.GetEntities<Liquid>())
+                        if (group == -1 || groupLeader)
                         {
-                            if (leader != null && liquid.group == group)
+                            currentTransparency = Calc.Approach(currentTransparency, insideTransparency, Engine.DeltaTime * 2f);
+                        }
+                        else
+                        {
+                            foreach (Liquid liquid in SceneAs<Level>().Tracker.GetEntities<Liquid>())
                             {
-                                currentTransparency = leader.currentTransparency;
+                                if (leader != null && liquid.group == group)
+                                {
+                                    currentTransparency = leader.currentTransparency;
+                                }
                             }
                         }
                     }
@@ -1250,13 +1278,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
             return false;
         }
 
-        public bool PlayerCompletelyInside()
+        public bool PlayerCompletelyInside(bool duringTransition = false)
         {
             foreach (Player player in SceneAs<Level>().Tracker.GetEntities<Player>())
             {
                 if (group == -1)
                 {
-                    if (CollideCheck(player) && (upsideDown ? player.Bottom <= Bottom - 4 : player.Top >= Top + 4) && player.Left >= Left && player.Right <= Right)
+                    if (CollideCheck(player) && (upsideDown ? player.Bottom <= Bottom - 4 + (duringTransition ? 12 : 0) : player.Top >= Top + 4 - (duringTransition ? 12 : 0)) && player.Left >= Left - (duringTransition ? 8 : 0) && player.Right <= Right + (duringTransition ? 8 : 0))
                     {
                         return true;
                     }
@@ -1265,7 +1293,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 {
                     foreach (Liquid liquid in SceneAs<Level>().Tracker.GetEntities<Liquid>())
                     {
-                        if (liquid.CollideCheck(player) && (liquid.upsideDown ? player.Bottom <= liquid.Bottom - 4 : player.Top >= liquid.Top + 4))
+                        if (liquid.CollideCheck(player) && (liquid.upsideDown ? player.Bottom <= liquid.Bottom - 4 + (duringTransition ? 12 : 0) : player.Top >= liquid.Top + 4 - (duringTransition ? 12 : 0)))
                         {
                             return true;
                         }
