@@ -34,16 +34,31 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
         public override void Load()
         {
             On.Celeste.Level.Update += modLevelUpdate;
+            On.Celeste.Holdable.Check += onHoldableCheck;
         }
 
-        public override void Unload()
+        private bool onHoldableCheck(On.Celeste.Holdable.orig_Check orig, Holdable self, Player player)
         {
-            On.Celeste.Level.Update -= modLevelUpdate;
+            if (self.Entity.GetType() == typeof(MegaBomb))
+            {
+                MegaBomb bomb = (MegaBomb)self.Entity;
+                if (!bomb.WasThrown && Input.GrabCheck)
+                {
+                    return false;
+                }
+            }
+            return orig(self, player);
         }
 
         public bool Active(Level level)
         {
             return XaphanModule.ModSettings.MegaBombs && !XaphanModule.ModSaveData.MegaBombsInactive.Contains(level.Session.Area.LevelSet);
+        }
+
+        public override void Unload()
+        {
+            On.Celeste.Level.Update -= modLevelUpdate;
+            On.Celeste.Holdable.Check -= onHoldableCheck;
         }
 
         private void modLevelUpdate(On.Celeste.Level.orig_Update orig, Level self)

@@ -32,6 +32,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Visible = Bomb.Visible;
             }
         }
+
         private FieldInfo HoldableCannotHoldTimer = typeof(Holdable).GetField("cannotHoldTimer", BindingFlags.Instance | BindingFlags.NonPublic);
 
         private Sprite bombSprite;
@@ -66,9 +67,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private Vector2 previousPosition;
 
-        private bool WasThrown;
+        public bool WasThrown;
 
         private Coroutine ExplodeRoutine = new();
+
+        private float CheckHoldTime;
 
         public Bomb(Vector2 position, Player player) : base(position)
         {
@@ -360,7 +363,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     Hold.Holder.Throw();
                 }
             }
-            else
+            else if (CheckHoldTime > 0.05f)
             {
                 WasThrown = true;
                 foreach (Slope slope in SceneAs<Level>().Tracker.GetEntities<Slope>())
@@ -499,6 +502,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     Hold.CheckAgainstColliders();
                 }
             }
+            CheckHoldTime += Engine.DeltaTime;
             Slope.SetCollisionAfterUpdate(this);
             platforms.ForEach(entity => entity.Collidable = false);
         }

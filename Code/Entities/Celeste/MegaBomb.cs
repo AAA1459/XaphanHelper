@@ -40,6 +40,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool shouldExplodeImmediately;
 
+        public bool WasThrown;
+
+        private float CheckHoldTime;
+
         public MegaBomb(Vector2 position, Player player) : base(position)
         {
             this.player = player;
@@ -249,8 +253,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     bombSprite.FlipX = false;
                 }
             }
-            else
+            else if (CheckHoldTime > 0.05f)
             {
+                WasThrown = true;
                 foreach (Slope slope in SceneAs<Level>().Tracker.GetEntities<Slope>())
                 {
                     if (slope.UpsideDown && CollideCheck(slope))
@@ -356,6 +361,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 Hold.CheckAgainstColliders();
             }
+            CheckHoldTime += Engine.DeltaTime;
             Slope.SetCollisionAfterUpdate(this);
         }
 

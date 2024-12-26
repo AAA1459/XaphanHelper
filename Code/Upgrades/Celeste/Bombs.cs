@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Celeste.Mod.XaphanHelper.Entities;
 using Celeste.Mod.XaphanHelper.UI_Elements;
 using Microsoft.Xna.Framework;
@@ -35,6 +36,20 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
         {
             On.Celeste.Level.Update += modLevelUpdate;
             On.Celeste.Player.Die += onPlayerDie;
+            On.Celeste.Holdable.Check += onHoldableCheck;
+        }
+
+        private bool onHoldableCheck(On.Celeste.Holdable.orig_Check orig, Holdable self, Player player)
+        {
+            if (self.Entity.GetType() == typeof(Bomb))
+            {
+                Bomb bomb = (Bomb)self.Entity;
+                if (!bomb.WasThrown && Input.GrabCheck)
+                {
+                    return false;
+                }
+            }
+            return orig(self, player);
         }
 
         private PlayerDeadBody onPlayerDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats)
@@ -52,6 +67,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
         {
             On.Celeste.Level.Update -= modLevelUpdate;
             On.Celeste.Player.Die -= onPlayerDie;
+            On.Celeste.Holdable.Check -= onHoldableCheck;
         }
 
         public bool Active(Level level)
