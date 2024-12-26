@@ -1248,8 +1248,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator Destroy(bool normalRespawn = false, bool silence = false, bool forced = false)
         {
+            if (dead)
+            {
+               yield break;
+            }
             if (!SaveData.Instance.Assists.Invincible || forced)
             {
+                dead = true;
                 XaphanModule.NoDroneSpawnSound = false;
                 Strawberry goldenStrawb = null;
                 if (player != null)
@@ -1280,7 +1285,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                     }
                 }
-                dead = true;
                 Level Level = Engine.Scene as Level;
                 if (FakePlayer != null)
                 {
@@ -1549,16 +1553,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         }
                     }
                 }
-                foreach (LightManager manager in SceneAs<Level>().Tracker.GetEntities<LightManager>())
+                if (SceneAs<Level>().Tracker.GetEntities<LightManager>().Count > 0)
                 {
-                    manager.TemporaryModeTimer = 0f;
-                    if (manager.ForceModeRoutine.Active)
+                    foreach (LightManager manager in SceneAs<Level>().Tracker.GetEntities<LightManager>())
                     {
-                        manager.ForceModeRoutine.Cancel();
-                        manager.TemporaryMode = XaphanModuleSession.LightModes.None;
+                        manager.TemporaryModeTimer = 0f;
+                        if (manager.ForceModeRoutine.Active)
+                        {
+                            manager.ForceModeRoutine.Cancel();
+                            manager.TemporaryMode = XaphanModuleSession.LightModes.None;
+                        }
+                        XaphanModule.ModSession.LightMode = manager.RespawnMode;
+                        manager.SetMainMode(manager.RespawnMode);
                     }
-                    XaphanModule.ModSession.LightMode = manager.RespawnMode;
-                    manager.SetMainMode(manager.RespawnMode);
                 }
                 level.Reload();
             });
