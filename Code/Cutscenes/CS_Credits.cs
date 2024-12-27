@@ -150,24 +150,22 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         public override void OnEnd(Level level)
         {
-            if (!FromTitleScreen)
+            Audio.SetMusicParam("fade", 0);
+            if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
             {
-                Audio.SetMusicParam("fade", 0);
-                if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
+                XaphanModule.ModSettings.WatchedCredits = true;
+                XaphanModule.SaveIconVisible = false;
+                level.AutoSave();
+                if (FromTitleScreen)
                 {
-                    XaphanModule.ModSettings.WatchedCredits = true;
-                    XaphanModule.SaveIconVisible = false;
-                    level.AutoSave();
-                    XaphanModule.ReturnToTitleScreen(level);
+                    level.Session.Audio.Music.Event = null;
+                    level.Session.Audio.Apply(forceSixteenthNoteHack: false);
                 }
-                else
-                {
-                    level.CompleteArea(spotlightWipe: false, skipScreenWipe: true, skipCompleteScreen: true);
-                }
+                XaphanModule.ReturnToTitleScreen(level);
             }
             else
             {
-                Finished = true;
+                level.CompleteArea(spotlightWipe: false, skipScreenWipe: true, skipCompleteScreen: true);
             }
         }
 
