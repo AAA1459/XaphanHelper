@@ -16,7 +16,6 @@ namespace Celeste.Mod.XaphanHelper.Hooks
 
         public static int ID;
 
-
         public static string StartRoom;
 
         public static Vector2? StartSpawn;
@@ -146,6 +145,10 @@ namespace Celeste.Mod.XaphanHelper.Hooks
                         StartSpawn = level.Session.RespawnPoint - new Vector2(level.Bounds.Left, level.Bounds.Top);
                         ID = self.ID.ID;
                         XaphanModule.ModSaveData.GoldenStrawberryUnlockedWarps.Clear();
+                        if (self.SceneAs<Level>().Session.Area.LevelSet == "Xaphan/0")
+                        {
+                            XaphanModule.ModSaveData.GoldenStrawberryUnlockedWarps.Add($"{self.SceneAs<Level>().Session.Area.LevelSet}_Ch0_A-W0");
+                        }
                         if (XaphanModule.useUpgrades)
                         {
                             XaphanModule.ModSaveData.GoldenStrawberryStaminaUpgrades.Clear();
