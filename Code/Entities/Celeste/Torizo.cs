@@ -683,7 +683,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (SceneAs<Level>().OnInterval(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 0.04f : 0.06f) && Sprite.CurrentAnimationFrame >= 2 && !SolidBehind)
                 {
-                    SceneAs<Level>().Add(new TorizoFireball(new Vector2(Position.X + (Facing == Facings.Right ? 56 : 24), Position.Y + 24), new Vector2(75f, -125f), Facing == Facings.Left));
+                    SceneAs<Level>().Add(new TorizoFireball(new Vector2(Position.X + (Facing == Facings.Right ? 56 : 36), Position.Y + 28), new Vector2(75f, -125f), Facing == Facings.Left));
                 }
                 yield return null;
             }
@@ -730,7 +730,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 shootDuration -= Engine.DeltaTime;
                 if (SceneAs<Level>().OnInterval(0.06f))
                 {
-                    SceneAs<Level>().Add(new TorizoFireball(new Vector2(Position.X + (Facing == Facings.Right ? 56 : 24), Position.Y + 32), new Vector2(Calc.Random.Next(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? (close ? 10 : 60) : 110, SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? (close ? 110 : 260) : 210), 0f), Facing == Facings.Left));
+                    SceneAs<Level>().Add(new TorizoFireball(new Vector2(Position.X + (Facing == Facings.Right ? 56 : 36), Position.Y + 28), new Vector2(Calc.Random.Next(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? (close ? 10 : 60) : 110, SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? (close ? 110 : 260) : 210), 0f), Facing == Facings.Left));
                 }
                 yield return null;
             }
