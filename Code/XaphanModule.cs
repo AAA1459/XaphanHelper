@@ -4161,6 +4161,7 @@ namespace Celeste.Mod.XaphanHelper
                 // Backward saves compatibility
 
                 SaveUpdater.RemoveUpgrades();
+                SaveUpdater.GiveUpgrades();
             }
         }
 

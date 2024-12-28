@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using IL.Monocle;
 
 namespace Celeste.Mod.XaphanHelper
 {
     class SaveUpdater
     {
         private static List<string> upgradesToRemove = new();
+
+        private static List<string> upgradesToGive = new();
 
         public static void Load()
         {
@@ -31,6 +32,7 @@ namespace Celeste.Mod.XaphanHelper
                     if (XaphanModule.BombsCollected(level))
                     {
                         upgradesToRemove.Add("Bombs");
+                        upgradesToGive.Add("Binoculars");
                     }
 
                     // Remove Bombs upgrade Achievement
@@ -446,6 +448,15 @@ namespace Celeste.Mod.XaphanHelper
                 Commands.Cmd_Remove_Upgrades(upgrade);
             }
             upgradesToRemove.Clear();
+        }
+
+        public static void GiveUpgrades()
+        {
+            foreach (string upgrade in upgradesToGive)
+            {
+                Commands.Cmd_Give_Upgrade(upgrade);
+            }
+            upgradesToGive.Clear();
         }
 
         private static void onLevelUpdate(On.Celeste.Level.orig_Update orig, Level self)

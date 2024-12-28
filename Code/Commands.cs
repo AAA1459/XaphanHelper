@@ -176,7 +176,7 @@ namespace Celeste.Mod.XaphanHelper
         }
 
         [Command("give_upgrade", "Give specified upgrades (Separated by a semicolon). If no upgrades are specified, give all upgrades. Avaiable upgrades: PowerGrip, ClimbingKit, SpiderMagnet, DashBoots, SpaceJump, LightningDash, LongBeam, IceBeam, WaveBeam, MissilesModule, SuperMissilesModule, DroneTeleport, JumpBoost, HoverJet, VariaJacket, GravityJacket, Bombs, MegaBombs, RemoteDrone, GoldenFeather, EtherealDash, ScrewAttack, Binoculars, PortableStation, PulseRadar")]
-        private static void Cmd_Give_Upgrade(string upg = "")
+        public static void Cmd_Give_Upgrade(string upg = "")
         {
             if (XaphanModule.useUpgrades)
             {
