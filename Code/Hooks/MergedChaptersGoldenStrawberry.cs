@@ -412,13 +412,16 @@ namespace Celeste.Mod.XaphanHelper.Hooks
 
         public static void MergeFlagsAndEntities(Level level)
         {
-            foreach (EntityID entity in XaphanModule.ModSaveData.PreGoldenDoNotLoad)
+            if (XaphanModule.ModSaveData.SavedNoLoadEntities.ContainsKey(level.Session.Area.LevelSet))
             {
-                XaphanModule.ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet].Add(entity);
-            }
-            foreach (EntityID entity in XaphanModule.ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet])
-            {
-                level.Session.DoNotLoad.Add(entity);
+                foreach (EntityID entity in XaphanModule.ModSaveData.PreGoldenDoNotLoad)
+                {
+                    XaphanModule.ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet].Add(entity);
+                }
+                foreach (EntityID entity in XaphanModule.ModSaveData.SavedNoLoadEntities[level.Session.Area.LevelSet])
+                {
+                    level.Session.DoNotLoad.Add(entity);
+                }
             }
 
             foreach (string flag in level.Session.Flags)
