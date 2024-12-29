@@ -18,11 +18,14 @@ namespace Celeste.Mod.XaphanHelper.Hooks
 
         private static void onPlayerDeaDBodyEnd(On.Celeste.PlayerDeadBody.orig_End orig, PlayerDeadBody self)
         {
-            if ((self.SceneAs<Level>().Tracker.GetEntities<FlagDashSwitch>().Count > 0 || self.SceneAs<Level>().Tracker.GetEntities<DroneSwitch>().Count > 0 || self.SceneAs<Level>().Tracker.GetEntities<Detonator>().Count > 0 || self.SceneAs<Level>().Tracker.GetEntity<LightManager>() != null) && !self.SceneAs<Level>().Session.GrabbedGolden)
+            if (self.SceneAs<Level>().Session.Area.LevelSet != "Celeste")
             {
-                self.DeathAction = DeathAction;
+                if ((self.SceneAs<Level>().Tracker.GetEntities<FlagDashSwitch>().Count > 0 || self.SceneAs<Level>().Tracker.GetEntities<DroneSwitch>().Count > 0 || self.SceneAs<Level>().Tracker.GetEntities<Detonator>().Count > 0 || self.SceneAs<Level>().Tracker.GetEntity<LightManager>() != null) && !self.SceneAs<Level>().Session.GrabbedGolden)
+                {
+                    self.DeathAction = DeathAction;
+                }
+                XaphanModule.ModSession.NoRespawnIds.Clear();
             }
-            XaphanModule.ModSession.NoRespawnIds.Clear();
             orig(self);
         }
 
