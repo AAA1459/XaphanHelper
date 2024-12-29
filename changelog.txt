@@ -1,5 +1,6 @@
 Version 1.0.65 :
 - Fixed a bug preventing the player seeker sequence to complete correctly in vanilla 5A
+- Fixed a crash happening after watching Credits in The Secret of Celeste Mountain before starting the game at least once
 
 Version 1.0.64 :
 - Added "Force Inactive Flag" attribute to Drone Gates and Flag Dash Switches
