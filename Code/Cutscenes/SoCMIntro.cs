@@ -455,19 +455,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             mainMenu.Focused = false;
             Scene.Add(CreditsCutscene = new CS_Credits(player, true));
             yield return null;
-            while (!CreditsCutscene.Finished)
-            {
-                yield return null;
-            }
-            mainMenu.Selection = 0;
-            mainMenu.Focused = true;
-            level.Session.Audio.Music.Event = "event:/music/xaphan/lvl_0_intro_loop";
-            level.Session.Audio.Apply(forceSixteenthNoteHack: false);
-            yield return new FadeWipe(level, wipeIn: true)
-            {
-                Duration = 1f
-            }.Duration;
-            Audio.SetMusicParam("fade", 1f);
         }
 
         private IEnumerator FadeLogo()

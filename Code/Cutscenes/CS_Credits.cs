@@ -62,8 +62,6 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
 
         private bool FromTitleScreen;
 
-        public bool Finished;
-
         public CS_Credits(Player player, bool fromTitleScreen = false)
         {
             FromTitleScreen = fromTitleScreen;
