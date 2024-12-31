@@ -929,10 +929,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 if (player != null)
                 {
-                    if (PlayerInside())
+                    /*if (PlayerInside())
                     {
                         OnCollide(player);
-                    }
+                    }*/
                     if (!PlayerCompletelyInside())
                     {
                         currentTransparency = Calc.Approach(currentTransparency, outsideTransparency, Engine.DeltaTime * 2f);
@@ -1272,7 +1272,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 foreach (Player player in SceneAs<Level>().Tracker.GetEntities<Player>())
                 {
-                    if (CollideCheck(player))
+                    if (CollideCheck(player) && (player.Bottom >= Top + 3f))
                     {
                         return true;
                     }
