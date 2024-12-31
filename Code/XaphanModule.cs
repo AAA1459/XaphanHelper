@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Xml;
 using Celeste.Mod.Meta;
 using Celeste.Mod.UI;
@@ -2032,13 +2033,23 @@ namespace Celeste.Mod.XaphanHelper
             }
         }
 
+        private static void AutoSaveThread(object o)
+        {
+            Level level = Engine.Scene as Level;
+            if (level != null)
+            {
+                level.AutoSave();
+            }
+        }
+
         private void onLevelLoad(Level level, Player.IntroTypes playerIntro, bool isFromLoader)
         {
             // Save the game on room entry when using a Merge Chapters Controller
             if (useMergeChaptersController && MergeChaptersControllerMode == "Rooms")
             {
                 SaveIconVisible = false;
-                level.AutoSave();
+                //RunThread.Start(AutoSaveThread, "AutoSaveThread");
+                ThreadPool.QueueUserWorkItem(AutoSaveThread);
             }
 
             isInLevel = true;
