@@ -22,7 +22,7 @@ namespace Celeste.Mod.XaphanHelper.Hooks
             {
                 if ((self.SceneAs<Level>().Tracker.GetEntities<FlagDashSwitch>().Count > 0 || self.SceneAs<Level>().Tracker.GetEntities<DroneSwitch>().Count > 0 || self.SceneAs<Level>().Tracker.GetEntities<Detonator>().Count > 0 || self.SceneAs<Level>().Tracker.GetEntity<LightManager>() != null) && !self.SceneAs<Level>().Session.GrabbedGolden)
                 {
-                    self.DeathAction = DeathAction;
+                    self.DeathAction += DeathAction;
                 }
                 XaphanModule.ModSession.NoRespawnIds.Clear();
             }
