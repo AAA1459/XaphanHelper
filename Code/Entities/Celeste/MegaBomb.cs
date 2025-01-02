@@ -44,6 +44,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private float CheckHoldTime;
 
+        private Coroutine ExplodeRoutine = new();
+
         public MegaBomb(Vector2 position, Player player) : base(position)
         {
             this.player = player;
@@ -95,6 +97,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void OnRelease(Vector2 force)
         {
+            Add(ExplodeRoutine = new Coroutine(Explode()));
             RemoveTag(Tags.Persistent);
             if (force.X != 0f && force.Y == 0f)
             {
@@ -231,10 +234,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             if (!XaphanModule.ModSettings.UseBagItemSlot.Check)
             {
                 RemoveSelf();
-            }
-            else
-            {
-                Add(new Coroutine(Explode()));
             }
         }
 
