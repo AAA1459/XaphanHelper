@@ -2898,12 +2898,11 @@ namespace Celeste.Mod.XaphanHelper
                 LightManager manager = level.Tracker.GetEntity<LightManager>();
                 if (manager != null)
                 {
-                    if (manager.MainMode != LightModes.None)
+                    if (manager.RespawnMode != LightModes.None)
                     {
-                        ModSaveData.LightMode[level.Session.Area.LevelSet] = manager.MainMode;
+                        ModSaveData.LightMode[level.Session.Area.LevelSet] = manager.RespawnMode;
                     }
                 }
-
             }
 
             onSlope = false;
@@ -3448,7 +3447,7 @@ namespace Celeste.Mod.XaphanHelper
             LightManager manager = level.Tracker.GetEntity<LightManager>();
             if (manager != null)
             {
-                ModSaveData.LightMode[level.Session.Area.LevelSet] = manager.MainMode;
+                ModSaveData.LightMode[level.Session.Area.LevelSet] = manager.RespawnMode;
             }
             LevelEnter.Go(new Session(new AreaKey(AreaData.Get("Xaphan/0/0-Prologue").ToKey(AreaMode.Normal).ID))
             {
