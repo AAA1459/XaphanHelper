@@ -38,7 +38,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     break;
                 case 4:
                     pageTitle = "Xaphan_0_Journal_Golden_Full_Clears";
-                    players = PlayerStat.GeneratePlayersFullClearsList();
+                    players = PlayerStat.GeneratePlayersGoldenFullClearsList();
                     break;
             }
             if (players.Count > 0)

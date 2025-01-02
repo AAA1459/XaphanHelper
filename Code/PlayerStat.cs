@@ -37,6 +37,16 @@ namespace Celeste.Mod.XaphanHelper
                 time: "26:44:52",
                 version: "3.0.0"
             ));
+            list.Add(new PlayerStatData(
+                name: "Adam Korinek",
+                medals: 1425,
+                blueCrystalHearts: 2,
+                yellowCrystalHearts: 4,
+                strawberries: 135,
+                deaths: 10063,
+                time: "40:13:16",
+                version: "3.0.0"
+            ));
 
             return list;
         }
