@@ -27,17 +27,16 @@ namespace Celeste.Mod.XaphanHelper
         {
             List<PlayerStatData> list = new();
 
-            /*list.Add(new PlayerStatData(
-                name: "Player 1",
-                medals: 300,
+            list.Add(new PlayerStatData(
+                name: "Gamation ",
+                medals: 1290,
                 blueCrystalHearts: 2,
-                redCrystalHearts: 0,
-                yellowCrystalHearts: 1,
-                strawberries: 79,
-                normalDeaths: 1893,
-                bSideDeaths: 274,
-                time: "2:00:00"
-            ));*/
+                yellowCrystalHearts: 4,
+                strawberries: 135,
+                deaths: 9949,
+                time: "26:44:52",
+                version: "3.0.0"
+            ));
 
             return list;
         }
