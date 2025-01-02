@@ -40,7 +40,7 @@ namespace Celeste.Mod.XaphanHelper.Managers
 
         private static void modOnLevelLoad(Level level, Player.IntroTypes playerIntro, bool isFromLoader)
         {
-            if (level.Tracker.GetEntities<LightManager>().Count == 0)
+            if (level.Session.Area.LevelSet != "Celeste" && level.Tracker.GetEntities<LightManager>().Count == 0)
             {
                 level.Add(new LightManager());
             }
