@@ -7,7 +7,6 @@ Version 1.0.66 :
 - Improved performances of the auto-save feature triggering on room transition in campaign using a Merge Chapter Controller whith its mode set to Rooms
 - Settings in The Secret of Celeste Mountain are now immediately saved when leaving the Settings menu
 - Fixed a bug that could start the bombs detonation timer when the bomb is summoned instead of thrown by the player
-- Fixed a bug causing a bomb to be incorrectly spawned if the player was against a wall and pressed the grab and bag buttons at the same time
 - Fixed a bug saving the current Light Mode instead of the Respawn light mode when returning to the title screen in The Secret of Celeste Mountain
 
 Version 1.0.65 :
