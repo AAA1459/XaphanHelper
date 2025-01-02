@@ -411,6 +411,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             {
                 yield return null;
             }
+            XaphanModule.SaveModSettings();
             level.FormationBackdrop.Display = false;
         }
 

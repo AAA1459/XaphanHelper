@@ -2909,6 +2909,18 @@ namespace Celeste.Mod.XaphanHelper
             isInLevel = false;
         }
 
+        public static void SaveModSettings()
+        {
+            foreach (EverestModule module in Everest.Modules)
+            {
+                if (module.Metadata.Name == "XaphanHelper")
+                {
+                    module.SaveSettings();
+                    break;
+                }
+            }
+        }
+
         private static void onCreatePauseMenuButtons(Level level, TextMenu menu, bool minimal)
         {
             if (useMetroidGameplay)
