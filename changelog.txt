@@ -1,3 +1,11 @@
+Version 1.0.66 :
+- Added a light source to Leafs
+- A manager entity used by other custom entities is no longer automatically added to the scene in vanilla chapters
+- Customs actions that should occur when the player die now occur in addition to other mods actions instead of replacing them
+- Liquids now use the hurtbox of the player (as they were doing prior to version 1.0.64) to determine if they should kill the player
+- Liquids will now consider the player to be inside them (and affect their physics) if the player hurtbox collide with them rather than the whole player hitbox
+- Improved performances of the auto-save feature triggering on room transition in campaign using a Merge Chapter Controller whith its mode set to Rooms
+
 Version 1.0.65 :
 - Fixed a bug preventing the player seeker sequence to complete correctly in vanilla 5A
 - Fixed a crash happening after watching Credits in The Secret of Celeste Mountain before starting the game at least once
