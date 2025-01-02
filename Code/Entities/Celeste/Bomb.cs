@@ -112,6 +112,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private void OnRelease(Vector2 force)
         {
+            Add(ExplodeRoutine = new Coroutine(Explode()));
             RemoveTag(Tags.Persistent);
             bombSpriteDisplay.RemoveTag(Tags.Persistent);
             if (force.X != 0f && force.Y == 0f)
@@ -313,7 +314,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
             else
             {
                 Scene.Add(bombSpriteDisplay = new BombSpriteDisplay(Position, this));
-                Add(ExplodeRoutine = new Coroutine(Explode()));
             }
         }
 
@@ -532,11 +532,6 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public IEnumerator Explode()
         {
-            yield return 0.01f;
-            while (Hold.IsHeld)
-            {
-                yield return null;
-            }
             bombSprite.Play("countdown");
             float timer = 2f;
             while (timer >= 0 && !shouldExplodeImmediately)
