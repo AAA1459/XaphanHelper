@@ -46,6 +46,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool ShouldSwitchSprite;
 
+        public VertexLight Light;
+
         public Leaf(EntityData data, Vector2 offset) : base(data.Position + offset, 22, safe: false)
         {
             flag = data.Attr("flag");
@@ -97,6 +99,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             outline.AddLoop("idle-dead", "outline-dead", respawnTime / 48f);
             outline.Visible = false;
             outline.Origin = new Vector2(outline.Width / 2f, 6f);
+            Add(Light = new VertexLight(Collider.Center, Color.White, 1f, 16, 24));
             Depth = -100;
         }
 
