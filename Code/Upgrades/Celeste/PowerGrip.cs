@@ -93,7 +93,8 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         private bool PlayerOnClimbBoundsCheck(On.Celeste.Player.orig_ClimbBoundsCheck orig, Player self, int dir)
         {
-            if (Active(self.SceneAs<Level>()) && !self.SceneAs<Level>().Session.GetFlag("Xaphan_Helper_Ceiling") && !XaphanModule.PlayerIsControllingRemoteDrone())
+            BagDisplay bagDisplay = GetDisplay(self.SceneAs<Level>(), "bag");
+            if (Active(self.SceneAs<Level>()) && !self.SceneAs<Level>().Session.GetFlag("Xaphan_Helper_Ceiling") && !XaphanModule.PlayerIsControllingRemoteDrone() && (bagDisplay != null ? (self.OnGround() ? !XaphanModule.ModSettings.UseBagItemSlot.Check : true) : true))
             {
                 BagDisplay display = self.SceneAs<Level>().Tracker.GetEntity<BagDisplay>();
                 List<Entity> conveyors = self.SceneAs<Level>().Tracker.GetEntities<Conveyor>();
