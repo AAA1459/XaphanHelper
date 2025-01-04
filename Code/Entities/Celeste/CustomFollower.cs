@@ -307,7 +307,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         public void OnPlayer(Player player)
         {
-            if (Follower.Leader != null || collected)
+            Drone drone = SceneAs<Level>().Tracker.GetEntity<Drone>();
+            if (Follower.Leader != null || collected || (XaphanModule.PlayerIsControllingRemoteDrone() && drone.dead))
             {
                 return;
             }

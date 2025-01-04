@@ -154,6 +154,17 @@ namespace Celeste.Mod.XaphanHelper.Entities
             On.Celeste.ChangeRespawnTrigger.OnEnter += onChangeRespawnTriggerOnEnter;
             On.Celeste.CameraTargetTrigger.OnLeave += onCameratargetTriggerOnLeave;
             On.Celeste.CameraOffsetTrigger.OnEnter += onCameraOffsetTriggerOnEnter;
+            On.Celeste.Strawberry.OnPlayer += onStrawberryOnPlayer;
+        }
+
+        private static void onStrawberryOnPlayer(On.Celeste.Strawberry.orig_OnPlayer orig, Strawberry self, Player player)
+        {
+            Drone drone = self.SceneAs<Level>().Tracker.GetEntity<Drone>();
+            if (XaphanModule.PlayerIsControllingRemoteDrone() && drone.dead)
+            {
+                return;
+            }
+            orig(self, player);
         }
 
         private static void onCameraOffsetTriggerOnEnter(On.Celeste.CameraOffsetTrigger.orig_OnEnter orig, CameraOffsetTrigger self, Player player)
@@ -333,6 +344,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             On.Celeste.ChangeRespawnTrigger.OnEnter -= onChangeRespawnTriggerOnEnter;
             On.Celeste.CameraTargetTrigger.OnLeave -= onCameratargetTriggerOnLeave;
             On.Celeste.CameraOffsetTrigger.OnEnter -= onCameraOffsetTriggerOnEnter;
+            On.Celeste.Strawberry.OnPlayer -= onStrawberryOnPlayer;
         }
 
         private static void OnHoldableUpdate(On.Celeste.Holdable.orig_Update orig, Holdable self)
@@ -1264,7 +1276,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                         if (player.Leader.Followers[num].Entity is Strawberry)
                         {
                             Strawberry strawberry = (Strawberry)player.Leader.Followers[num].Entity;
-                            if (!strawberry.Golden && (forced || !enabled))
+                            if (!strawberry.Golden)
                             {
                                 Follower follower = player.Leader.Followers[num];
                                 follower.Leader.LoseFollower(follower);
