@@ -9,6 +9,8 @@ Version 1.0.66 :
 - Fixed a bug that could start the bombs detonation timer when the bomb is summoned instead of thrown by the player
 - Fixed a bug that could cause a bomb to spawn, but not being picked up when trying to grab a wall and spawn a bomb at the same time
 - Fixed a bug saving the current Light Mode instead of the Respawn light mode when returning to the title screen in The Secret of Celeste Mountain
+- Fixed a bug that could allow the plyer to collect strawberries upon dying, or when destroying it manually
+- Fixed a bug that could cause the player to be teleported trough Push Blocks
 
 Version 1.0.65 :
 - Fixed a bug preventing the player seeker sequence to complete correctly in vanilla 5A
