@@ -435,8 +435,32 @@ namespace Celeste.Mod.XaphanHelper
                     XaphanModule.SaveUpdaterUpdateLorebook = true;
                     XaphanModule.ModSaveData.SoCMVer = "3.0.0";
                 }
-                
-                //... No newer version yet...
+
+                //... Update save from 3.0.0 to 3.0.1
+                if (XaphanModule.SoCMVersion >= new Version(3, 0, 1) && XaphanModule.ModSaveData.SoCMVer != "3.0.1")
+                {
+                    Logger.Log(LogLevel.Info, "XH", "UpdateSave");
+                    if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch5_V-24_Laser_3"))
+                    {
+                        XaphanModule.ModSaveData.SavedFlags.Remove("Xaphan/0_Ch5_V-24_Laser_3");
+                    }
+                    if (XaphanModule.ModSaveData.SavedSesionFlags.ContainsKey("Xaphan/0"))
+                    {
+                        if (XaphanModule.ModSaveData.SavedSesionFlags["Xaphan/0"].Contains("V-24_Laser_3"))
+                        {
+                            string[] flags = XaphanModule.ModSaveData.SavedSesionFlags["Xaphan/0"].Split(',');
+                            string newFlags = null;
+                            for (int i = 0; i < flags.Length; i++)
+                            {
+                                if (!flags[i].Contains("V-24_Laser_3"))
+                                {
+                                    newFlags += (i == 0 ? "" : ",") + flags[i];
+                                }
+                            }
+                            XaphanModule.ModSaveData.SavedSesionFlags["Xaphan/0"] = newFlags;
+                        }
+                    }
+                }
             }
             XaphanModule.ModSaveData.SoCMVer = XaphanModule.SoCMVersion.Major + "." + XaphanModule.SoCMVersion.Minor + "." + XaphanModule.SoCMVersion.Build;
         }
