@@ -149,6 +149,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 if (pushBlock.canKill)
                 {
                     pushBlock.Collidable = true;
+                    if (self.CollideCheck(pushBlock))
+                    {
+                        self.Die(new Vector2(self.Facing == Facings.Left ? 1f : -1f, 0f));
+                    }
                 }
             }
         }
