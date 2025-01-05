@@ -1,24 +1,61 @@
 ﻿using Celeste.Mod.XaphanHelper.Data;
+using System;
 using System.Collections.Generic;
+using System.Net.Http;
 
 namespace Celeste.Mod.XaphanHelper
 {
     static class PlayerStat 
     {
+        static readonly HttpClient client = new HttpClient();
+
+        public static string PlayersClearsList;
+
+        public static string PlayersFullClearsList;
+
+        public static string PlayersGoldenClearsList;
+
+        public static string PlayersGoldenFullClearsList;
+
+        public static async void GetPlayersList()
+        {
+            try
+            {
+                PlayersClearsList = await client.GetStringAsync("http://cf-formation.fr/clears.txt");
+                PlayersFullClearsList = await client.GetStringAsync("http://cf-formation.fr/fullClears.txt");
+                PlayersGoldenClearsList = await client.GetStringAsync("http://cf-formation.fr/goldenClears.txt");
+                PlayersGoldenFullClearsList = await client.GetStringAsync("http://cf-formation.fr/goldenFullCLears.txt");
+            }
+            catch (HttpRequestException e)
+            {
+                Logger.Log(LogLevel.Info, "Xh", "\nException Caught!" + "Message :{0} " + e.Message);
+            }
+        }
+
         public static List<PlayerStatData> GeneratePlayersClearsList()
         {
             List<PlayerStatData> list = new();
 
-            /*list.Add(new PlayerStatData(
-                name: "Player 1",
-                medals: 300,
-                blueCrystalHearts: 1,
-                yellowCrystalHearts: 3,
-                strawberries: 79,
-                deaths: 1893,
-                time: "4:00:00",
-                version: "3.0.0"
-            ));*/
+            if (!string.IsNullOrEmpty(PlayersClearsList))
+            {
+                string[] playersData = PlayersClearsList.Split(
+                    new string[] { Environment.NewLine },
+                    StringSplitOptions.None
+                    );
+                foreach (string player in playersData)
+                {
+                    list.Add(new PlayerStatData(
+                        name: player.Split(',')[0],
+                        medals: int.Parse(player.Split(',')[1]),
+                        blueCrystalHearts: int.Parse(player.Split(',')[2]),
+                        yellowCrystalHearts: int.Parse(player.Split(',')[3]),
+                        strawberries: int.Parse(player.Split(',')[4]),
+                        deaths: int.Parse(player.Split(',')[5]),
+                        time: player.Split(',')[6],
+                        version: player.Split(',')[7]
+                    ));
+                }
+            }
 
             return list;
         }
@@ -27,26 +64,26 @@ namespace Celeste.Mod.XaphanHelper
         {
             List<PlayerStatData> list = new();
 
-            list.Add(new PlayerStatData(
-                name: "Gamation ",
-                medals: 1290,
-                blueCrystalHearts: 2,
-                yellowCrystalHearts: 4,
-                strawberries: 135,
-                deaths: 9949,
-                time: "26:44:52",
-                version: "3.0.0"
-            ));
-            list.Add(new PlayerStatData(
-                name: "Adam Korinek",
-                medals: 1425,
-                blueCrystalHearts: 2,
-                yellowCrystalHearts: 4,
-                strawberries: 135,
-                deaths: 10063,
-                time: "40:13:16",
-                version: "3.0.0"
-            ));
+            if (!string.IsNullOrEmpty(PlayersFullClearsList))
+            {
+                string[] playersData = PlayersFullClearsList.Split(
+                    new string[] { Environment.NewLine },
+                    StringSplitOptions.None
+                    );
+                foreach (string player in playersData)
+                {
+                    list.Add(new PlayerStatData(
+                        name: player.Split(',')[0],
+                        medals: int.Parse(player.Split(',')[1]),
+                        blueCrystalHearts: int.Parse(player.Split(',')[2]),
+                        yellowCrystalHearts: int.Parse(player.Split(',')[3]),
+                        strawberries: int.Parse(player.Split(',')[4]),
+                        deaths: int.Parse(player.Split(',')[5]),
+                        time: player.Split(',')[6],
+                        version: player.Split(',')[7]
+                    ));
+                }
+            }
 
             return list;
         }
@@ -55,17 +92,26 @@ namespace Celeste.Mod.XaphanHelper
         {
             List<PlayerStatData> list = new();
 
-            /*list.Add(new PlayerStatData(
-                name: "Player 1",
-                medals: 300,
-                blueCrystalHearts: 2,
-                redCrystalHearts: 0,
-                yellowCrystalHearts: 1,
-                strawberries: 79,
-                normalDeaths: 1893,
-                bSideDeaths: 274,
-                time: "2:00:00"
-            ));*/
+            if (!string.IsNullOrEmpty(PlayersGoldenClearsList))
+            {
+                string[] playersData = PlayersGoldenClearsList.Split(
+                    new string[] { Environment.NewLine },
+                    StringSplitOptions.None
+                    );
+                foreach (string player in playersData)
+                {
+                    list.Add(new PlayerStatData(
+                        name: player.Split(',')[0],
+                        medals: int.Parse(player.Split(',')[1]),
+                        blueCrystalHearts: int.Parse(player.Split(',')[2]),
+                        yellowCrystalHearts: int.Parse(player.Split(',')[3]),
+                        strawberries: int.Parse(player.Split(',')[4]),
+                        deaths: int.Parse(player.Split(',')[5]),
+                        time: player.Split(',')[6],
+                        version: player.Split(',')[7]
+                    ));
+                }
+            }
 
             return list;
         }
@@ -74,17 +120,26 @@ namespace Celeste.Mod.XaphanHelper
         {
             List<PlayerStatData> list = new();
 
-            /*list.Add(new PlayerStatData(
-                name: "Player 1",
-                medals: 300,
-                blueCrystalHearts: 2,
-                redCrystalHearts: 0,
-                yellowCrystalHearts: 1,
-                strawberries: 79,
-                normalDeaths: 1893,
-                bSideDeaths: 274,
-                time: "2:00:00"
-            ));*/
+            if (!string.IsNullOrEmpty(PlayersGoldenFullClearsList))
+            {
+                string[] playersData = PlayersGoldenFullClearsList.Split(
+                    new string[] { Environment.NewLine },
+                    StringSplitOptions.None
+                    );
+                foreach (string player in playersData)
+                {
+                    list.Add(new PlayerStatData(
+                        name: player.Split(',')[0],
+                        medals: int.Parse(player.Split(',')[1]),
+                        blueCrystalHearts: int.Parse(player.Split(',')[2]),
+                        yellowCrystalHearts: int.Parse(player.Split(',')[3]),
+                        strawberries: int.Parse(player.Split(',')[4]),
+                        deaths: int.Parse(player.Split(',')[5]),
+                        time: player.Split(',')[6],
+                        version: player.Split(',')[7]
+                    ));
+                }
+            }
 
             return list;
         }

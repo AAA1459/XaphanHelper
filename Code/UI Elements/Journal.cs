@@ -43,6 +43,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         private float rightArrowEase;
 
+        public string playerList;
+
         public JournalPage Page => Pages[PageIndex];
 
         public JournalPage NextPage
@@ -277,43 +279,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 GFX.Gui["dotarrow_outline"].DrawCentered(vector2 + new Vector2(-num3 / 2 - 50, 32f * (1f - Ease.CubeOut(leftArrowEase))), Color.White * leftArrowEase, new Vector2(-1f, 1f));
                 GFX.Gui["dotarrow_outline"].DrawCentered(vector2 + new Vector2(num3 / 2 + 50, 32f * (1f - Ease.CubeOut(rightArrowEase))), Color.White * rightArrowEase);
             }
-        }
-
-        public IEnumerator orig_Enter()
-        {
-            Stats.MakeRequest();
-            PageIndex = 0;
-            Visible = true;
-            X = -1920f;
-            turningPage = false;
-            turningScale = 1f;
-            rotation = 0f;
-            dot = 0f;
-            dotTarget = 0f;
-            dotEase = 0f;
-            leftArrowEase = 0f;
-            rightArrowEase = 0f;
-            NextPageBuffer = VirtualContent.CreateRenderTarget("journal-a", 1610, 1000);
-            CurrentPageBuffer = VirtualContent.CreateRenderTarget("journal-b", 1610, 1000);
-            Pages.Add(new JournalCover(this));
-            /*Pages.Add(new OuiJournalProgress(this));
-            Pages.Add(new OuiJournalSpeedrun(this));
-            Pages.Add(new OuiJournalDeaths(this));
-            Pages.Add(new OuiJournalPoem(this));*/
-            int num = 0;
-            foreach (JournalPage page in Pages)
-            {
-                page.PageIndex = num++;
-            }
-            Pages[0].Redraw(CurrentPageBuffer);
-            for (float p = 0f; p < 1f; p += Engine.DeltaTime / 0.4f)
-            {
-                rotation = -0.025f * Ease.BackOut(p);
-                X = -1920f + 1920f * Ease.CubeInOut(p);
-                dotEase = p;
-                yield return null;
-            }
-            dotEase = 1f;
         }
     }
 }

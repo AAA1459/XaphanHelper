@@ -439,7 +439,6 @@ namespace Celeste.Mod.XaphanHelper
                 //... Update save from 3.0.0 to 3.0.1
                 if (XaphanModule.SoCMVersion >= new Version(3, 0, 1) && XaphanModule.ModSaveData.SoCMVer != "3.0.1")
                 {
-                    Logger.Log(LogLevel.Info, "XH", "UpdateSave");
                     if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch5_V-24_Laser_3"))
                     {
                         XaphanModule.ModSaveData.SavedFlags.Remove("Xaphan/0_Ch5_V-24_Laser_3");

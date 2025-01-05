@@ -26,6 +26,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Added(scene);
             Add(talk = new TalkComponent(new Rectangle(0, 28, 16, 8), new Vector2(8f, -2f), Interact));
             talk.PlayerMustBeFacing = false;
+            PlayerStat.GetPlayersList();
         }
 
         private void Interact(Player player)
