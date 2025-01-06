@@ -1,3 +1,6 @@
+Version 1.0.67 :
+- Changed the default display for the In-Game map progress display from 'off' to 'area map'
+
 Version 1.0.66 :
 - Added a light source to Leafs
 - A manager entity used by other custom entities is no longer automatically added to the scene in vanilla chapters

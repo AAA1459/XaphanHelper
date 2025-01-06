@@ -67,7 +67,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Prefix = Level.Session.Area.LevelSet;
             if (!XaphanModule.ModSaveData.ProgressMode.ContainsKey(Prefix))
             {
-                XaphanModule.ModSaveData.ProgressMode.Add(Prefix, 0);
+                XaphanModule.ModSaveData.ProgressMode.Add(Prefix, 1);
             }
             else
             {
