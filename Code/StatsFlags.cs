@@ -564,107 +564,110 @@ namespace Celeste.Mod.XaphanHelper
 
                 // SoCM
 
-                if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
+                if (Prefix == "Xaphan/0")
                 {
-                    // Items
-
-                    int currentTotalStrawberries = 0;
-                    int currentTotalEnergyTanks = 0;
-                    int currentTotalFireRateModules = 0;
-                    int currentTotalMissiles = 0;
-                    int currentTotalSuperMissiles = 0;
-                    int maxTotalStrawberries = 0;
-                    int maxTotalEnergyTanks = 0;
-                    int maxTotalFireRateModules = 0;
-                    int maxTotalMissiles = 0;
-                    int maxTotalSuperMissiles = 0;
-
-                    for (int i = 1; i <= 5; i++)
+                    if (XaphanModule.SoCMVersion >= new Version(3, 0, 0))
                     {
-                        currentTotalStrawberries += (CurrentStrawberries[i] - (self.Session.GetFlag("XaphanHelper_StatFlag_GoldenCh" + i + "-1") ? 1 : 0));
-                        currentTotalEnergyTanks += CurrentEnergyTanks[i];
-                        currentTotalFireRateModules += CurrentFireRateModules[i];
-                        currentTotalMissiles += CurrentMissiles[i];
-                        currentTotalSuperMissiles += CurrentSuperMissiles[i];
-                        maxTotalStrawberries += TotalStrawberries[i];
-                        maxTotalEnergyTanks += TotalEnergyTanks[i];
-                        maxTotalFireRateModules += TotalFireRateModules[i];
-                        maxTotalMissiles += TotalMissiles[i];
-                        maxTotalSuperMissiles += TotalSuperMissiles[i];
-                    }
+                        // Items
 
-                    int currentItems = currentTotalStrawberries + currentTotalEnergyTanks + currentTotalFireRateModules + currentTotalMissiles + currentTotalSuperMissiles + cassetteCount + heartCount;
-                    int totalItems = maxTotalStrawberries + maxTotalEnergyTanks + maxTotalFireRateModules + maxTotalMissiles + maxTotalSuperMissiles + SaveData.Instance.GetLevelSetStatsFor(SaveData.Instance.LevelSet).MaxCassettes + TotalASideHearts;
+                        int currentTotalStrawberries = 0;
+                        int currentTotalEnergyTanks = 0;
+                        int currentTotalFireRateModules = 0;
+                        int currentTotalMissiles = 0;
+                        int currentTotalSuperMissiles = 0;
+                        int maxTotalStrawberries = 0;
+                        int maxTotalEnergyTanks = 0;
+                        int maxTotalFireRateModules = 0;
+                        int maxTotalMissiles = 0;
+                        int maxTotalSuperMissiles = 0;
 
-                    if (currentItems == totalItems)
-                    {
-                        self.Session.SetFlag("XaphanHelper_StatFlag_Items");
-                    }
-
-                    // LoreBook
-
-                    if (ReadLoreBookEntries != null && TotalLoreBookEntries != null)
-                    {
-                        for (int i = 0; i < 3; i++)
+                        for (int i = 1; i <= 5; i++)
                         {
-                            if (ReadLoreBookEntries[i] == TotalLoreBookEntries[i])
-                            {
-                                self.Session.SetFlag("XaphanHelper_StatFlag_LoreBook_" + i);
-                            }
+                            currentTotalStrawberries += (CurrentStrawberries[i] - (self.Session.GetFlag("XaphanHelper_StatFlag_GoldenCh" + i + "-1") ? 1 : 0));
+                            currentTotalEnergyTanks += CurrentEnergyTanks[i];
+                            currentTotalFireRateModules += CurrentFireRateModules[i];
+                            currentTotalMissiles += CurrentMissiles[i];
+                            currentTotalSuperMissiles += CurrentSuperMissiles[i];
+                            maxTotalStrawberries += TotalStrawberries[i];
+                            maxTotalEnergyTanks += TotalEnergyTanks[i];
+                            maxTotalFireRateModules += TotalFireRateModules[i];
+                            maxTotalMissiles += TotalMissiles[i];
+                            maxTotalSuperMissiles += TotalSuperMissiles[i];
                         }
 
-                        if ((ReadLoreBookEntries[0] + ReadLoreBookEntries[1] + ReadLoreBookEntries[2]) == (TotalLoreBookEntries[0] + TotalLoreBookEntries[1] + TotalLoreBookEntries[2]))
-                        {
-                            self.Session.SetFlag("XaphanHelper_StatFlag_LoreBook");
-                        }
-                    }
+                        int currentItems = currentTotalStrawberries + currentTotalEnergyTanks + currentTotalFireRateModules + currentTotalMissiles + currentTotalSuperMissiles + cassetteCount + heartCount;
+                        int totalItems = maxTotalStrawberries + maxTotalEnergyTanks + maxTotalFireRateModules + maxTotalMissiles + maxTotalSuperMissiles + SaveData.Instance.GetLevelSetStatsFor(SaveData.Instance.LevelSet).MaxCassettes + TotalASideHearts;
 
-                    if (achievements.Count == 0)
-                    {
-                        achievements = Achievements.GenerateAchievementsList(self.Session);
-                    }
-                    else
-                    {
-                        int currentYellowHearts = 0;
-                        foreach (AchievementData achievement in achievements)
+                        if (currentItems == totalItems)
                         {
-                            if (achievement.AchievementID.Contains("boss") && achievement.AchievementID.Contains("cm"))
+                            self.Session.SetFlag("XaphanHelper_StatFlag_Items");
+                        }
+
+                        // LoreBook
+
+                        if (ReadLoreBookEntries != null && TotalLoreBookEntries != null)
+                        {
+                            for (int i = 0; i < 3; i++)
                             {
-                                if (self.Session.GetFlag(achievement.Flag))
+                                if (ReadLoreBookEntries[i] == TotalLoreBookEntries[i])
                                 {
-                                    currentYellowHearts++;
+                                    self.Session.SetFlag("XaphanHelper_StatFlag_LoreBook_" + i);
                                 }
                             }
+
+                            if ((ReadLoreBookEntries[0] + ReadLoreBookEntries[1] + ReadLoreBookEntries[2]) == (TotalLoreBookEntries[0] + TotalLoreBookEntries[1] + TotalLoreBookEntries[2]))
+                            {
+                                self.Session.SetFlag("XaphanHelper_StatFlag_LoreBook");
+                            }
                         }
-                        if (self.Session.GetFlag("XaphanHelper_StatFlag_Heart") || currentYellowHearts > 0)
+
+                        if (achievements.Count == 0)
                         {
-                            self.Session.SetFlag("XaphanHelper_StatFlag_SoCMHearts");
+                            achievements = Achievements.GenerateAchievementsList(self.Session);
                         }
-                    }
-
-                    // Big Screens Logs
-
-                    int currentTotalLambertLogs = 0;
-
-                    foreach (string flag in XaphanModule.ModSaveData.SavedFlags)
-                    {
-                        if (flag.Contains("Xaphan/0") && (flag.Contains("V-Lore-00") || flag.Contains("V-Lore-01") || flag.Contains("V-Lore-02") || flag.Contains("W-Lore-00") || flag.Contains("W-Lore-01") || flag.Contains("X-Lore-00") || flag.Contains("Y-Lore-00")))
+                        else
                         {
-                            currentTotalLambertLogs++;
+                            int currentYellowHearts = 0;
+                            foreach (AchievementData achievement in achievements)
+                            {
+                                if (achievement.AchievementID.Contains("boss") && achievement.AchievementID.Contains("cm"))
+                                {
+                                    if (self.Session.GetFlag(achievement.Flag))
+                                    {
+                                        currentYellowHearts++;
+                                    }
+                                }
+                            }
+                            if (self.Session.GetFlag("XaphanHelper_StatFlag_Heart") || currentYellowHearts > 0)
+                            {
+                                self.Session.SetFlag("XaphanHelper_StatFlag_SoCMHearts");
+                            }
+                        }
+
+                        // Big Screens Logs
+
+                        int currentTotalLambertLogs = 0;
+
+                        foreach (string flag in XaphanModule.ModSaveData.SavedFlags)
+                        {
+                            if (flag.Contains("Xaphan/0") && (flag.Contains("V-Lore-00") || flag.Contains("V-Lore-01") || flag.Contains("V-Lore-02") || flag.Contains("W-Lore-00") || flag.Contains("W-Lore-01") || flag.Contains("X-Lore-00") || flag.Contains("Y-Lore-00")))
+                            {
+                                currentTotalLambertLogs++;
+                            }
+                        }
+
+                        if (currentTotalLambertLogs == 7)
+                        {
+                            self.Session.SetFlag("XaphanHelper_StatFlag_LambertLogs");
                         }
                     }
 
-                    if (currentTotalLambertLogs == 7)
+                    // Achievements
+
+                    if (self.Session.Area.Mode == 0 && self.Session.Area.LevelSet == "Xaphan/0" && !fixedAchievements)
                     {
-                        self.Session.SetFlag("XaphanHelper_StatFlag_LambertLogs");
+                        RemoveCompletedAchievementsIfNoLongerComplete(self.Session);
                     }
-                }
-
-                // Achievements
-
-                if (self.Session.Area.Mode == 0 && self.Session.Area.LevelSet == "Xaphan/0" && !fixedAchievements)
-                {
-                    RemoveCompletedAchievementsIfNoLongerComplete(self.Session);
                 }
             }
         }
