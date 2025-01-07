@@ -28,7 +28,7 @@ namespace Celeste.Mod.XaphanHelper
             }
             catch (HttpRequestException e)
             {
-                Logger.Log(LogLevel.Info, "Xh", "\nException Caught!" + "Message :{0} " + e.Message);
+                Logger.Log(LogLevel.Info, "XaphanHelper/PlayerStats", "Could not get data for players stats. Reason: " + e.Message);
             }
         }
 
