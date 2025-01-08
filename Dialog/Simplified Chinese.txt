@@ -1,0 +1,317 @@
+﻿﻿# XaphanHelper - 1.0.67 翻译，由AAA1459制作
+
+# NOTES:
+# The # Symbol at the start of a line counts as a Comment. To include in dialog, use a \#
+# The . Symbol will cause a pause unless escaped with \. (ex: Mr. Oshiro has a pause, Mr\. Oshiro does not)
+# Newlines automatically create a Page Break, unless there is an {n} command on the previous line
+# Commands: Anything inside of curly braces {...} is a command and should not be translated.
+
+# Inline Text Commands:
+# {~}wavy text{/~}
+# {!}impact text{/!}
+# {>> x}changes speed at which characters are displayed{>>}
+# {# 000000}this text is black{#} (uses HEX color values)
+# {+MENU_BEGIN} inserts the dialog from the MENU_BEGIN value (in English, "CLIMB")
+# {n} creates a newline, without a page break
+# {0.5} creates a 0.5 second pause
+# {big}this text is large{/big}
+
+# Gameplay Control Commands (should never change)
+# {trigger x} this triggers an in-game event
+# {anchor} controls the visual position of the textbox in-game
+
+#Tutorials
+	XaphanHelper_SwitchAbility= 切换能力
+	XaphanHelper_Shoot= 射击
+	XaphanHelper_Destroy= 自毁
+
+#Infos
+	XaphanHelper_Select= 选择
+	XaphanHelper_ToSelect= 来选择
+	XaphanHelper_Press= 按下
+	XaphanHelper_Hold= 按住
+	XaphanHelper_ThenHold= 然后按住
+	XaphanHelper_ThenPress= 然后按下
+	XaphanHelper_AndPress= 并按下
+	XaphanHelper_Or= 或
+	XaphanHelper_ClingingPress= 紧贴墙壁并按下
+
+#Metroid Infos
+	XaphanHelper_MorphMode= 变形球模式
+	XaphanHelper_Fire= 光束与
+	XaphanHelper_Set= 设置与
+
+#Celeste Upgrades
+	XaphanHelper_get_Map_Name= 地图
+	XaphanHelper_get_Map_Desc= 允许打开世界地图
+	XaphanHelper_get_Map_Desc_b= 以打开地图
+	XaphanHelper_get_MapShard_Name= 地图碎片
+	XaphanHelper_get_MapShard_Desc= 在你的地图上
+	XaphanHelper_get_MapShard_Desc_b= 显示这个区域的一部分
+	XaphanHelper_get_MissilesModule_Name= 导弹模块
+	XaphanHelper_get_MissilesModule_Desc= 使无人机能够发射导弹
+	XaphanHelper_get_MissilesModule_Desc_b= 以摧毁一些墙壁并激活某些开关
+	XaphanHelper_get_SuperMissilesModule_Name= 超级导弹模块
+	XaphanHelper_get_SuperMissilesModule_Desc= 使无人机发射威力更大
+	XaphanHelper_get_SuperMissilesModule_Desc_b= 半径也更大的导弹
+	XaphanHelper_get_PowerGrip_Name= 强力握把
+	XaphanHelper_get_PowerGrip_Desc= 允许你在一定时间内抓住墙壁
+	XaphanHelper_get_PowerGrip_Desc_b= 在墙附近以抓住它
+	XaphanHelper_get_ClimbingKit_Name= 攀岩套装
+	XaphanHelper_get_ClimbingKit_Desc= 允许你在墙壁上攀爬
+	XaphanHelper_get_ClimbingKit_Desc_b= 在贴着墙壁时以攀爬它
+	XaphanHelper_get_SpiderMagnet_Name= 蜘蛛磁铁
+	XaphanHelper_get_SpiderMagnet_Desc= 使你能抓在磁力天花板上
+	XaphanHelper_get_SpiderMagnet_Desc_b= 在磁力天花板之下以抓住它
+	XaphanHelper_get_Bombs_Name= 炸弹
+	XaphanHelper_get_Bombs_Desc= 使你能炸开某些墙壁
+	XaphanHelper_get_Bombs_Desc_b= 来放置一个炸弹
+	XaphanHelper_get_MegaBombs_Name= 重磅炸弹
+	XaphanHelper_get_MegaBombs_Desc= 使你能炸开某些墙壁并轰飞一些方块
+	XaphanHelper_get_MegaBombs_Desc_b= 来放置一个炸弹
+	XaphanHelper_get_RemoteDrone_Name= 遥控无人机
+	XaphanHelper_get_RemoteDrone_Desc= 使你能够遥控一个微型无人机
+	XaphanHelper_get_RemoteDrone_Desc_b= 以部署无人机
+	XaphanHelper_get_GoldenFeather_Name= 金羽毛
+	XaphanHelper_get_GoldenFeather_Desc= 允许你自由滑行或乘风而行
+	XaphanHelper_get_GoldenFeather_Desc_b= 以在空中展开羽毛
+	XaphanHelper_get_Binoculars_Name= 双筒望远镜
+	XaphanHelper_get_Binoculars_Desc= 允许你预览当前房间
+	XaphanHelper_get_Binoculars_Desc_b= 以使用望远镜
+	XaphanHelper_get_EtherealDash_Name= 空灵冲刺
+	XaphanHelper_get_EtherealDash_Desc= 允许你冲刺通过某些薄墙
+	XaphanHelper_get_PortableStation_Name= 便携传送台
+	XaphanHelper_get_PortableStation_Desc= 允许你随时传送至任何已解锁的站点
+	XaphanHelper_get_PortableStation_Desc_b= 以开始传送
+	XaphanHelper_get_PulseRadar_Name= 脉冲雷达
+	XaphanHelper_get_PulseRadar_Desc= 能够使你附近所有的秘密通道现形
+	XaphanHelper_get_PulseRadar_Desc_b= 以使用雷达
+	XaphanHelper_get_DroneTeleport_Name= 无人机描点
+	XaphanHelper_get_DroneTeleport_Desc= 使你能瞬间传送至无人机所在地
+	XaphanHelper_get_DroneTeleport_Desc_b= 在操控无人机时以传送至它
+	XaphanHelper_get_JumpBoost_Name= 跳跃加成
+	XaphanHelper_get_JumpBoost_Desc= 使无人机的跳跃高度增加50%
+	XaphanHelper_get_JumpBoost_Desc_b= 以跳的更高
+	XaphanHelper_get_ScrewAttack_Name= 团身旋击
+	XaphanHelper_get_ScrewAttack_Desc= 摧毁部分墙壁，提高速度
+	XaphanHelper_get_ScrewAttack_Desc_b= 并能够穿过部分障碍物在跳跃时
+	XaphanHelper_get_DashBoots_Name= 冲刺靴
+	XaphanHelper_get_DashBoots_Desc= 允许你在任意方向上做一个冲刺
+	XaphanHelper_get_DashBoots_Desc_b= 和任意方向键去冲刺
+	XaphanHelper_get_SpaceJump_Name= 二段跳
+	XaphanHelper_get_SpaceJump_Desc= 允许你在空中进行二段跳
+	XaphanHelper_get_SpaceJump_Desc_b= 在空中以二段跳
+	XaphanHelper_get_HoverJet_Name= 悬停喷气机
+	XaphanHelper_get_HoverJet_Desc= 允许无人机短时间内悬停在空中
+	XaphanHelper_get_HoverJet_Desc_b= 和坠落方向以悬停
+	XaphanHelper_get_LightningDash_Name= 超级冲刺
+	XaphanHelper_get_LightningDash_Desc= 允许你在水平方向上无限冲刺
+	XaphanHelper_get_LightningDash_Desc_b= 和远离墙壁的方向以无限冲刺
+
+#Metroid Upgrades
+	XaphanHelper_get_Spazer_Name= 宽光束
+	XaphanHelper_get_Spazer_Desc= 使你能同时发射三道光束
+	XaphanHelper_get_PlasmaBeam_Name= 等离子光束
+	XaphanHelper_get_PlasmaBeam_Desc= 使光束能够穿透敌人
+	XaphanHelper_get_Met_VariaJacket_Name= 防护服
+	XaphanHelper_get_Met_VariaJacket_Desc= 使你能够在极端温度中存活
+	XaphanHelper_get_Met_GravityJacket_Name= 重力服
+	XaphanHelper_get_Met_GravityJacket_Desc= 允许你在液体中自由移动并免受熔岩影响
+	XaphanHelper_get_MorphingBall_Name= 变形球
+	XaphanHelper_get_MorphingBall_Desc= 使你能够进入狭窄的通道
+	XaphanHelper_get_MorphingBall_Desc_b= 以变形
+	XaphanHelper_get_MorphBombs_Name= 炸弹
+	XaphanHelper_get_MorphBombs_Desc= 使你能炸开某些墙壁
+	XaphanHelper_get_MorphBombs_Desc_b= 在变形球形态设置炸弹
+	XaphanHelper_get_SpringBall_Name= 弹簧球
+	XaphanHelper_get_SpringBall_Desc= 给予变形球形态跳跃能力
+	XaphanHelper_get_SpringBall_Desc_b= 在变形球形态跳跃
+	XaphanHelper_get_Met_ScrewAttack_Name= 团身旋击
+	XaphanHelper_get_Met_ScrewAttack_Desc= 在翻滚时对敌人造成伤害
+	XaphanHelper_get_HighJumpBoots_Name= 高跳靴
+	XaphanHelper_get_HighJumpBoots_Desc= 增加最大跳跃高度
+	XaphanHelper_get_Met_SpaceJump_Name= 连跳
+	XaphanHelper_get_Met_SpaceJump_Desc= 可以在空中连续跳跃
+	XaphanHelper_get_Met_SpaceJump_Desc_b= 空翻并连续跳跃
+	XaphanHelper_get_SpeedBooster_Name= 加速器
+	XaphanHelper_get_SpeedBooster_Desc= 提高奔跑速度。撞毁部分方块
+	XaphanHelper_get_SpeedBooster_Desc_b= 并持续奔跑以加速
+	XaphanHelper_get_Missile_Name= 导弹
+	XaphanHelper_get_Missile_Name_b= 导弹升级
+	XaphanHelper_get_Missile_Desc= 造成更多伤害 - 打开红色舱门
+	XaphanHelper_get_SuperMissile_Name= 超级导弹
+	XaphanHelper_get_SuperMissile_Name_b= 超级导弹罐
+	XaphanHelper_get_SuperMissile_Desc= 造成超大伤害 - 打开绿色舱门
+	XaphanHelper_get_PowerBomb_Name= 强力炸弹
+	XaphanHelper_get_PowerBomb_Name_b= 强力炸弹罐
+	XaphanHelper_get_PowerBomb_Desc= 释放超强力的爆炸 - 打开黄色舱门
+	XaphanHelper_get_Met_EnergyTank_Name= 能量罐
+	XaphanHelper_get_Met_EnergyTank_Desc= 增加最大体力
+	XaphanHelper_Increase_Missile= 增加导弹容量
+	XaphanHelper_Increase_SuperMissile= 增加超级导弹容量
+	XaphanHelper_Increase_PowerBomb= 增加强力炸弹容量
+
+#Common Upgrades
+	XaphanHelper_get_VariaJacket_Name= 防护服
+	XaphanHelper_get_VariaJacket_Desc= 使你能够在极端温度中存活
+	XaphanHelper_get_GravityJacket_Name= 重力服
+	XaphanHelper_get_GravityJacket_Desc= 允许你在水中自由移动
+	XaphanHelper_get_LongBeam_Name= 长光束
+	XaphanHelper_get_LongBeam_Desc= 使光束能射到更远处的目标
+	XaphanHelper_get_LongBeam_Desc_drone= 使无人机的光束能射到更远处的目标
+	XaphanHelper_get_IceBeam_Name= 冰冻光束
+	XaphanHelper_get_IceBeam_Desc= 使光束能够冻结敌人
+	XaphanHelper_get_IceBeam_Desc_drone= 使无人机的光束能够冻结物体
+	XaphanHelper_get_WaveBeam_Name= 波动光束
+	XaphanHelper_get_WaveBeam_Desc= 使光束能够穿透墙体
+	XaphanHelper_get_WaveBeam_Desc_drone= 使无人机的光束能够穿透墙体
+
+#Collectables
+#注意：下列文本使用 Graphics/Atlases/Gameplay/collectables/XaphanHelper/CustomFollower/collectText/ 中的字体
+	XaphanHelper_Collect_EnergyTank= 体力
+	XaphanHelper_Collect_Missiles= 导弹
+	XaphanHelper_Collect_SuperMissiles= 超导
+	XaphanHelper_Collect_FireRateModule= 光束冷却
+	XaphanHelper_Collect_Time_One= 秒
+	XaphanHelper_Collect_Time= 秒
+	
+	XaphanHelper_get_EnergyTank_Desc= 每个能量罐将增加5点最大体力
+	XaphanHelper_get_FireRateModule_Desc= 每个射速模块将减少光束冷却的15%
+
+#Warps
+	XaphanHelper_Warp_Select_Destination= - 选择你的目的地 -
+	XaphanHelper_Warp_Stay= 留在原地
+	XaphanHelper_Warp_None= 使用传送站前需先解锁至少两个站点
+
+#Mod Options Menu
+	ModOptions_XaphanModule_ShowMiniMap= 显示小地图
+	ModOptions_XaphanModule_ShowMiniMap_Desc= 只在兼容的章节上显示
+	ModOptions_XaphanModule_MiniMapOpacity= 小地图不透明度
+	ModOptions_XaphanModule_10= 10%
+	ModOptions_XaphanModule_20= 20%
+	ModOptions_XaphanModule_30= 30%
+	ModOptions_XaphanModule_40= 40%
+	ModOptions_XaphanModule_50= 50%
+	ModOptions_XaphanModule_60= 60%
+	ModOptions_XaphanModule_70= 70%
+	ModOptions_XaphanModule_80= 80%
+	ModOptions_XaphanModule_90= 90%
+	ModOptions_XaphanModule_100= 100%
+	ModOptions_XaphanModule_SpaceJumpIndicator= 二段跳指示器
+	ModOptions_XaphanModule_SpaceJumpIndicator_None= 无
+	ModOptions_XaphanModule_SpaceJumpIndicator_Small= 较小
+	ModOptions_XaphanModule_SpaceJumpIndicator_Large= 较大
+	ModOptions_XaphanModule_StaminaIndicator= 体力指示器
+	ModOptions_XaphanModule_StaminaIndicator_UI_Only= 屏幕顶部
+	ModOptions_XaphanModule_StaminaIndicator_Player_Only= 玩家附近
+	ModOptions_XaphanModule_StaminaIndicator_Both= 屏幕顶部及玩家附近
+	ModOptions_XaphanModule_OxygenIndicator= 氧气指示器
+	ModOptions_XaphanModule_ShowCompleteSlopesHitboxes= 显示完整的斜坡碰撞箱
+	ModOptions_XaphanModule_ShowCompleteSlopesHitboxes_Desc= 显示斜坡用于承载玩家的平台碰撞箱，帮助TAS制作者
+
+#Bindings
+	ModOptions_XaphanModule_OpenMap= 打开地图 / 状态栏
+	ModOptions_XaphanModule_SelectItem= 切换装备中的能力
+	ModOptions_XaphanModule_UseBagItemSlot= 使用背包栏中的能力
+	ModOptions_XaphanModule_UseMiscItemSlot= 使用其他栏中的能力
+	ModOptions_XaphanModule_MapScreenShowMapOrWorldMap= 地图面板 - 切换区域和世界地图
+	ModOptions_XaphanModule_MapScreenDisplayOptions= 地图面板 - 自定义显示选项
+	ModOptions_XaphanModule_MapScreenPlaceMarker= 地图面板 - 设置标记
+
+#UI
+	XaphanHelper_UI_ActiveCM_title= 准备好接受挑战了吗？
+	XaphanHelper_UI_CM_note1= 你可以选择重玩这个Boss遭遇战{n}或更困难的挑战版本
+	XaphanHelper_UI_CM_note2= 你可以在暂停菜单中退出遭遇战{n}只要复活后不移动
+	XaphanHelper_UI_CM_note3= 警告！此遭遇战期间将暂时禁用通常还未获得的能力
+	XaphanHelper_UI_Replay_Normal_Mode= 重玩普通模式
+	XaphanHelper_UI_Play_Challenge_Mode= 游玩挑战模式
+	XaphanHelper_UI_Replay_Challenge_Mode= 重玩挑战模式
+	XaphanHelper_UI_GiveUpNM_title= 放弃本场遭遇战？
+	XaphanHelper_UI_GiveUpNM= 放弃
+	XaphanHelper_UI_GiveUpCM_title= 放弃游玩挑战模式？
+	XaphanHelper_UI_GiveUpCM= 放弃
+	XaphanHelper_UI_GiveUpBSide_title= 放弃游玩 B 面？
+	XaphanHelper_UI_GiveUpCSide_title= 放弃游玩 C 面？
+	XaphanHelper_UI_GiveUpBSide= 放弃
+	XaphanHelper_UI_GiveUpCSide= 放弃
+	XaphanHelper_UI_GiveUpBSide_info= 这将使你丢失此 B 面中的所有进度{n}并被送回 A 面.
+	XaphanHelper_UI_GiveUpCSide_info= 这将使你丢失此 C 面中的所有进度{n}并被送回 A 面.
+	XaphanHelper_UI_RestartCampaign_title= 重新开始整个系列？
+	XaphanHelper_UI_RestartCampaign= 确认
+	XaphanHelper_UI_RestartCampaign_info= 这将丢失这一系列的所有关卡进度，重头开始。
+	XaphanHelper_UI_close= 关闭
+	XaphanHelper_UI_map= 地图
+	XaphanHelper_UI_mapExplored= 已探索区域：
+	XaphanHelper_UI_itemsCollected= 已搜集物品：
+	XaphanHelper_UI_skip= 跳过
+	XaphanHelper_UI_abilities= 能力
+	XaphanHelper_UI_activate= 激活
+	XaphanHelper_UI_deactivate= 禁用
+	XaphanHelper_UI_displayOptions= 自定义显示
+	XaphanHelper_UI_showhints= 提示
+	XaphanHelper_UI_showmarkers= 标记
+	XaphanHelper_UI_progress= 进度
+	XaphanHelper_UI_progres_display= 显示：
+	XaphanHelper_UI_progress_allareas= 所有区域
+	XaphanHelper_UI_progress_area= 当前区域
+	XaphanHelper_UI_progress_subarea= 当前子区域
+	XaphanHelper_UI_showWorldMap= 显示世界地图
+	XaphanHelper_UI_showAreaMap= 显示区域地图
+	XaphanHelper_UI_markers= 添加/移除标记
+	XaphanHelper_UI_markers_place= 设置标记
+	XaphanHelper_UI_markers_remove= 移除标记
+	XaphanHelper_UI_markers_select= 选择一个标记
+	XaphanHelper_UI_confirm= 确认
+	XaphanHelper_UI_achievements= 成就
+	Xaphanhelper_UI_Arms= 工具
+	Xaphanhelper_UI_Legs= 腿
+	Xaphanhelper_UI_Drone= 无人机
+	Xaphanhelper_UI_Jacket= 夹克
+	Xaphanhelper_UI_Bag= 背包
+	Xaphanhelper_UI_Misc= 其他
+	Xaphanhelper_UI_Beam= 光束：
+	Xaphanhelper_UI_Modules= 模块：
+	Xaphanhelper_UI_Time= 用时
+	XaphanHelper_UI_Currently_In= 所在地：
+	XaphanHelper_UI_ReturnToMap_Rooms= 返回地图将保存你的进度。{n}回来时将从当前记录点重新开始。
+	XaphanHelper_UI_ReturnToMap_Warps= 返回地图将保存你的进度。{n}回来时将从到达过的最后一个传送站重新开始。
+	XaphanHelper_UI_Menu= 菜单
+	XaphanHelper_UI_Medals= 成就点数
+	XaphanHelper_UI_Categories= 类别
+	XaphanHelper_UI_General= 通用
+	XaphanHelper_UI_Objective= 当前进度：
+	XaphanHelper_UI_Achievements_Locked= 类别未解锁
+	XaphanHelper_UI_Achievements_Locked_Description= 继续游玩{n}以解锁此类别
+	XaphanHelper_UI_Completed= 已完成
+	XaphanHelper_UI_Hidden= 隐藏
+	XaphanHelper_UI_LockedAchievementDesc= 未解锁的成就
+	XaphanHelper_UI_AchievementToUnlock= 解锁条件:
+	XaphanHelper_UI_selectCategory= 选择类别
+	XaphanHelper_UI_back= 返回
+	Xaphanhelper_UI_Stamina= 体力
+	Xaphanhelper_UI_Ammo= 弹药
+	XaphanHelper_UI_lorebook= 档案集
+	XaphanHelper_UI_Locations= 地点
+	XaphanHelper_UI_Locations_Desc= 已访问的地点信息
+	XaphanHelper_UI_Equipment= 装备
+	XaphanHelper_UI_Equipment_Desc= 已获得的装备信息
+	XaphanHelper_UI_Adventure= 冒险
+	XaphanHelper_UI_Adventure_Desc= 与故事相关的事件和物品信息
+	XaphanHelper_UI_Discovered= 已发现的
+	XaphanHelper_UI_Entries= 条目
+	XaphanHelper_UI_Informations= 信息
+	XaphanHelper_UI_LorebookEntry_Locked= 尚未解锁此条目
+	XaphanHelper_UI_LorebookNewEntry= 新的条目信息！
+	Xaphanhelper_UI_Breath= 氧气
+
+#Metroid UI
+	XaphanHelper_UI_Save_Game= 是否保存进度？
+	Xaphanhelper_UI_Metroid_Beams= 光束
+	Xaphanhelper_UI_Metroid_Suits= 服装
+	Xaphanhelper_UI_Metroid_Misc= 其他
+	Xaphanhelper_UI_Metroid_Boots= 鞋子
+
+#Errors
+	XaphanHelper_chapter_not_exist= The destination chapter doses not exist
+	XaphanHelper_room_not_exist= The destination room doses not exist
+	XaphanHelper_room_name_empty= The destination room name is empty
