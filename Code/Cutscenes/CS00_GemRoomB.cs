@@ -89,6 +89,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             level.Frozen = false;
             level.Session.Audio.Music.Event = SFX.EventnameByHandle(oldMusic);
             level.Session.Audio.Apply(forceSixteenthNoteHack: false);
+            Scene.Remove(poem);
         }
 
         public IEnumerator Cutscene(Level level)
