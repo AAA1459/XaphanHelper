@@ -34,7 +34,7 @@
 	XaphanHelper_ThenPress= 然后按下
 	XaphanHelper_AndPress= 并按下
 	XaphanHelper_Or= 或
-	XaphanHelper_ClingingPress= 紧贴墙壁并按下
+	XaphanHelper_ClingingPress= 抓着墙壁并按下
 
 #Metroid Infos
 	XaphanHelper_MorphMode= 变形球模式
@@ -59,10 +59,10 @@
 	XaphanHelper_get_PowerGrip_Desc_b= 在墙附近以抓住它
 	XaphanHelper_get_ClimbingKit_Name= 攀岩套装
 	XaphanHelper_get_ClimbingKit_Desc= 允许你在墙壁上攀爬
-	XaphanHelper_get_ClimbingKit_Desc_b= 在贴着墙壁时以攀爬它
+	XaphanHelper_get_ClimbingKit_Desc_b= 在抓着墙壁时以攀爬它
 	XaphanHelper_get_SpiderMagnet_Name= 蜘蛛磁铁
 	XaphanHelper_get_SpiderMagnet_Desc= 使你能抓在磁力天花板上
-	XaphanHelper_get_SpiderMagnet_Desc_b= 在磁力天花板之下以抓住它
+	XaphanHelper_get_SpiderMagnet_Desc_b= 在磁力天花板下以抓住它
 	XaphanHelper_get_Bombs_Name= 炸弹
 	XaphanHelper_get_Bombs_Desc= 使你能炸开某些墙壁
 	XaphanHelper_get_Bombs_Desc_b= 来放置一个炸弹
