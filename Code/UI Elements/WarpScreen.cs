@@ -311,11 +311,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
 
             mapDisplay.Display = false;
+            
             // FIXME: hackfix for now, MapDisplay.UpdateMap should be refactored to use area IDs
             int chapterIndex = new AreaKey(SelectedWarp.AreaId).ChapterIndex;
             mapDisplay.UpdateMap(Math.Max(0, chapterIndex), SelectedWarp.Room, 0);
-
-            mapProgressDisplay?.RemoveSelf();
             if (mapDisplay.InGameMapControllerData.ShowProgress != "Never")
             {
                 Scene.Add(mapProgressDisplay = new MapProgressDisplay(new Vector2(mapDisplay.Grid.X + 18f, mapDisplay.Grid.Y), level, mapDisplay.InGameMapControllerData, mapDisplay.SubAreaControllerData, mapDisplay.RoomControllerData, mapDisplay.TilesControllerData, mapDisplay.EntitiesData, mapDisplay.chapterIndex, mapDisplay.currentRoom));
@@ -339,12 +338,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 Audio.Play("event:/ui/main/rollover_down");
                 currentMenu--;
+                mapProgressDisplay?.RemoveSelf();
                 InitializeScreen();
             }
             else if (Input.MenuRight.Pressed && currentMenu < warpsPerArea.Count - 1 && !onlyCurrentChapter)
             {
                 Audio.Play("event:/ui/main/rollover_up");
                 currentMenu++;
+                mapProgressDisplay?.RemoveSelf();
                 InitializeScreen();
             }
             else
@@ -357,6 +358,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         // FIXME: hackfix for now, MapDisplay.GetRoomOffset should be refactored to accept WarpInfo (?)
                         Vector2 roomOffset = mapDisplay.GetRoomOffset(null, SelectedWarp.Room, 0);
                         mapDisplay.SetCurrentRoomCoordinates(roomOffset);
+                        mapProgressDisplay?.RemoveSelf();
+                        if (mapDisplay.InGameMapControllerData.ShowProgress != "Never")
+                        {
+                            Scene.Add(mapProgressDisplay = new MapProgressDisplay(new Vector2(mapDisplay.Grid.X + 18f, mapDisplay.Grid.Y), SceneAs<Level>(), mapDisplay.InGameMapControllerData, mapDisplay.SubAreaControllerData, mapDisplay.RoomControllerData, mapDisplay.TilesControllerData, mapDisplay.EntitiesData, mapDisplay.chapterIndex, mapDisplay.currentRoom));
+                        }
                     }
                 }
             }

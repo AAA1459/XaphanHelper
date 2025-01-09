@@ -1,4 +1,5 @@
 Version 1.0.68 :
+- Improved performances of the In-Game map Progress Display
 - Fixed a performance issue occuring after the Theo Cutscene in The Secret Of Celeste Mountain
 
 Version 1.0.67 :
