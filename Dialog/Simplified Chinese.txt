@@ -298,10 +298,10 @@
 	XaphanHelper_UI_Adventure= 冒险
 	XaphanHelper_UI_Adventure_Desc= 与故事相关的事件和物品信息
 	XaphanHelper_UI_Discovered= 已发现的
-	XaphanHelper_UI_Entries= 条目
+	XaphanHelper_UI_Entries= 词条
 	XaphanHelper_UI_Informations= 信息
-	XaphanHelper_UI_LorebookEntry_Locked= 尚未解锁此条目
-	XaphanHelper_UI_LorebookNewEntry= 新的条目信息！
+	XaphanHelper_UI_LorebookEntry_Locked= 尚未解锁此词条
+	XaphanHelper_UI_LorebookNewEntry= 新的词条信息！
 	Xaphanhelper_UI_Breath= 氧气
 
 #Metroid UI
