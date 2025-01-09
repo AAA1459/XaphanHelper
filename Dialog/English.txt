@@ -193,12 +193,15 @@
 	ModOptions_XaphanModule_80= 80%
 	ModOptions_XaphanModule_90= 90%
 	ModOptions_XaphanModule_100= 100%
-	ModOptions_XaphanModule_ShowHeatLevel= Show Heat Level
-	ModOptions_XaphanModule_ShowHeatLevel_Desc= Display the time left before dying in heated rooms
 	ModOptions_XaphanModule_SpaceJumpIndicator= Space Jump Indicator
 	ModOptions_XaphanModule_SpaceJumpIndicator_None= None
 	ModOptions_XaphanModule_SpaceJumpIndicator_Small= Small
 	ModOptions_XaphanModule_SpaceJumpIndicator_Large= Large
+	ModOptions_XaphanModule_StaminaIndicator= Stamina Indicator
+	ModOptions_XaphanModule_StaminaIndicator_UI_Only= Top of Screen
+	ModOptions_XaphanModule_StaminaIndicator_Player_Only= Near Player
+	ModOptions_XaphanModule_StaminaIndicator_Both= Both
+	ModOptions_XaphanModule_OxygenIndicator= Oxygen Indicator
 	ModOptions_XaphanModule_ShowCompleteSlopesHitboxes= Show Complete Slopes Hitboxes
 	ModOptions_XaphanModule_ShowCompleteSlopesHitboxes_Desc= Show hidden platforms hitboxes used by slopes{n}to move the player - Can be useful for TASes
 
@@ -207,9 +210,9 @@
 	ModOptions_XaphanModule_SelectItem= Select Equiped Ability
 	ModOptions_XaphanModule_UseBagItemSlot= Use Equiped Ability in Bag Slot
 	ModOptions_XaphanModule_UseMiscItemSlot= Use Equiped Ability in Misc Slot
-	ModOptions_XaphanModule_MapScreenShowProgressDisplay= Map Screen - Select Progress Display
 	ModOptions_XaphanModule_MapScreenShowMapOrWorldMap= Map Screen - Switch between Area Map and World Map
-	ModOptions_XaphanModule_MapScreenShowHints= Map Screen - Show / Hide Hints
+	ModOptions_XaphanModule_MapScreenDisplayOptions= Map Screen - Customise Display Options
+	ModOptions_XaphanModule_MapScreenPlaceMarker= Map Screen - Place Marker
 
 #UI
 	XaphanHelper_UI_ActiveCM_title= READY FOR A CHALLENGE?
@@ -240,16 +243,20 @@
 	XaphanHelper_UI_abilities= Abilities
 	XaphanHelper_UI_activate= Activate
 	XaphanHelper_UI_deactivate= Deactivate
+	XaphanHelper_UI_displayOptions= Display Options
 	XaphanHelper_UI_showhints= Show Hints
-	XaphanHelper_UI_hidehints= Hide Hints
-	XaphanHelper_UI_showProgress= Show Progress Display
-	XaphanHelper_UI_changeProgress= Change Progress Display
-	XaphanHelper_UI_hideProgress= Hide Progress Display
-	XaphanHelper_UI_progress_allareas= Progress: All Areas
-	XaphanHelper_UI_progress_area= Progress: Current Area
-	XaphanHelper_UI_progress_subarea= Progress: Current Sub Area
+	XaphanHelper_UI_showmarkers= Show Markers
+	XaphanHelper_UI_progress= Progress Display
+	XaphanHelper_UI_progres_display= Display:
+	XaphanHelper_UI_progress_allareas= All Areas
+	XaphanHelper_UI_progress_area= Current Area
+	XaphanHelper_UI_progress_subarea= Current Sub Area
 	XaphanHelper_UI_showWorldMap= Show World Map
 	XaphanHelper_UI_showAreaMap= Show Area Map
+	XaphanHelper_UI_markers= Add/Remove Marker
+	XaphanHelper_UI_markers_place= Place Marker
+	XaphanHelper_UI_markers_remove= Remove Marker
+	XaphanHelper_UI_markers_select= Select a Marker
 	XaphanHelper_UI_confirm= Confirm
 	XaphanHelper_UI_achievements= Achievements
 	Xaphanhelper_UI_Arms= ARMS
@@ -291,6 +298,7 @@
 	XaphanHelper_UI_Informations= INFORMATIONS
 	XaphanHelper_UI_LorebookEntry_Locked= You have not discovered this entry yet
 	XaphanHelper_UI_LorebookNewEntry= New Lorebook entry!
+	Xaphanhelper_UI_Breath= OXYGEN
 
 #Metroid UI
 	XaphanHelper_UI_Save_Game= WOULD YOU LIKE TO SAVE ?
@@ -303,6 +311,3 @@
 	XaphanHelper_chapter_not_exist= The destination chapter doses not exist
 	XaphanHelper_room_not_exist= The destination room doses not exist
 	XaphanHelper_room_name_empty= The destination room name is empty
-
-#Temporary
-	LorebookEntry_Boss_2_1_Name= Shadow Monster
