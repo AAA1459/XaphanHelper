@@ -82,7 +82,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
             public void CheckIfMarker()
             {
-                Vector2 selectorPosition = mapDisplay.CalcRoomPosition(mapDisplay.GetRoomPosition(CurrentRoom) + (mapDisplay.roomIsAdjusted(CurrentRoom) ? mapDisplay.GetAdjustedPosition(CurrentRoom) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition) + TilePosition * 40;
+                Vector2 selectorPosition = mapDisplay.CalcRoomPosition(mapDisplay.RoomData[CurrentRoom].Position + (mapDisplay.roomIsAdjusted(CurrentRoom) ? mapDisplay.GetAdjustedPosition(CurrentRoom) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition) + TilePosition * 40;
                 HashSet<string> markers = XaphanModule.ModSaveData.Markers.ContainsKey(mapDisplay.Prefix) ? XaphanModule.ModSaveData.Markers[mapDisplay.Prefix] : null;
                 if (markers != null)
                 {
@@ -92,7 +92,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         int chapterIndex = int.Parse(marker.Split(':')[0]);
                         string room = marker.Split(':')[1];
                         Vector2 position = new Vector2(int.Parse(marker.Split(':')[2]), int.Parse(marker.Split(':')[3]));
-                        if (chapterIndex == mapDisplay.chapterIndex && (mapDisplay.CalcRoomPosition(mapDisplay.GetRoomPosition(room) + (mapDisplay.roomIsAdjusted(room) ? mapDisplay.GetAdjustedPosition(room) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition) + position * 40f) == selectorPosition)
+                        if (chapterIndex == mapDisplay.chapterIndex && (mapDisplay.CalcRoomPosition(mapDisplay.RoomData[room].Position + (mapDisplay.roomIsAdjusted(room) ? mapDisplay.GetAdjustedPosition(room) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition) + position * 40f) == selectorPosition)
                         {
                             HoverExistingMarker = true;
                             HoverExistingMarkerRoom = room;
@@ -185,6 +185,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public List<InGameMapHintControllerData> HintControllerData = new();
 
         public List<InGameMapEntitiesData> EntitiesData = new();
+
+        public Dictionary<string, InGameMapRoomData> RoomData = new();
 
         public List<InGameMapIconsData> Icons = new();
 
@@ -344,6 +346,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 chapterIndex = chapter;
             }
             MapData = AreaData.Areas[area.ID - (area.ChapterIndex == -1 ? 0 : area.ChapterIndex) + chapterIndex].Mode[(int)area.Mode].MapData;
+            GetInGameMapRooms();
             InGameMapControllerData = null;
             GetInGameMapController();
             if (chapter == -1)
@@ -494,6 +497,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             chapterIndex = chapter;
             currentRoom = room;
             MapData = AreaData.Areas[area.ID - (area.ChapterIndex == -1 ? 0 : area.ChapterIndex) + chapter].Mode[(int)area.Mode].MapData;
+            RoomData.Clear();
             UnexploredRooms.Clear();
             InGameMapControllerData = null;
             RoomControllerData.Clear();
@@ -505,6 +509,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             OldTilesControllerData.Clear();
             EntitiesData.Clear();
             SubAreaControllerData.Clear();
+            GetInGameMapRooms();
             GetInGameMapController();
             GetRoomControllers();
             GetRoomAdjustControllers();
@@ -559,6 +564,14 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
             }
             return Vector2.Zero;
+        }
+
+        private void GetInGameMapRooms()
+        {
+            foreach (LevelData level in MapData.Levels)
+            {
+                RoomData.Add(level.Name, new InGameMapRoomData(GetRoomPosition(level.Name), GetRoomSize(level.Name)));
+            }
         }
 
         private void GetInGameMapController()
@@ -871,23 +884,23 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             AdjustX = GetAdjustedPosition(room.Room).X;
                             AdjustY = GetAdjustedPosition(room.Room).Y;
                         }
-                        if (GetRoomPosition(room.Room).X + AdjustX + MostLeftTileX < MostLeftRoomX)
+                        if (RoomData[room.Room].Position.X + AdjustX + MostLeftTileX < MostLeftRoomX)
                         {
-                            MostLeftRoomX = GetRoomPosition(room.Room).X + AdjustX + MostLeftTileX;
+                            MostLeftRoomX = RoomData[room.Room].Position.X + AdjustX + MostLeftTileX;
                             MostLeftRoom = room.Room;
                         }
-                        if (GetRoomPosition(room.Room).Y + AdjustY + MostTopTileY < MostTopRoomY)
+                        if (RoomData[room.Room].Position.Y + AdjustY + MostTopTileY < MostTopRoomY)
                         {
-                            MostTopRoomY = GetRoomPosition(room.Room).Y + AdjustY + MostTopTileY;
+                            MostTopRoomY = RoomData[room.Room].Position.Y + AdjustY + MostTopTileY;
                             MostTopRoom = room.Room;
                         }
-                        if (GetRoomPosition(room.Room).X + AdjustX + MostRightTileX > MostRightRoomX)
+                        if (RoomData[room.Room].Position.X + AdjustX + MostRightTileX > MostRightRoomX)
                         {
-                            MostRightRoomX = GetRoomPosition(room.Room).X + AdjustX + MostRightTileX;
+                            MostRightRoomX = RoomData[room.Room].Position.X + AdjustX + MostRightTileX;
                         }
-                        if (GetRoomPosition(room.Room).Y + AdjustY + MostBottomTileY > MostBottomRoomY)
+                        if (RoomData[room.Room].Position.Y + AdjustY + MostBottomTileY > MostBottomRoomY)
                         {
-                            MostBottomRoomY = GetRoomPosition(room.Room).Y + AdjustY + MostBottomTileY;
+                            MostBottomRoomY = RoomData[room.Room].Position.Y + AdjustY + MostBottomTileY;
                         }
                     }
                     else
@@ -897,25 +910,25 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             AdjustX = GetAdjustedPosition(room.Room).X;
                             AdjustY = GetAdjustedPosition(room.Room).Y;
                         }
-                        if (GetRoomPosition(room.Room).X + AdjustX < MostLeftRoomX)
+                        if (RoomData[room.Room].Position.X + AdjustX < MostLeftRoomX)
                         {
-                            MostLeftRoomX = GetRoomPosition(room.Room).X + AdjustX;
+                            MostLeftRoomX = RoomData[room.Room].Position.X + AdjustX;
                             MostLeftRoom = room.Room;
                         }
-                        if (GetRoomPosition(room.Room).Y + AdjustY < MostTopRoomY)
+                        if (RoomData[room.Room].Position.Y + AdjustY < MostTopRoomY)
                         {
-                            MostTopRoomY = GetRoomPosition(room.Room).Y + AdjustY;
+                            MostTopRoomY = RoomData[room.Room].Position.Y + AdjustY;
                             MostTopRoom = room.Room;
                         }
-                        MostRightRoomSize = GetRoomSize(room.Room);
-                        if (GetRoomPosition(room.Room).X + AdjustX + MostRightRoomSize.X * 8 > MostRightRoomX)
+                        MostRightRoomSize = RoomData[room.Room].Size;
+                        if (RoomData[room.Room].Position.X + AdjustX + MostRightRoomSize.X * 8 > MostRightRoomX)
                         {
-                            MostRightRoomX = GetRoomPosition(room.Room).X + AdjustX + MostRightRoomSize.X * 8;
+                            MostRightRoomX = RoomData[room.Room].Position.X + AdjustX + MostRightRoomSize.X * 8;
                         }
-                        MostBottomRoomSize = GetRoomSize(room.Room);
-                        if (GetRoomPosition(room.Room).Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8 > MostBottomRoomY)
+                        MostBottomRoomSize = RoomData[room.Room].Size;
+                        if (RoomData[room.Room].Position.Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8 > MostBottomRoomY)
                         {
-                            MostBottomRoomY = GetRoomPosition(room.Room).Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8;
+                            MostBottomRoomY = RoomData[room.Room].Position.Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8;
                         }
                     }
                 }
@@ -934,7 +947,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 foreach (string visitedRoom in XaphanModule.ModSaveData.VisitedRooms)
                 {
                     str = visitedRoom.Split('/');
-                    if (str[2] == "Ch" + chapterIndex)
+                    if (visitedRoom.Contains(Prefix) && str[2] == "Ch" + chapterIndex)
                     {
                         float AdjustX = 0;
                         float AdjustY = 0;
@@ -976,23 +989,23 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 AdjustX = GetAdjustedPosition(str[3]).X;
                                 AdjustY = GetAdjustedPosition(str[3]).Y;
                             }
-                            if (GetRoomPosition(str[3]).X + AdjustX + MostLeftTileX < MostLeftRoomX)
+                            if (RoomData[str[3]].Position.X + AdjustX + MostLeftTileX < MostLeftRoomX)
                             {
-                                MostLeftRoomX = GetRoomPosition(str[3]).X + AdjustX + MostLeftTileX;
+                                MostLeftRoomX = RoomData[str[3]].Position.X + AdjustX + MostLeftTileX;
                                 MostLeftRoom = str[3];
                             }
-                            if (GetRoomPosition(str[3]).Y + AdjustY + MostTopTileY < MostTopRoomY)
+                            if (RoomData[str[3]].Position.Y + AdjustY + MostTopTileY < MostTopRoomY)
                             {
-                                MostTopRoomY = GetRoomPosition(str[3]).Y + AdjustY + MostTopTileY;
+                                MostTopRoomY = RoomData[str[3]].Position.Y + AdjustY + MostTopTileY;
                                 MostTopRoom = str[3];
                             }
-                            if (GetRoomPosition(str[3]).X + AdjustX + MostRightTileX > MostRightRoomX)
+                            if (RoomData[str[3]].Position.X + AdjustX + MostRightTileX > MostRightRoomX)
                             {
-                                MostRightRoomX = GetRoomPosition(str[3]).X + AdjustX + MostRightTileX;
+                                MostRightRoomX = RoomData[str[3]].Position.X + AdjustX + MostRightTileX;
                             }
-                            if (GetRoomPosition(str[3]).Y + AdjustY + MostBottomTileY > MostBottomRoomY)
+                            if (RoomData[str[3]].Position.Y + AdjustY + MostBottomTileY > MostBottomRoomY)
                             {
-                                MostBottomRoomY = GetRoomPosition(str[3]).Y + AdjustY + MostBottomTileY;
+                                MostBottomRoomY = RoomData[str[3]].Position.Y + AdjustY + MostBottomTileY;
                             }
                         }
                         else
@@ -1002,25 +1015,25 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 AdjustX = GetAdjustedPosition(str[3]).X;
                                 AdjustY = GetAdjustedPosition(str[3]).Y;
                             }
-                            if (GetRoomPosition(str[3]).X + AdjustX < MostLeftRoomX)
+                            if (RoomData[str[3]].Position.X + AdjustX < MostLeftRoomX)
                             {
-                                MostLeftRoomX = GetRoomPosition(str[3]).X + AdjustX;
+                                MostLeftRoomX = RoomData[str[3]].Position.X + AdjustX;
                                 MostLeftRoom = str[3];
                             }
-                            if (GetRoomPosition(str[3]).Y + AdjustY < MostTopRoomY)
+                            if (RoomData[str[3]].Position.Y + AdjustY < MostTopRoomY)
                             {
-                                MostTopRoomY = GetRoomPosition(str[3]).Y + AdjustY;
+                                MostTopRoomY = RoomData[str[3]].Position.Y + AdjustY;
                                 MostTopRoom = str[3];
                             }
-                            MostRightRoomSize = GetRoomSize(str[3]);
-                            if (GetRoomPosition(str[3]).X + AdjustX + MostRightRoomSize.X * 8 > MostRightRoomX)
+                            MostRightRoomSize = RoomData[str[3]].Size;
+                            if (RoomData[str[3]].Position.X + AdjustX + MostRightRoomSize.X * 8 > MostRightRoomX)
                             {
-                                MostRightRoomX = GetRoomPosition(str[3]).X + AdjustX + MostRightRoomSize.X * 8;
+                                MostRightRoomX = RoomData[str[3]].Position.X + AdjustX + MostRightRoomSize.X * 8;
                             }
-                            MostBottomRoomSize = GetRoomSize(str[3]);
-                            if (GetRoomPosition(str[3]).Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8 > MostBottomRoomY)
+                            MostBottomRoomSize = RoomData[str[3]].Size;
+                            if (RoomData[str[3]].Position.Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8 > MostBottomRoomY)
                             {
-                                MostBottomRoomY = GetRoomPosition(str[3]).Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8;
+                                MostBottomRoomY = RoomData[str[3]].Position.Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8;
                             }
                         }
                     }
@@ -1096,23 +1109,23 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                         AdjustX = GetAdjustedPosition(str[1]).X;
                                         AdjustY = GetAdjustedPosition(str[1]).Y;
                                     }
-                                    if (GetRoomPosition(str[1]).X + AdjustX + MostLeftTileX < MostLeftRoomX)
+                                    if (RoomData[str[1]].Position.X + AdjustX + MostLeftTileX < MostLeftRoomX)
                                     {
-                                        MostLeftRoomX = GetRoomPosition(str[1]).X + AdjustX + MostLeftTileX;
+                                        MostLeftRoomX = RoomData[str[1]].Position.X + AdjustX + MostLeftTileX;
                                         MostLeftRoom = str[1];
                                     }
-                                    if (GetRoomPosition(str[1]).Y + AdjustY + MostTopTileY < MostTopRoomY)
+                                    if (RoomData[str[1]].Position.Y + AdjustY + MostTopTileY < MostTopRoomY)
                                     {
-                                        MostTopRoomY = GetRoomPosition(str[1]).Y + AdjustY + MostTopTileY;
+                                        MostTopRoomY = RoomData[str[1]].Position.Y + AdjustY + MostTopTileY;
                                         MostTopRoom = str[1];
                                     }
-                                    if (GetRoomPosition(str[1]).X + AdjustX + MostRightTileX > MostRightRoomX)
+                                    if (RoomData[str[1]].Position.X + AdjustX + MostRightTileX > MostRightRoomX)
                                     {
-                                        MostRightRoomX = GetRoomPosition(str[1]).X + AdjustX + MostRightTileX;
+                                        MostRightRoomX = RoomData[str[1]].Position.X + AdjustX + MostRightTileX;
                                     }
-                                    if (GetRoomPosition(str[1]).Y + AdjustY + MostBottomTileY > MostBottomRoomY)
+                                    if (RoomData[str[1]].Position.Y + AdjustY + MostBottomTileY > MostBottomRoomY)
                                     {
-                                        MostBottomRoomY = GetRoomPosition(str[1]).Y + AdjustY + MostBottomTileY;
+                                        MostBottomRoomY = RoomData[str[1]].Position.Y + AdjustY + MostBottomTileY;
                                     }
                                 }
                                 else
@@ -1122,25 +1135,25 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                         AdjustX = GetAdjustedPosition(str[1]).X;
                                         AdjustY = GetAdjustedPosition(str[1]).Y;
                                     }
-                                    if (GetRoomPosition(str[1]).X + AdjustX < MostLeftRoomX)
+                                    if (RoomData[str[1]].Position.X + AdjustX < MostLeftRoomX)
                                     {
-                                        MostLeftRoomX = GetRoomPosition(str[1]).X + AdjustX;
+                                        MostLeftRoomX = RoomData[str[1]].Position.X + AdjustX;
                                         MostLeftRoom = str[1];
                                     }
-                                    if (GetRoomPosition(str[1]).Y + AdjustY < MostTopRoomY)
+                                    if (RoomData[str[1]].Position.Y + AdjustY < MostTopRoomY)
                                     {
-                                        MostTopRoomY = GetRoomPosition(str[1]).Y + AdjustY;
+                                        MostTopRoomY = RoomData[str[1]].Position.Y + AdjustY;
                                         MostTopRoom = str[1];
                                     }
-                                    MostRightRoomSize = GetRoomSize(str[1]);
-                                    if (GetRoomPosition(str[1]).X + AdjustX + MostRightRoomSize.X * 8 > MostRightRoomX)
+                                    MostRightRoomSize = RoomData[str[1]].Size;
+                                    if (RoomData[str[1]].Position.X + AdjustX + MostRightRoomSize.X * 8 > MostRightRoomX)
                                     {
-                                        MostRightRoomX = GetRoomPosition(str[1]).X + AdjustX + MostRightRoomSize.X * 8;
+                                        MostRightRoomX = RoomData[str[1]].Position.X + AdjustX + MostRightRoomSize.X * 8;
                                     }
-                                    MostBottomRoomSize = GetRoomSize(str[1]);
-                                    if (GetRoomPosition(str[1]).Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8 > MostBottomRoomY)
+                                    MostBottomRoomSize = RoomData[str[1]].Size;
+                                    if (RoomData[str[1]].Position.Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8 > MostBottomRoomY)
                                     {
-                                        MostBottomRoomY = GetRoomPosition(str[1]).Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8;
+                                        MostBottomRoomY = RoomData[str[1]].Position.Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8;
                                     }
                                 }
                             }
@@ -1229,23 +1242,23 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                     AdjustX = GetAdjustedPosition(str[1]).X;
                                     AdjustY = GetAdjustedPosition(str[1]).Y;
                                 }
-                                if (GetRoomPosition(str[1]).X + AdjustX + MostLeftTileX < MostLeftRoomX)
+                                if (RoomData[str[1]].Position.X + AdjustX + MostLeftTileX < MostLeftRoomX)
                                 {
-                                    MostLeftRoomX = GetRoomPosition(str[1]).X + AdjustX + MostLeftTileX;
+                                    MostLeftRoomX = RoomData[str[1]].Position.X + AdjustX + MostLeftTileX;
                                     MostLeftRoom = str[1];
                                 }
-                                if (GetRoomPosition(str[1]).Y + AdjustY + MostTopTileY < MostTopRoomY)
+                                if (RoomData[str[1]].Position.Y + AdjustY + MostTopTileY < MostTopRoomY)
                                 {
-                                    MostTopRoomY = GetRoomPosition(str[1]).Y + AdjustY + MostTopTileY;
+                                    MostTopRoomY = RoomData[str[1]].Position.Y + AdjustY + MostTopTileY;
                                     MostTopRoom = str[1];
                                 }
-                                if (GetRoomPosition(str[1]).X + AdjustX + MostRightTileX > MostRightRoomX)
+                                if (RoomData[str[1]].Position.X + AdjustX + MostRightTileX > MostRightRoomX)
                                 {
-                                    MostRightRoomX = GetRoomPosition(str[1]).X + AdjustX + MostRightTileX;
+                                    MostRightRoomX = RoomData[str[1]].Position.X + AdjustX + MostRightTileX;
                                 }
-                                if (GetRoomPosition(str[1]).Y + AdjustY + MostBottomTileY > MostBottomRoomY)
+                                if (RoomData[str[1]].Position.Y + AdjustY + MostBottomTileY > MostBottomRoomY)
                                 {
-                                    MostBottomRoomY = GetRoomPosition(str[1]).Y + AdjustY + MostBottomTileY;
+                                    MostBottomRoomY = RoomData[str[1]].Position.Y + AdjustY + MostBottomTileY;
                                 }
                             }
                             else
@@ -1255,25 +1268,25 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                     AdjustX = GetAdjustedPosition(str[1]).X;
                                     AdjustY = GetAdjustedPosition(str[1]).Y;
                                 }
-                                if (GetRoomPosition(str[1]).X + AdjustX < MostLeftRoomX)
+                                if (RoomData[str[1]].Position.X + AdjustX < MostLeftRoomX)
                                 {
-                                    MostLeftRoomX = GetRoomPosition(str[1]).X + AdjustX;
+                                    MostLeftRoomX = RoomData[str[1]].Position.X + AdjustX;
                                     MostLeftRoom = str[1];
                                 }
-                                if (GetRoomPosition(str[1]).Y + AdjustY < MostTopRoomY)
+                                if (RoomData[str[1]].Position.Y + AdjustY < MostTopRoomY)
                                 {
-                                    MostTopRoomY = GetRoomPosition(str[1]).Y + AdjustY;
+                                    MostTopRoomY = RoomData[str[1]].Position.Y + AdjustY;
                                     MostTopRoom = str[1];
                                 }
-                                MostRightRoomSize = GetRoomSize(str[1]);
-                                if (GetRoomPosition(str[1]).X + AdjustX + MostRightRoomSize.X * 8 > MostRightRoomX)
+                                MostRightRoomSize = RoomData[str[1]].Size;
+                                if (RoomData[str[1]].Position.X + AdjustX + MostRightRoomSize.X * 8 > MostRightRoomX)
                                 {
-                                    MostRightRoomX = GetRoomPosition(str[1]).X + AdjustX + MostRightRoomSize.X * 8;
+                                    MostRightRoomX = RoomData[str[1]].Position.X + AdjustX + MostRightRoomSize.X * 8;
                                 }
-                                MostBottomRoomSize = GetRoomSize(str[1]);
-                                if (GetRoomPosition(str[1]).Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8 > MostBottomRoomY)
+                                MostBottomRoomSize = RoomData[str[1]].Size;
+                                if (RoomData[str[1]].Position.Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8 > MostBottomRoomY)
                                 {
-                                    MostBottomRoomY = GetRoomPosition(str[1]).Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8;
+                                    MostBottomRoomY = RoomData[str[1]].Position.Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8;
                                 }
                             }
                         }
@@ -1312,23 +1325,23 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                     AdjustY = GetAdjustedPosition(hint.Room).Y;
                                 }
 
-                                if (GetRoomPosition(hint.Room).X + AdjustX + hint.TileCordX * ScreenTilesX < MostLeftRoomX)
+                                if (RoomData[hint.Room].Position.X + AdjustX + hint.TileCordX * ScreenTilesX < MostLeftRoomX)
                                 {
-                                    MostLeftRoomX = GetRoomPosition(hint.Room).X + AdjustX + hint.TileCordX * ScreenTilesX;
+                                    MostLeftRoomX = RoomData[hint.Room].Position.X + AdjustX + hint.TileCordX * ScreenTilesX;
                                     MostLeftRoom = hint.Room;
                                 }
-                                if (GetRoomPosition(hint.Room).Y + AdjustY + hint.TileCordY * ScreenTilesY < MostTopRoomY)
+                                if (RoomData[hint.Room].Position.Y + AdjustY + hint.TileCordY * ScreenTilesY < MostTopRoomY)
                                 {
-                                    MostTopRoomY = GetRoomPosition(hint.Room).Y + AdjustY + hint.TileCordY * ScreenTilesY;
+                                    MostTopRoomY = RoomData[hint.Room].Position.Y + AdjustY + hint.TileCordY * ScreenTilesY;
                                     MostTopRoom = hint.Room;
                                 }
-                                if (GetRoomPosition(hint.Room).X + AdjustX + (1 + hint.TileCordX) * ScreenTilesX > MostRightRoomX)
+                                if (RoomData[hint.Room].Position.X + AdjustX + (1 + hint.TileCordX) * ScreenTilesX > MostRightRoomX)
                                 {
-                                    MostRightRoomX = GetRoomPosition(hint.Room).X + AdjustX + (1 + hint.TileCordX) * ScreenTilesX;
+                                    MostRightRoomX = RoomData[hint.Room].Position.X + AdjustX + (1 + hint.TileCordX) * ScreenTilesX;
                                 }
-                                if (GetRoomPosition(hint.Room).Y + AdjustY + (1 + hint.TileCordY) * ScreenTilesY > MostBottomRoomY)
+                                if (RoomData[hint.Room].Position.Y + AdjustY + (1 + hint.TileCordY) * ScreenTilesY > MostBottomRoomY)
                                 {
-                                    MostBottomRoomY = GetRoomPosition(hint.Room).Y + AdjustY + (1 + hint.TileCordY) * ScreenTilesY;
+                                    MostBottomRoomY = RoomData[hint.Room].Position.Y + AdjustY + (1 + hint.TileCordY) * ScreenTilesY;
                                 }
                             }
                         }
@@ -1343,8 +1356,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
             MapWidth = MostRightRoomX - MostLeftRoomX;
             MapHeight = MostBottomRoomY - MostTopRoomY;
-            MapLeft = CalcRoomPosition(GetRoomPosition(MostLeftRoom) + (roomIsAdjusted(MostLeftRoom) ? GetAdjustedPosition(MostLeftRoom) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition).X;
-            MapTop = CalcRoomPosition(GetRoomPosition(MostTopRoom) + (roomIsAdjusted(MostTopRoom) ? GetAdjustedPosition(MostTopRoom) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition).Y;
+            MapLeft = CalcRoomPosition(RoomData[MostLeftRoom].Position + (roomIsAdjusted(MostLeftRoom) ? GetAdjustedPosition(MostLeftRoom) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition).X;
+            MapTop = CalcRoomPosition(RoomData[MostTopRoom].Position + (roomIsAdjusted(MostTopRoom) ? GetAdjustedPosition(MostTopRoom) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition).Y;
         }
 
         public void SetCurrentRoomCoordinates(Vector2 offset)
@@ -1352,7 +1365,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             currentRoomJustify = new Vector2(20, 20);
             float AdjustX = roomIsAdjusted(currentRoom) ? GetAdjustedPosition(currentRoom).X / ScreenTilesX : 0;
             float AdjustY = roomIsAdjusted(currentRoom) ? GetAdjustedPosition(currentRoom).Y / ScreenTilesY : 0;
-            currentRoomPosition = new Vector2((GetRoomPosition(currentRoom).X < 0 ? ((float)Math.Round((GetRoomPosition(currentRoom).X) / ScreenTilesX, 0, MidpointRounding.AwayFromZero) + AdjustX) : ((float)Math.Floor((GetRoomPosition(currentRoom).X) / ScreenTilesX) + AdjustX)) * 40, ((float)Math.Round((GetRoomPosition(currentRoom).Y) / ScreenTilesY, 0, MidpointRounding.AwayFromZero) + AdjustY) * 40) + offset;
+            currentRoomPosition = new Vector2((RoomData[currentRoom].Position.X < 0 ? ((float)Math.Round((RoomData[currentRoom].Position.X) / ScreenTilesX, 0, MidpointRounding.AwayFromZero) + AdjustX) : ((float)Math.Floor((RoomData[currentRoom].Position.X) / ScreenTilesX) + AdjustX)) * 40, ((float)Math.Round((RoomData[currentRoom].Position.Y) / ScreenTilesY, 0, MidpointRounding.AwayFromZero) + AdjustY) * 40) + offset;
         }
 
         public List<int> GetMapShards()
@@ -2498,7 +2511,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         {
                             int oldTileCord = roomControllerData.GetEntranceOffsetField(i);
                             string[] oldEntranceTypes = GetEntrancesType(room);
-                            Vector2 roomSize = ConvertRoomSizeToMapSize(GetRoomSize(room));
+                            Vector2 roomSize = ConvertRoomSizeToMapSize(RoomData[room].Size);
                             if (oldEntranceTypes[i] == "Left")
                             {
                                 entrancePosition[i] = new Vector2(0, oldTileCord);
@@ -2600,6 +2613,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 if (roomAdjustControllerData.Room == room)
                 {
                     adjustedPosition = new Vector2(roomAdjustControllerData.PositionX * ScreenTilesX, roomAdjustControllerData.PositionY * ScreenTilesY);
+                    break;
                 }
             }
             return adjustedPosition;
@@ -2613,6 +2627,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 if (roomAdjustControllerData.Room == room)
                 {
                     adjustedSize = new Vector2(roomAdjustControllerData.SizeX * 40, roomAdjustControllerData.SizeY * 40);
+                    break;
                 }
             }
             return adjustedSize;
@@ -2638,6 +2653,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 if (roomAdjustControllerData.Room == room)
                 {
                     hiddenTiles = roomAdjustControllerData.HiddenTiles;
+                    break;
                 }
             }
             return hiddenTiles;
@@ -2705,6 +2721,33 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         public override void Added(Scene scene)
         {
             base.Added(scene);
+            // Delete visted rooms if they do not exist anymore
+
+            HashSet<string> DeleteRoomsList = new();
+            foreach (string visitedRoom in XaphanModule.ModSaveData.VisitedRooms)
+            {
+                string[] str = visitedRoom.Split('/');
+                if (visitedRoom.Contains(Prefix) && str[2] == "Ch" + chapterIndex)
+                {
+                    bool roomExist = false;
+                    foreach (LevelData levelData in MapData.Levels)
+                    {
+                        if (levelData.Name == str[3])
+                        {
+                            roomExist = true;
+                            break;
+                        }
+                    }
+                    if (!roomExist)
+                    {
+                        DeleteRoomsList.Add(visitedRoom);
+                    }
+                }
+            }
+            foreach (string room in DeleteRoomsList)
+            {
+                XaphanModule.ModSaveData.VisitedRooms.Remove(room);
+            }
             if (!HideIndicator)
             {
                 if (mode == "map" || mode == "worldmap")
@@ -2744,7 +2787,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             MarkerSelectionMode = !MarkerSelectionMode;
             if (markerSelector == null)
             {
-                Vector2 RoomPosition = CalcRoomPosition(GetRoomPosition(currentRoom) + (roomIsAdjusted(currentRoom) ? GetAdjustedPosition(currentRoom) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
+                Vector2 RoomPosition = CalcRoomPosition(RoomData[currentRoom].Position + (roomIsAdjusted(currentRoom) ? GetAdjustedPosition(currentRoom) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
                 level.Add(markerSelector = new MarkerSelector(Vector2.One + RoomPosition, currentRoom, playerPosition, this));
             }
             else
@@ -2823,115 +2866,86 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             if (!NoGrid)
             {
                 Draw.Rect(Grid.X, Grid.Y, Grid.Width, Grid.Height, Color.Black * 0.85f * Opacity);
-                for (int i = 0; i <= Grid.Height / 40 - 1; i++)
+                Image GridImage = new(GFX.Gui["maps/grid"]);
+                for (int i = 0; i <= Grid.Width / 40 - 1; i++)
                 {
-                    for (int j = 0; j <= Grid.Width / 40 * 5 - 1; j++)
+                    for (int j = 0; j <= Grid.Height / 40 - 1; j++)
                     {
-                        Draw.Rect(new Vector2(Grid.X + j * 8, Grid.Y + i * 40), 4, 4, GridColor * 0.5f * Opacity);
-                    }
-                    for (int j = 0; j <= 3; j++)
-                    {
-                        for (int k = 0; k <= Grid.Width / 40 - 1; k++)
-                        {
-                            Draw.Rect(new Vector2(Grid.X + k * 40, Grid.Y + 8 + j * 8 + i * 40), 4, 4, GridColor * 0.5f * Opacity);
-                        }
+                        GridImage.Position = new Vector2(Grid.X + i * 40, Grid.Y + j * 40);
+                        GridImage.Color = GridColor * 0.5f * Opacity;
+                        GridImage.Render();
                     }
                 }
             }
 
             if (Display)
             {
-
                 // Draw content
 
-                // If room is not using a TilesController
-
-                // Unexplored rooms
-
-                if (MapCollected || RevealUnexploredRooms())
+                if (SceneAs<Level>().Session.Area.LevelSet != "Xaphan/0") // Will be deprecated in a future version
                 {
-                    foreach (string unexploredRoom in UnexploredRooms)
+                    // Unexplored rooms (only if the room is not using a TilesController)
+
+                    if (MapCollected || RevealUnexploredRooms())
                     {
-                        string[] baseStr = unexploredRoom.Split(':');
-                        string[] str = baseStr[0].Split('/');
-                        if (str[0] == "Ch" + chapterIndex)
+                        foreach (string unexploredRoom in UnexploredRooms)
                         {
-                            if (!roomUseTilesController(str[1]))
+                            string[] baseStr = unexploredRoom.Split(':');
+                            string[] str = baseStr[0].Split('/');
+                            if (str[0] == "Ch" + chapterIndex)
                             {
-                                Vector2 unexploredRoomPosition = CalcRoomPosition(GetRoomPosition(str[1]) + (roomIsAdjusted(str[1]) ? GetAdjustedPosition(str[1]) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
-                                Vector2 unexploredRoomSize = ConvertRoomSizeToMapSize(GetRoomSize(str[1]) + (roomIsAdjusted(str[1]) ? GetAdjustedSize(str[1]) : Vector2.Zero));
-                                Draw.Rect(unexploredRoomPosition + Vector2.One, unexploredRoomSize.X, unexploredRoomSize.Y, UnexploredRoomColor * Opacity);
-                                Draw.HollowRect(unexploredRoomPosition + Vector2.One, unexploredRoomSize.X, unexploredRoomSize.Y, RoomBorderColor * Opacity);
-                                Draw.HollowRect(unexploredRoomPosition + new Vector2(2, 2), unexploredRoomSize.X - 2, unexploredRoomSize.Y - 2, RoomBorderColor * Opacity);
-                                Draw.HollowRect(unexploredRoomPosition + new Vector2(3, 3), unexploredRoomSize.X - 4, unexploredRoomSize.Y - 4, RoomBorderColor * Opacity);
-                                Draw.HollowRect(unexploredRoomPosition + new Vector2(4, 4), unexploredRoomSize.X - 6, unexploredRoomSize.Y - 6, RoomBorderColor * Opacity);
+                                if (!roomUseTilesController(str[1]))
+                                {
+                                    Vector2 unexploredRoomPosition = CalcRoomPosition(RoomData[str[1]].Position + (roomIsAdjusted(str[1]) ? GetAdjustedPosition(str[1]) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
+                                    Vector2 unexploredRoomSize = ConvertRoomSizeToMapSize(RoomData[str[1]].Size + (roomIsAdjusted(str[1]) ? GetAdjustedSize(str[1]) : Vector2.Zero));
+                                    Draw.Rect(unexploredRoomPosition + Vector2.One, unexploredRoomSize.X, unexploredRoomSize.Y, UnexploredRoomColor * Opacity);
+                                    Draw.HollowRect(unexploredRoomPosition + Vector2.One, unexploredRoomSize.X, unexploredRoomSize.Y, RoomBorderColor * Opacity);
+                                    Draw.HollowRect(unexploredRoomPosition + new Vector2(2, 2), unexploredRoomSize.X - 2, unexploredRoomSize.Y - 2, RoomBorderColor * Opacity);
+                                    Draw.HollowRect(unexploredRoomPosition + new Vector2(3, 3), unexploredRoomSize.X - 4, unexploredRoomSize.Y - 4, RoomBorderColor * Opacity);
+                                    Draw.HollowRect(unexploredRoomPosition + new Vector2(4, 4), unexploredRoomSize.X - 6, unexploredRoomSize.Y - 6, RoomBorderColor * Opacity);
+                                }
                             }
                         }
                     }
-                }
 
-                // Delete visted rooms if they do not exist anymore
+                    // Visited rooms (only if the room is not using a TilesController)
 
-                HashSet<string> DeleteRoomsList = new();
-                foreach (string visitedRoom in XaphanModule.ModSaveData.VisitedRooms)
-                {
-                    string[] str = visitedRoom.Split('/');
-                    if (visitedRoom.Contains(Prefix) && str[2] == "Ch" + chapterIndex)
+                    foreach (string visitedRoom in XaphanModule.ModSaveData.VisitedRooms)
                     {
-                        bool roomExist = false;
-                        foreach (LevelData levelData in MapData.Levels)
+                        if (visitedRoom.Contains(Prefix))
                         {
-                            if (levelData.Name == str[3])
+                            string[] str = visitedRoom.Split('/');
+                            if (str[2] == "Ch" + chapterIndex)
                             {
-                                roomExist = true;
-                                break;
+                                if (!roomUseTilesController(str[3]))
+                                {
+                                    Vector2 visitedRoomPosition = CalcRoomPosition(RoomData[str[3]].Position + (roomIsAdjusted(str[3]) ? GetAdjustedPosition(str[3]) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
+                                    Vector2 visitedRoomSize = ConvertRoomSizeToMapSize(RoomData[str[3]].Size + (roomIsAdjusted(str[3]) ? GetAdjustedSize(str[3]) : Vector2.Zero));
+                                    Draw.Rect(visitedRoomPosition + Vector2.One, visitedRoomSize.X, visitedRoomSize.Y, HeatedRooms.Contains(str[3]) ? HeatedRoomColor * Opacity : (roomIsSecret(str[3]) ? SecretRoomColor * Opacity : ExploredRoomColor * Opacity));
+                                    Draw.HollowRect(visitedRoomPosition + Vector2.One, visitedRoomSize.X, visitedRoomSize.Y, RoomBorderColor * Opacity);
+                                    Draw.HollowRect(visitedRoomPosition + new Vector2(2, 2), visitedRoomSize.X - 2, visitedRoomSize.Y - 2, RoomBorderColor * Opacity);
+                                    Draw.HollowRect(visitedRoomPosition + new Vector2(3, 3), visitedRoomSize.X - 4, visitedRoomSize.Y - 4, RoomBorderColor * Opacity);
+                                    Draw.HollowRect(visitedRoomPosition + new Vector2(4, 4), visitedRoomSize.X - 6, visitedRoomSize.Y - 6, RoomBorderColor * Opacity);
+                                }
                             }
                         }
-                        if (!roomExist)
-                        {
-                            DeleteRoomsList.Add(visitedRoom);
-                        }
                     }
-                }
-                foreach (string room in DeleteRoomsList)
-                {
-                    XaphanModule.ModSaveData.VisitedRooms.Remove(room);
-                }
 
-                // Visited rooms
+                    // Entrances (only if the room is not using a TilesController)
 
-                foreach (string visitedRoom in XaphanModule.ModSaveData.VisitedRooms)
-                {
-                    string[] str = visitedRoom.Split('/');
-                    if (visitedRoom.Contains(Prefix) && str[2] == "Ch" + chapterIndex)
+                    foreach (InGameMapEntrancesData entrance in Entrances)
                     {
-                        if (!roomUseTilesController(str[3]))
+                        if (!roomUseTilesController(entrance.Room))
                         {
-                            Vector2 visitedRoomPosition = CalcRoomPosition(GetRoomPosition(str[3]) + (roomIsAdjusted(str[3]) ? GetAdjustedPosition(str[3]) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
-                            Vector2 visitedRoomSize = ConvertRoomSizeToMapSize(GetRoomSize(str[3]) + (roomIsAdjusted(str[3]) ? GetAdjustedSize(str[3]) : Vector2.Zero));
-                            Draw.Rect(visitedRoomPosition + Vector2.One, visitedRoomSize.X, visitedRoomSize.Y, HeatedRooms.Contains(str[3]) ? HeatedRoomColor * Opacity : (roomIsSecret(str[3]) ? SecretRoomColor * Opacity : ExploredRoomColor * Opacity));
-                            Draw.HollowRect(visitedRoomPosition + Vector2.One, visitedRoomSize.X, visitedRoomSize.Y, RoomBorderColor * Opacity);
-                            Draw.HollowRect(visitedRoomPosition + new Vector2(2, 2), visitedRoomSize.X - 2, visitedRoomSize.Y - 2, RoomBorderColor * Opacity);
-                            Draw.HollowRect(visitedRoomPosition + new Vector2(3, 3), visitedRoomSize.X - 4, visitedRoomSize.Y - 4, RoomBorderColor * Opacity);
-                            Draw.HollowRect(visitedRoomPosition + new Vector2(4, 4), visitedRoomSize.X - 6, visitedRoomSize.Y - 6, RoomBorderColor * Opacity);
+                            Vector2 RoomPosition = CalcRoomPosition(RoomData[entrance.Room].Position + (roomIsAdjusted(entrance.Room) ? GetAdjustedPosition(entrance.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
+                            if (isNotVisibleOnScreen(RoomPosition, entrance.Position))
+                            {
+                                continue;
+                            }
+                            Draw.Rect(RoomPosition + entrance.Position, entrance.Width, entrance.Height, entrance.Color * Opacity);
                         }
                     }
-                }
-
-                // Entrances (only if the room is not using a TilesController)
-
-                foreach (InGameMapEntrancesData entrance in Entrances)
-                {
-                    if (!roomUseTilesController(entrance.Room))
-                    {
-                        Vector2 RoomPosition = CalcRoomPosition(GetRoomPosition(entrance.Room) + (roomIsAdjusted(entrance.Room) ? GetAdjustedPosition(entrance.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
-                        if (isNotVisibleOnScreen(RoomPosition, entrance.Position))
-                        {
-                            continue;
-                        }
-                        Draw.Rect(RoomPosition + entrance.Position, entrance.Width, entrance.Height, entrance.Color * Opacity);
-                    }
-                }
+                }               
 
                 // Tiles (only if the room is using a TilesController)
 
@@ -2939,7 +2953,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     if (roomUseTilesController(tile.Room))
                     {
-                        Vector2 RoomPosition = CalcRoomPosition(GetRoomPosition(tile.Room) + (roomIsAdjusted(tile.Room) ? GetAdjustedPosition(tile.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
+                        Vector2 RoomPosition = CalcRoomPosition(RoomData[tile.Room].Position + (roomIsAdjusted(tile.Room) ? GetAdjustedPosition(tile.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
                         if (isNotVisibleOnScreen(RoomPosition, tile.Position))
                         {
                             continue;
@@ -2976,7 +2990,11 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
                 foreach (InGameMapIconsData icon in Icons)
                 {
-                    Vector2 RoomPosition = CalcRoomPosition(GetRoomPosition(icon.Room) + (roomIsAdjusted(icon.Room) ? GetAdjustedPosition(icon.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
+                    if (chapterIndex != SceneAs<Level>().Session.Area.ChapterIndex && (icon.Type.Contains("player") || icon.Type.Contains("samus")))
+                    {
+                        continue;
+                    }
+                    Vector2 RoomPosition = CalcRoomPosition(RoomData[icon.Room].Position + (roomIsAdjusted(icon.Room) ? GetAdjustedPosition(icon.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
                     Vector2 IconPosition = icon.Position;
                     if (isNotVisibleOnScreen(RoomPosition, IconPosition))
                     {
@@ -3031,7 +3049,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     {
                         if (marker.ChapterIndex == chapterIndex)
                         {
-                            Vector2 RoomPosition = CalcRoomPosition(GetRoomPosition(marker.Room) + (roomIsAdjusted(marker.Room) ? GetAdjustedPosition(marker.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
+                            Vector2 RoomPosition = CalcRoomPosition(RoomData[marker.Room].Position + (roomIsAdjusted(marker.Room) ? GetAdjustedPosition(marker.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
                             Vector2 IconPosition = marker.Position;
                             if (isNotVisibleOnScreen(RoomPosition, IconPosition))
                             {
@@ -3076,7 +3094,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         List<int> mapShards = GetUnlockedMapShards();
                         if (XaphanModule.ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + image.Room) || (ExtraUnexploredRooms.Contains("Ch" + chapterIndex + "/" + image.Room)) || (InGameMapControllerData.RevealUnexploredRooms && !roomIsSecret(image.Room)) || ForceRevealUnexploredRooms)
                         {
-                            Vector2 RoomPosition = CalcRoomPosition(GetRoomPosition(image.Room) + (roomIsAdjusted(image.Room) ? GetAdjustedPosition(image.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
+                            Vector2 RoomPosition = CalcRoomPosition(RoomData[image.Room].Position + (roomIsAdjusted(image.Room) ? GetAdjustedPosition(image.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
                             Image Image = new(GFX.Gui["maps/" + Prefix + "/areas/" + image.ImagePath + (Settings.Instance.Language == "french" ? "-" + Settings.Instance.Language : "")]);
                             Image.Color = Calc.HexToColor(string.IsNullOrEmpty(image.Color) ? "FFFFFF" : image.Color);
                             Image.Position = RoomPosition;
@@ -3086,7 +3104,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         {
                             if (!XaphanModule.ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + image.Room) && (((UnexploredRooms.Contains("Ch" + chapterIndex + "/" + image.Room + ":" + mapShard) && MapCollected))))
                             {
-                                Vector2 RoomPosition = CalcRoomPosition(GetRoomPosition(image.Room) + (roomIsAdjusted(image.Room) ? GetAdjustedPosition(image.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
+                                Vector2 RoomPosition = CalcRoomPosition(RoomData[image.Room].Position + (roomIsAdjusted(image.Room) ? GetAdjustedPosition(image.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
                                 Image Image = new(GFX.Gui["maps/" + Prefix + "/areas/" + image.ImagePath + (Settings.Instance.Language == "french" ? "-" + Settings.Instance.Language : "")]);
                                 Image.Color = Calc.HexToColor(string.IsNullOrEmpty(image.Color) ? "FFFFFF" : image.Color);
                                 Image.Position = RoomPosition;
@@ -3118,7 +3136,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                                 }
                                 if (AllFlagsTrue && (!level.Session.GetFlag(hint.HideFlag) && !level.Session.GetFlag("Ch" + chapterIndex + "_" + hint.HideFlag)))
                                 {
-                                    Vector2 RoomPosition = CalcRoomPosition(GetRoomPosition(hint.Room) + (roomIsAdjusted(hint.Room) ? GetAdjustedPosition(hint.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
+                                    Vector2 RoomPosition = CalcRoomPosition(RoomData[hint.Room].Position + (roomIsAdjusted(hint.Room) ? GetAdjustedPosition(hint.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
                                     if (hint.Type == "Arrow" && mode != "minimap" && (mode == "worldmap" ? !hint.HideOnWorldMap : true))
                                     {
                                         if (isNotVisibleOnScreen(RoomPosition, hint.Sprite.Position))
