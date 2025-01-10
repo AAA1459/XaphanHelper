@@ -3,6 +3,7 @@ Version 1.0.68 :
 - Improved performances of the In-Game map
 - Fixed a performance issue occuring after the Theo Cutscene in The Secret Of Celeste Mountain
 - Fixed a bug preventing the In-Game map to work properly in campaigns not using a Merge Chapter Controller
+- Fixed a bug displaying an unintended line of text when collecting the Varia Jacket ability
 
 Version 1.0.67 :
 - Changed the default display for the In-Game map progress display from 'off' to 'area map'

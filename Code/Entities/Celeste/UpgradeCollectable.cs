@@ -265,7 +265,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     controlA = XaphanModule.ModSettings.UseBagItemSlot;
                     inputActionA = "XaphanHelper_Press";
                     break;
-                case "variaJacket":
+                case "VariaJacket":
                     poemTextC = null;
                     break;
                 case "GravityJacket":
