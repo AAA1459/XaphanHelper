@@ -1,6 +1,7 @@
 Version 1.0.68 :
 - Improved performances of the In-Game map Progress Display
 - Improved performances of the In-Game map
+- The title screen in The Secret Of Celeste Mountain should no longer be triggered when entering the prologue after a crash, potentially causing a softlock
 - Fixed a performance issue occuring after the Theo Cutscene in The Secret Of Celeste Mountain
 - Fixed a bug preventing the In-Game map to work properly in campaigns not using a Merge Chapter Controller
 - Fixed a bug displaying an unintended line of text when collecting the Varia Jacket ability
