@@ -3122,6 +3122,7 @@ namespace Celeste.Mod.XaphanHelper
                     level.Session.SetFlag("Boss_Defeated", true);
                     level.Session.SetFlag("boss_Normal_Mode", false);
                     level.Session.SetFlag("boss_Challenge_Mode", false);
+                    level.Session.SetFlag("XaphanHelper_Prevent_Drone", false);
                     level.Paused = false;
                     Engine.FreezeTimer = 0.15f;
                 }));
