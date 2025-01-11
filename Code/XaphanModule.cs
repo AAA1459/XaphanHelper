@@ -3550,16 +3550,16 @@ namespace Celeste.Mod.XaphanHelper
                     }
                 }
 
-                // Set Flag to keep screen Black before Title Screen
-
-                self.Session.SetFlag("SoCM_startedGame", startedGame);
-
                 // Skip Title Screen when going back to prologue if player entered the a level without triggering the Title Screen first (ex: After a crash)
 
                 if (self.Session.Level != "A-00" && self.Session.Level != "Intro")
                 {
-                    SkipSoCMIntro = true;
+                    SkipSoCMIntro = startedGame = true;
                 }
+
+                // Set Flag to keep screen Black before Title Screen
+
+                self.Session.SetFlag("SoCM_startedGame", startedGame);
             }
 
             orig(self);
