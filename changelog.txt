@@ -7,6 +7,7 @@ Version 1.0.68 :
 - Fixed a bug displaying an unintended line of text when collecting the Varia Jacket ability
 - Fixed a bug allowing the player to grab a Bomb or Mega Bomb during its explosion animation
 - Fixed a bug preventing the player hairs to be facing the correct direction when sliding on a slope and holding the direction opposite to the slope
+- Fixed a bug preventing 3 achievements in The Secret of Celeste Mountain to be awarded correctly
 
 Version 1.0.67 :
 - Changed the default display for the In-Game map progress display from 'off' to 'area map'
