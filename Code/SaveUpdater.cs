@@ -460,6 +460,32 @@ namespace Celeste.Mod.XaphanHelper
                         }
                     }
                 }
+
+                //... Update save from 3.0.1 to 3.0.2
+                if (XaphanModule.SoCMVersion >= new Version(3, 0, 2) && XaphanModule.ModSaveData.SoCMVer != "3.0.2")
+                {
+                    if (XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch4_R-10_Gate_2"))
+                    {
+                        XaphanModule.ModSaveData.SavedFlags.Remove("Xaphan/0_Ch4_R-10_Gate_2");
+                    }
+                    if (XaphanModule.ModSaveData.SavedSesionFlags.ContainsKey("Xaphan/0"))
+                    {
+                        if (XaphanModule.ModSaveData.SavedSesionFlags["Xaphan/0"].Contains("R-10_Gate_2"))
+                        {
+                            string[] flags = XaphanModule.ModSaveData.SavedSesionFlags["Xaphan/0"].Split(',');
+                            string newFlags = null;
+                            for (int i = 0; i < flags.Length; i++)
+                            {
+                                if (!flags[i].Contains("R-10_Gate_2"))
+                                {
+                                    newFlags += (i == 0 ? "" : ",") + flags[i];
+                                }
+                            }
+                            XaphanModule.ModSaveData.SavedSesionFlags["Xaphan/0"] = newFlags;
+                        }
+                    }
+                }
+                
             }
             XaphanModule.ModSaveData.SoCMVer = XaphanModule.SoCMVersion.Major + "." + XaphanModule.SoCMVersion.Minor + "." + XaphanModule.SoCMVersion.Build;
         }
