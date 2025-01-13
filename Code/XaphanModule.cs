@@ -2116,7 +2116,7 @@ namespace Celeste.Mod.XaphanHelper
 
                 // Add current room to the in-game map
 
-                if (!ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + room) && (!string.IsNullOrEmpty(ModSaveData.DestinationRoom) ? level.Session.Level == ModSaveData.DestinationRoom : true) && ModSaveData.LoadedPlayer)
+                if (!ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + room) && (!string.IsNullOrEmpty(ModSaveData.DestinationRoom) ? level.Session.Level == ModSaveData.DestinationRoom : true) && (useMergeChaptersController ? ModSaveData.LoadedPlayer : true))
                 {
                     ModSaveData.VisitedRooms.Add(Prefix + "/Ch" + chapterIndex + "/" + room);
                 }
@@ -2246,7 +2246,7 @@ namespace Celeste.Mod.XaphanHelper
 
             // Room Music stuff
 
-            if (string.IsNullOrEmpty(level.Session.LevelData.Music) && string.IsNullOrEmpty(ModSaveData.DestinationRoom) && ModSaveData.LoadedPlayer)
+            if (string.IsNullOrEmpty(level.Session.LevelData.Music) && string.IsNullOrEmpty(ModSaveData.DestinationRoom) && (useMergeChaptersController ? ModSaveData.LoadedPlayer : true))
             {
                 bool playerHasGolden = useMergeChaptersController && PlayerHasGolden;
                 foreach (RoomMusicControllerData roomMusicControllerData in RoomMusicControllerData)
@@ -3122,6 +3122,7 @@ namespace Celeste.Mod.XaphanHelper
                     level.Session.SetFlag("Boss_Defeated", true);
                     level.Session.SetFlag("boss_Normal_Mode", false);
                     level.Session.SetFlag("boss_Challenge_Mode", false);
+                    level.Session.SetFlag("XaphanHelper_Prevent_Drone", false);
                     level.Paused = false;
                     Engine.FreezeTimer = 0.15f;
                 }));
@@ -3548,6 +3549,13 @@ namespace Celeste.Mod.XaphanHelper
                     {
                         self.Wipe.Cancel();
                     }
+                }
+
+                // Skip Title Screen when going back to prologue if player entered the a level without triggering the Title Screen first (ex: After a crash)
+
+                if (self.Session.Level != "A-00" && self.Session.Level != "Intro")
+                {
+                    SkipSoCMIntro = startedGame = true;
                 }
 
                 // Set Flag to keep screen Black before Title Screen
@@ -4095,7 +4103,7 @@ namespace Celeste.Mod.XaphanHelper
                     {
                         playerPosition.Y = 0;
                     }
-                    if (!ModSaveData.VisitedRoomsTiles.Contains(Prefix + "/Ch" + chapterIndex + "/" + self.Session.Level + "-" + playerPosition.X + "-" + playerPosition.Y) && (!string.IsNullOrEmpty(ModSaveData.DestinationRoom) ? self.Session.Level == ModSaveData.DestinationRoom : true) && ModSaveData.LoadedPlayer)
+                    if (!ModSaveData.VisitedRoomsTiles.Contains(Prefix + "/Ch" + chapterIndex + "/" + self.Session.Level + "-" + playerPosition.X + "-" + playerPosition.Y) && (!string.IsNullOrEmpty(ModSaveData.DestinationRoom) ? self.Session.Level == ModSaveData.DestinationRoom : true) && (useMergeChaptersController ? ModSaveData.LoadedPlayer : true))
                     {
                         ModSaveData.VisitedRoomsTiles.Add(Prefix + "/Ch" + chapterIndex + "/" + self.Session.Level + "-" + playerPosition.X + "-" + playerPosition.Y);
                         InGameMapRoomController roomController = self.Tracker.GetEntity<InGameMapRoomController>();

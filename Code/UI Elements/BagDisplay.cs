@@ -6,6 +6,7 @@ using Celeste.Mod.XaphanHelper.Managers;
 using Celeste.Mod.XaphanHelper.Triggers;
 using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.UI_Elements
@@ -624,6 +625,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 Sprite.RenderPosition = Position + new Vector2(14f);
                 Sprite.Color = Color.White * Opacity;
                 Sprite.Render();
+            }
+
+            MTexture cross = GFX.Gui["upgrades/cross"];
+            if (type == "bag" && currentSelection == 3 && SceneAs<Level>().Session.GetFlag("XaphanHelper_Prevent_Drone"))
+            {
+                cross.DrawCentered(Center + Vector2.One * 50f);
             }
         }
 

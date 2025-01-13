@@ -91,6 +91,7 @@ namespace Celeste.Mod.XaphanHelper.Events
         public override void OnBegin(Level level)
         {
             level.Session.SetFlag("In_bossfight", false);
+            level.Session.SetFlag("XaphanHelper_Prevent_Drone", false);
             level.InCutscene = false;
             level.CancelCutscene();
             liquid = level.Tracker.GetEntity<Liquid>();
@@ -119,6 +120,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                 {
                     boss.SetHealth(8);
                 }
+                level.Session.SetFlag("XaphanHelper_Prevent_Drone", true);
                 if (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch5_Pre_Genesis_Event") || (HasGolden() && !BossDefeated()))
                 {
                     level.Add(dashBlock);
@@ -252,6 +254,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                         yield return null;
                     }
                     level.Session.SetFlag("In_bossfight", false);
+                    level.Session.SetFlag("XaphanHelper_Prevent_Drone", false);
                     if (level.Session.GetFlag("boss_Normal_Mode") || level.Session.GetFlag("boss_Challenge_Mode"))
                     {
                         CMote.ManageUpgrades(level, true);

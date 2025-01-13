@@ -539,18 +539,19 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 yield return null;
                 timer -= Engine.DeltaTime;
             }
+            explode = true;
+            Hold.PickupCollider = null;
+            HoldableCannotHoldTimer.SetValue(Hold, 5f);
             if (Hold.IsHeld)
             {
                 Hold.Holder.Throw();
             }
-            HoldableCannotHoldTimer.SetValue(Hold, 1f);
+            Hold.RemoveSelf();
             AllowPushing = false;
             Collider = new Circle(12f, 0f, -4f);
-            Hold.PickupCollider = Collider;
             Speed = Vector2.Zero;
             noGravityTimer = 0.01f;
             yield return 0.01f;
-            explode = true;
             bombSprite.Position += new Vector2(0, 12);
             Audio.Play("event:/game/xaphan/bomb_explode", Position);
             bombSprite.Play("explode", false);

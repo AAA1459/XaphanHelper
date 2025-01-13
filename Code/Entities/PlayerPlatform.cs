@@ -249,6 +249,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                     {
                                         player.Facing = Facings.Right;
                                     }
+                                    if (player.Hair.Facing != Facings.Right)
+                                    {
+                                        player.Hair.Facing = Facings.Right;
+                                    }
                                     if (player.Speed.X <= 250f - (Gentle ? 15f : 18f))
                                     {
                                         player.Speed.X += ForceSlide ? (Gentle ? 30f : 28f) : (Gentle ? 15f : 18f);
@@ -275,6 +279,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
                                     if (player.Facing != Facings.Left)
                                     {
                                         player.Facing = Facings.Left;
+                                    }
+                                    if (player.Hair.Facing != Facings.Left)
+                                    {
+                                        player.Hair.Facing = Facings.Left;
                                     }
                                     if (player.Speed.X >= -250f + (Gentle ? 15f : 18f))
                                     {

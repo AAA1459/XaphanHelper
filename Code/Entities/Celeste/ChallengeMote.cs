@@ -45,6 +45,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool AllowsSpiderMagnet;
 
+        private bool AllowsRemoteDrone;
+
         public bool SpaceJumpCollected()
         {
             return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_SpaceJump");
@@ -58,6 +60,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public bool SpiderMagnetCollected()
         {
             return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_SpiderMagnet");
+        }
+
+        public bool RemoteDroneCollected()
+        {
+            return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Upgrade_RemoteDrone");
         }
 
         public bool LightningDashCollected()
@@ -75,6 +82,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             AllowsSpaceJump = data.Bool("allowsSpaceJump", false);
             AllowsBombs = data.Bool("allowsBombs", false);
             AllowsSpiderMagnet = data.Bool("allowsSpiderMagnet", false);
+            AllowsRemoteDrone = data.Bool("allowsRemoteDrone", false);
             Tag = Tags.TransitionUpdate;
             BerryPos = Position + new Vector2(0, -48);
             P_Fire = new ParticleType
@@ -407,6 +415,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     XaphanModule.ModSettings.SpiderMagnet = true;
                     level.Session.SetFlag("Upgrade_HadSpiderMagnet", false);
                 }
+                if (level.Session.GetFlag("Upgrade_HadRemoteDrone"))
+                {
+                    level.Session.SetFlag("XaphanHelper_Prevent_Drone", false);
+                    level.Session.SetFlag("Upgrade_HadRemoteDrone", false);
+                }
                 /*if (level.Session.GetFlag("Upgrade_HadLightningDash"))
                 {
                     level.Session.SetFlag("Upgrade_LightningDash", true);
@@ -439,6 +452,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     level.Session.SetFlag("Upgrade_SpiderMagnet", false);
                     XaphanModule.ModSettings.SpiderMagnet = false;
                     level.Session.SetFlag("Upgrade_HadSpiderMagnet", true);
+                }
+                if ((RemoteDroneCollected() || level.Session.GetFlag("Upgrade_RemoteDrone")) && !AllowsRemoteDrone)
+                {
+                    level.Session.SetFlag("XaphanHelper_Prevent_Drone", true);
+                    level.Session.SetFlag("Upgrade_HadRemoteDrone", true);
                 }
                 /*if (LightningDashCollected() || level.Session.GetFlag("Upgrade_HadLightningDash"))
                 {

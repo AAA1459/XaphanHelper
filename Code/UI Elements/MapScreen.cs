@@ -628,7 +628,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     UpMoves = MaxYMove / 2;
                     DownMoves = MaxYMove / 2;
                 }
-                Vector2 CurrentRoomPosition = mapDisplay.CalcRoomPosition(mapDisplay.GetRoomPosition(mapDisplay.currentRoom) + (mapDisplay.roomIsAdjusted(mapDisplay.currentRoom) ? mapDisplay.GetAdjustedPosition(mapDisplay.currentRoom) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition);
+                Vector2 CurrentRoomPosition = mapDisplay.CalcRoomPosition(mapDisplay.RoomData[mapDisplay.currentRoom].Position + (mapDisplay.roomIsAdjusted(mapDisplay.currentRoom) ? mapDisplay.GetAdjustedPosition(mapDisplay.currentRoom) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition);
                 Vector2 PlayerIconPosition = Vector2.One + mapDisplay.playerPosition * 40;
 
                 if (previousLeftMoves != 0 || previousRightMoves != 0 || previousUpMoves != 0 || previousDownMoves != 0)
@@ -724,7 +724,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 }
                 if (displayWithIndicator.mode != "empty")
                 {
-                    CurrentRoomPosition = displayWithIndicator.CalcRoomPosition(displayWithIndicator.GetRoomPosition(displayWithIndicator.currentRoom) + (displayWithIndicator.roomIsAdjusted(displayWithIndicator.currentRoom) ? displayWithIndicator.GetAdjustedPosition(displayWithIndicator.currentRoom) : Vector2.Zero), displayWithIndicator.currentRoomPosition, displayWithIndicator.currentRoomJustify, displayWithIndicator.worldmapPosition);
+                    CurrentRoomPosition = displayWithIndicator.CalcRoomPosition(displayWithIndicator.RoomData[displayWithIndicator.currentRoom].Position + (displayWithIndicator.roomIsAdjusted(displayWithIndicator.currentRoom) ? displayWithIndicator.GetAdjustedPosition(displayWithIndicator.currentRoom) : Vector2.Zero), displayWithIndicator.currentRoomPosition, displayWithIndicator.currentRoomJustify, displayWithIndicator.worldmapPosition);
                     PlayerIconPosition = Vector2.One + displayWithIndicator.playerPosition * 40;
                 }
                 else
@@ -1219,7 +1219,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         if (prompt == null && displayMenu == null && mode == "map")
                         {
                             Audio.Play("event:/ui/main/message_confirm");
-                            Vector2 CurrentRoomPosition = mapDisplay.CalcRoomPosition(mapDisplay.GetRoomPosition(mapDisplay.currentRoom) + (mapDisplay.roomIsAdjusted(mapDisplay.currentRoom) ? mapDisplay.GetAdjustedPosition(mapDisplay.currentRoom) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition);
+                            Vector2 CurrentRoomPosition = mapDisplay.CalcRoomPosition(mapDisplay.RoomData[mapDisplay.currentRoom].Position + (mapDisplay.roomIsAdjusted(mapDisplay.currentRoom) ? mapDisplay.GetAdjustedPosition(mapDisplay.currentRoom) : Vector2.Zero), mapDisplay.currentRoomPosition, mapDisplay.currentRoomJustify, mapDisplay.worldmapPosition);
                             Vector2 PlayerIconPosition = Vector2.One + mapDisplay.playerPosition * 40;
                             if (mapDisplay.isNotVisibleOnScreen(CurrentRoomPosition, PlayerIconPosition))
                             {

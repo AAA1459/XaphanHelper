@@ -60,7 +60,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             yield return 0.2f;
             badeline = CutscenesHelper.BadelineSplit(Level, player);
             yield return CutscenesHelper.BadelineFloat(this, 30, -18, badeline, -1, true, false, true);
-            if (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem2_Sloted"))
+            if (!XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch1_Gem2_Collected"))
             {
                 yield return Textbox.Say("Xaphan_Ch4_A_Gem");
             }
