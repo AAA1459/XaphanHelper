@@ -1,3 +1,6 @@
+Version 1.0.70 :
+- Fixed a bug preventing bombs and mega bombs to use their whole explosion hitbox to activate touch switches
+
 Version 1.0.69 :
 - Fixed a crash when opening the In-Game map if it tried to display a room that no longer exist
 

@@ -438,6 +438,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Vector2 position = Center + Calc.AngleToVector(num + Calc.Random.Range(-(float)Math.PI / 90f, (float)Math.PI / 90f), Calc.Random.Range(12, 18));
                 level.Particles.Emit(P_Explode, position, num);
             }
+
+            foreach (TouchSwitch touchSwitch in Scene.Tracker.GetEntities<TouchSwitch>())
+            {
+                if (CollideCheck(touchSwitch))
+                {
+                    touchSwitch.TurnOn();
+                }
+            }
         }
 
         private void onLastFrame(string s)
