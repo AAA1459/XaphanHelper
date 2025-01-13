@@ -439,6 +439,30 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 level.Particles.Emit(P_Explode, position, num);
             }
 
+            foreach (Crate crate in Scene.Tracker.GetEntities<Crate>())
+            {
+                if (CollideCheck(crate) && !crate.Destroyed)
+                {
+                    crate.Destroy();
+                }
+            }
+
+            foreach (Crate.LaserBlocker blocker in Scene.Tracker.GetEntities<Crate.LaserBlocker>())
+            {
+                if (CollideCheck(blocker) && !blocker.Crate.Destroyed)
+                {
+                    blocker.Crate.Destroy();
+                }
+            }
+
+            foreach (ExplosiveBoulder boulder in Scene.Tracker.GetEntities<ExplosiveBoulder>())
+            {
+                if (CollideCheck(boulder))
+                {
+                    boulder.Explode();
+                }
+            }
+
             foreach (TouchSwitch touchSwitch in Scene.Tracker.GetEntities<TouchSwitch>())
             {
                 if (CollideCheck(touchSwitch))
