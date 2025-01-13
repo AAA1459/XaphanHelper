@@ -1,3 +1,6 @@
+Version 1.0.69 :
+- Fixed a crash when opening the In-Game map if it tried to display a room that no longer exist
+
 Version 1.0.68 :
 - Improved performances of the In-Game map Progress Display
 - Improved performances of the In-Game map
