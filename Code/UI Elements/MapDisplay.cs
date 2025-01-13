@@ -849,86 +849,89 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     float AdjustX = 0;
                     float AdjustY = 0;
-                    if (roomUseTilesController(room.Room))
+                    if (RoomData.ContainsKey(room.Room))
                     {
-                        List<Vector2> TilesPosition = GetTilesPosition(room.Room);
-                        float MostLeftTileX = 1000f;
-                        float MostTopTileY = 1000f;
-                        float MostRightTileX = -1000f;
-                        float MostBottomTileY = -1000f;
-                        for (int i = 0; i <= TilesPosition.Count - 1; i++)
+                        if (roomUseTilesController(room.Room))
                         {
-                            if (TilesPosition[i].X < MostLeftTileX)
+                            List<Vector2> TilesPosition = GetTilesPosition(room.Room);
+                            float MostLeftTileX = 1000f;
+                            float MostTopTileY = 1000f;
+                            float MostRightTileX = -1000f;
+                            float MostBottomTileY = -1000f;
+                            for (int i = 0; i <= TilesPosition.Count - 1; i++)
                             {
-                                MostLeftTileX = TilesPosition[i].X;
+                                if (TilesPosition[i].X < MostLeftTileX)
+                                {
+                                    MostLeftTileX = TilesPosition[i].X;
+                                }
+                                if (TilesPosition[i].Y < MostTopTileY)
+                                {
+                                    MostTopTileY = TilesPosition[i].Y;
+                                }
+                                if (TilesPosition[i].X + 1 > MostRightTileX)
+                                {
+                                    MostRightTileX = TilesPosition[i].X + 1;
+                                }
+                                if (TilesPosition[i].Y + 1 > MostBottomTileY)
+                                {
+                                    MostBottomTileY = TilesPosition[i].Y + 1;
+                                }
                             }
-                            if (TilesPosition[i].Y < MostTopTileY)
+                            MostLeftTileX *= ScreenTilesX;
+                            MostTopTileY *= ScreenTilesY;
+                            MostRightTileX *= ScreenTilesX;
+                            MostBottomTileY *= ScreenTilesY;
+                            if (roomIsAdjusted(room.Room))
                             {
-                                MostTopTileY = TilesPosition[i].Y;
+                                AdjustX = GetAdjustedPosition(room.Room).X;
+                                AdjustY = GetAdjustedPosition(room.Room).Y;
                             }
-                            if (TilesPosition[i].X + 1 > MostRightTileX)
+                            if (RoomData[room.Room].Position.X + AdjustX + MostLeftTileX < MostLeftRoomX)
                             {
-                                MostRightTileX = TilesPosition[i].X + 1;
+                                MostLeftRoomX = RoomData[room.Room].Position.X + AdjustX + MostLeftTileX;
+                                MostLeftRoom = room.Room;
                             }
-                            if (TilesPosition[i].Y + 1 > MostBottomTileY)
+                            if (RoomData[room.Room].Position.Y + AdjustY + MostTopTileY < MostTopRoomY)
                             {
-                                MostBottomTileY = TilesPosition[i].Y + 1;
+                                MostTopRoomY = RoomData[room.Room].Position.Y + AdjustY + MostTopTileY;
+                                MostTopRoom = room.Room;
+                            }
+                            if (RoomData[room.Room].Position.X + AdjustX + MostRightTileX > MostRightRoomX)
+                            {
+                                MostRightRoomX = RoomData[room.Room].Position.X + AdjustX + MostRightTileX;
+                            }
+                            if (RoomData[room.Room].Position.Y + AdjustY + MostBottomTileY > MostBottomRoomY)
+                            {
+                                MostBottomRoomY = RoomData[room.Room].Position.Y + AdjustY + MostBottomTileY;
                             }
                         }
-                        MostLeftTileX *= ScreenTilesX;
-                        MostTopTileY *= ScreenTilesY;
-                        MostRightTileX *= ScreenTilesX;
-                        MostBottomTileY *= ScreenTilesY;
-                        if (roomIsAdjusted(room.Room))
+                        else
                         {
-                            AdjustX = GetAdjustedPosition(room.Room).X;
-                            AdjustY = GetAdjustedPosition(room.Room).Y;
-                        }
-                        if (RoomData[room.Room].Position.X + AdjustX + MostLeftTileX < MostLeftRoomX)
-                        {
-                            MostLeftRoomX = RoomData[room.Room].Position.X + AdjustX + MostLeftTileX;
-                            MostLeftRoom = room.Room;
-                        }
-                        if (RoomData[room.Room].Position.Y + AdjustY + MostTopTileY < MostTopRoomY)
-                        {
-                            MostTopRoomY = RoomData[room.Room].Position.Y + AdjustY + MostTopTileY;
-                            MostTopRoom = room.Room;
-                        }
-                        if (RoomData[room.Room].Position.X + AdjustX + MostRightTileX > MostRightRoomX)
-                        {
-                            MostRightRoomX = RoomData[room.Room].Position.X + AdjustX + MostRightTileX;
-                        }
-                        if (RoomData[room.Room].Position.Y + AdjustY + MostBottomTileY > MostBottomRoomY)
-                        {
-                            MostBottomRoomY = RoomData[room.Room].Position.Y + AdjustY + MostBottomTileY;
-                        }
-                    }
-                    else
-                    {
-                        if (roomIsAdjusted(room.Room))
-                        {
-                            AdjustX = GetAdjustedPosition(room.Room).X;
-                            AdjustY = GetAdjustedPosition(room.Room).Y;
-                        }
-                        if (RoomData[room.Room].Position.X + AdjustX < MostLeftRoomX)
-                        {
-                            MostLeftRoomX = RoomData[room.Room].Position.X + AdjustX;
-                            MostLeftRoom = room.Room;
-                        }
-                        if (RoomData[room.Room].Position.Y + AdjustY < MostTopRoomY)
-                        {
-                            MostTopRoomY = RoomData[room.Room].Position.Y + AdjustY;
-                            MostTopRoom = room.Room;
-                        }
-                        MostRightRoomSize = RoomData[room.Room].Size;
-                        if (RoomData[room.Room].Position.X + AdjustX + MostRightRoomSize.X * 8 > MostRightRoomX)
-                        {
-                            MostRightRoomX = RoomData[room.Room].Position.X + AdjustX + MostRightRoomSize.X * 8;
-                        }
-                        MostBottomRoomSize = RoomData[room.Room].Size;
-                        if (RoomData[room.Room].Position.Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8 > MostBottomRoomY)
-                        {
-                            MostBottomRoomY = RoomData[room.Room].Position.Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8;
+                            if (roomIsAdjusted(room.Room))
+                            {
+                                AdjustX = GetAdjustedPosition(room.Room).X;
+                                AdjustY = GetAdjustedPosition(room.Room).Y;
+                            }
+                            if (RoomData[room.Room].Position.X + AdjustX < MostLeftRoomX)
+                            {
+                                MostLeftRoomX = RoomData[room.Room].Position.X + AdjustX;
+                                MostLeftRoom = room.Room;
+                            }
+                            if (RoomData[room.Room].Position.Y + AdjustY < MostTopRoomY)
+                            {
+                                MostTopRoomY = RoomData[room.Room].Position.Y + AdjustY;
+                                MostTopRoom = room.Room;
+                            }
+                            MostRightRoomSize = RoomData[room.Room].Size;
+                            if (RoomData[room.Room].Position.X + AdjustX + MostRightRoomSize.X * 8 > MostRightRoomX)
+                            {
+                                MostRightRoomX = RoomData[room.Room].Position.X + AdjustX + MostRightRoomSize.X * 8;
+                            }
+                            MostBottomRoomSize = RoomData[room.Room].Size;
+                            if (RoomData[room.Room].Position.Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8 > MostBottomRoomY)
+                            {
+                                MostBottomRoomY = RoomData[room.Room].Position.Y + AdjustY + (MostBottomRoomSize.Y / 40 * (ScreenTilesY / 8)) * 8;
+                            }
                         }
                     }
                 }
@@ -947,7 +950,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 foreach (string visitedRoom in XaphanModule.ModSaveData.VisitedRooms)
                 {
                     str = visitedRoom.Split('/');
-                    if (visitedRoom.Contains(Prefix) && str[2] == "Ch" + chapterIndex)
+                    if (visitedRoom.Contains(Prefix) && str[2] == "Ch" + chapterIndex && RoomData.ContainsKey(str[3]))
                     {
                         float AdjustX = 0;
                         float AdjustY = 0;
@@ -1047,7 +1050,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                         str = baseStr[0].Split('/');
                         foreach (int mapshard in mapShards)
                         {
-                            if (str[0] == "Ch" + chapterIndex && int.Parse(baseStr[1]) == mapshard)
+                            if (str[0] == "Ch" + chapterIndex && int.Parse(baseStr[1]) == mapshard && RoomData.ContainsKey(str[1]))
                             {
                                 float AdjustX = 0;
                                 float AdjustY = 0;
@@ -1180,7 +1183,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     if (!SkippedRooms.Contains(unexploredRoom))
                     {
                         str = unexploredRoom.Split('/');
-                        if (str[0] == "Ch" + chapterIndex)
+                        if (str[0] == "Ch" + chapterIndex && RoomData.ContainsKey(str[1]))
                         {
                             float AdjustX = 0;
                             float AdjustY = 0;
@@ -1302,7 +1305,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     foreach (InGameMapHintControllerData hint in HintControllerData)
                     {
-                        if (hint.ChapterIndex == chapterIndex)
+                        if (hint.ChapterIndex == chapterIndex && RoomData.ContainsKey(hint.Room))
                         {
                             bool AllFlagsTrue = true;
                             foreach (string flag in hint.DisplayFlags)
@@ -2497,7 +2500,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             Vector2[] entrancePosition = new Vector2[10];
             foreach (InGameMapRoomControllerData roomControllerData in RoomControllerData)
             {
-                if (roomControllerData.Room == room)
+                if (roomControllerData.Room == room && RoomData.ContainsKey(room))
                 {
                     for (int i = 0; i <= 9; i++)
                     {
