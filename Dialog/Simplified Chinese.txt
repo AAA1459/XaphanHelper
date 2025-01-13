@@ -54,7 +54,7 @@
 	XaphanHelper_get_SuperMissilesModule_Name= 超级导弹模块
 	XaphanHelper_get_SuperMissilesModule_Desc= 使无人机发射威力更大
 	XaphanHelper_get_SuperMissilesModule_Desc_b= 半径也更大的导弹
-	XaphanHelper_get_PowerGrip_Name= 强力握把
+	XaphanHelper_get_PowerGrip_Name= 强握之手
 	XaphanHelper_get_PowerGrip_Desc= 允许你在一定时间内抓住墙壁
 	XaphanHelper_get_PowerGrip_Desc_b= 在墙附近以抓住它
 	XaphanHelper_get_ClimbingKit_Name= 攀岩套装
@@ -89,7 +89,7 @@
 	XaphanHelper_get_DroneTeleport_Name= 无人机描点
 	XaphanHelper_get_DroneTeleport_Desc= 使你能瞬间传送至无人机所在地
 	XaphanHelper_get_DroneTeleport_Desc_b= 在操控无人机时以传送至它
-	XaphanHelper_get_JumpBoost_Name= 跳跃加成
+	XaphanHelper_get_JumpBoost_Name= 高跳
 	XaphanHelper_get_JumpBoost_Desc= 使无人机的跳跃高度增加50%
 	XaphanHelper_get_JumpBoost_Desc_b= 以跳的更高
 	XaphanHelper_get_ScrewAttack_Name= 团身旋击
@@ -98,7 +98,7 @@
 	XaphanHelper_get_DashBoots_Name= 冲刺靴
 	XaphanHelper_get_DashBoots_Desc= 允许你在任意方向上做一个冲刺
 	XaphanHelper_get_DashBoots_Desc_b= 和任意方向键去冲刺
-	XaphanHelper_get_SpaceJump_Name= 二段跳
+	XaphanHelper_get_SpaceJump_Name= 空中跳跃
 	XaphanHelper_get_SpaceJump_Desc= 允许你在空中进行二段跳
 	XaphanHelper_get_SpaceJump_Desc_b= 在空中以二段跳
 	XaphanHelper_get_HoverJet_Name= 悬停喷气机
@@ -140,12 +140,12 @@
 	XaphanHelper_get_Missile_Name_b= 导弹升级
 	XaphanHelper_get_Missile_Desc= 造成更多伤害 - 打开红色舱门
 	XaphanHelper_get_SuperMissile_Name= 超级导弹
-	XaphanHelper_get_SuperMissile_Name_b= 超级导弹罐
+	XaphanHelper_get_SuperMissile_Name_b= 超级导弹包
 	XaphanHelper_get_SuperMissile_Desc= 造成超大伤害 - 打开绿色舱门
 	XaphanHelper_get_PowerBomb_Name= 强力炸弹
-	XaphanHelper_get_PowerBomb_Name_b= 强力炸弹罐
+	XaphanHelper_get_PowerBomb_Name_b= 强力炸弹包
 	XaphanHelper_get_PowerBomb_Desc= 释放超强力的爆炸 - 打开黄色舱门
-	XaphanHelper_get_Met_EnergyTank_Name= 能量罐
+	XaphanHelper_get_Met_EnergyTank_Name= 能量包
 	XaphanHelper_get_Met_EnergyTank_Desc= 增加最大体力
 	XaphanHelper_Increase_Missile= 增加导弹容量
 	XaphanHelper_Increase_SuperMissile= 增加超级导弹容量
@@ -175,7 +175,7 @@
 	XaphanHelper_Collect_Time_One= 秒
 	XaphanHelper_Collect_Time= 秒
 	
-	XaphanHelper_get_EnergyTank_Desc= 每个能量罐将增加5点最大体力
+	XaphanHelper_get_EnergyTank_Desc= 每个能量包将增加5点最大体力
 	XaphanHelper_get_FireRateModule_Desc= 每个射速模块将减少光束冷却的15%
 
 #Warps
