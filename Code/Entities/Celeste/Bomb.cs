@@ -645,6 +645,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     boulder.Explode();
                 }
             }
+
+            foreach (TouchSwitch touchSwitch in Scene.Tracker.GetEntities<TouchSwitch>())
+            {
+                if (CollideCheck(touchSwitch))
+                {
+                    touchSwitch.TurnOn();
+                }
+            }
         }
 
         private void onLastFrame(string s)
