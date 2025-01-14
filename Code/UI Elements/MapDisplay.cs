@@ -3092,13 +3092,17 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
                 if (mode != "minimap" && !NoGrid)
                 {
+                    string language = "-" + Settings.Instance.Language;
                     foreach (InGameMapImageControllerData image in ImageControllerData)
                     {
                         List<int> mapShards = GetUnlockedMapShards();
                         if (XaphanModule.ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + image.Room) || (ExtraUnexploredRooms.Contains("Ch" + chapterIndex + "/" + image.Room)) || (InGameMapControllerData.RevealUnexploredRooms && !roomIsSecret(image.Room)) || ForceRevealUnexploredRooms)
                         {
                             Vector2 RoomPosition = CalcRoomPosition(RoomData[image.Room].Position + (roomIsAdjusted(image.Room) ? GetAdjustedPosition(image.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
-                            Image Image = new(GFX.Gui["maps/" + Prefix + "/areas/" + image.ImagePath + (Settings.Instance.Language == "french" ? "-" + Settings.Instance.Language : "")]);
+                            string ImagePath = "maps/" + Prefix + "/areas/" + image.ImagePath;
+                            if (GFX.Gui.Has(ImagePath + language))
+                                ImagePath += language;
+                            Image Image = new(GFX.Gui[ImagePath]);
                             Image.Color = Calc.HexToColor(string.IsNullOrEmpty(image.Color) ? "FFFFFF" : image.Color);
                             Image.Position = RoomPosition;
                             Image.Render();
@@ -3108,7 +3112,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             if (!XaphanModule.ModSaveData.VisitedRooms.Contains(Prefix + "/Ch" + chapterIndex + "/" + image.Room) && (((UnexploredRooms.Contains("Ch" + chapterIndex + "/" + image.Room + ":" + mapShard) && MapCollected))))
                             {
                                 Vector2 RoomPosition = CalcRoomPosition(RoomData[image.Room].Position + (roomIsAdjusted(image.Room) ? GetAdjustedPosition(image.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
-                                Image Image = new(GFX.Gui["maps/" + Prefix + "/areas/" + image.ImagePath + (Settings.Instance.Language == "french" ? "-" + Settings.Instance.Language : "")]);
+                                string ImagePath = "maps/" + Prefix + "/areas/" + image.ImagePath;
+                                if (GFX.Gui.Has(ImagePath + language))
+                                    ImagePath += language;
+                                Image Image = new(GFX.Gui[ImagePath]);
                                 Image.Color = Calc.HexToColor(string.IsNullOrEmpty(image.Color) ? "FFFFFF" : image.Color);
                                 Image.Position = RoomPosition;
                                 Image.Render();
