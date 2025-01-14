@@ -234,8 +234,8 @@
 	XaphanHelper_UI_GiveUpCSide_title= 放弃游玩 C 面？
 	XaphanHelper_UI_GiveUpBSide= 放弃
 	XaphanHelper_UI_GiveUpCSide= 放弃
-	XaphanHelper_UI_GiveUpBSide_info= 这将使你丢失此 B 面中的所有进度{n}并被送回 A 面.
-	XaphanHelper_UI_GiveUpCSide_info= 这将使你丢失此 C 面中的所有进度{n}并被送回 A 面.
+	XaphanHelper_UI_GiveUpBSide_info= 这将使你丢失此 B 面中的所有进度{n}并被送回 A 面。
+	XaphanHelper_UI_GiveUpCSide_info= 这将使你丢失此 C 面中的所有进度{n}并被送回 A 面。
 	XaphanHelper_UI_RestartCampaign_title= 重新开始整个系列？
 	XaphanHelper_UI_RestartCampaign= 确认
 	XaphanHelper_UI_RestartCampaign_info= 这将丢失这一系列的所有关卡进度，重头开始。
