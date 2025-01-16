@@ -1,3 +1,6 @@
+Version 1.0.71 :
+- Fixed a bug allowing some icons to be displayed before their corresponding abiltiy is unlocked on the In-Game map progress display
+
 Version 1.0.70 :
 - Fixed a bug preventing bombs and mega bombs to use their whole explosion hitbox to activate touch switches
 

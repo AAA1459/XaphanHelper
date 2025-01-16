@@ -1307,7 +1307,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     linesYPos.Insert(iconYPos, (int)((Position.Y + lineHeight * iconYPos + moonberryIcon.Height / 4) + (moonberryIcon.Height - characterImageHeight) / 2));
                     iconYPos++;
                 }
-                if (!InGameMapControllerData.HideUpgradeProgress && (subAreaIndex != -1 && mode == 1) ? SubAreaTotalStaminaUpgrades != 0 : TotalStaminaUpgrades != 0 && PowerGripUnlocked)
+                if (!InGameMapControllerData.HideUpgradeProgress && ((subAreaIndex != -1 && mode == 1) ? SubAreaTotalStaminaUpgrades != 0 : TotalStaminaUpgrades != 0) && PowerGripUnlocked)
                 {
                     Image staminaUpgradeIcon = new(GFX.Gui["maps/keys/energyTank"]);
                     staminaUpgradeIcon.Position = new Vector2(Position.X - 2f, Position.Y - 2f + lineHeight * iconYPos + staminaUpgradeIcon.Height / 4);
@@ -1315,7 +1315,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     linesYPos.Insert(iconYPos, (int)((Position.Y + lineHeight * iconYPos + staminaUpgradeIcon.Height / 4) + (staminaUpgradeIcon.Height - characterImageHeight) / 2));
                     iconYPos++;
                 }
-                if (!InGameMapControllerData.HideUpgradeProgress && (subAreaIndex != -1 && mode == 1) ? SubAreaTotalDroneFireRateUpgrades != 0 : TotalDroneFireRateUpgrades != 0 && RemoteDroneUnlocked)
+                if (!InGameMapControllerData.HideUpgradeProgress && ((subAreaIndex != -1 && mode == 1) ? SubAreaTotalDroneFireRateUpgrades != 0 : TotalDroneFireRateUpgrades != 0) && RemoteDroneUnlocked)
                 {
                     Image fireRateUpgradeIcon = new(GFX.Gui["maps/keys/fireRateModule"]);
                     fireRateUpgradeIcon.Position = new Vector2(Position.X, Position.Y + lineHeight * iconYPos + fireRateUpgradeIcon.Height / 4);
@@ -1323,7 +1323,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     linesYPos.Insert(iconYPos, (int)((Position.Y + lineHeight * iconYPos + fireRateUpgradeIcon.Height / 4) + (fireRateUpgradeIcon.Height - characterImageHeight) / 2));
                     iconYPos++;
                 }
-                if (!InGameMapControllerData.HideUpgradeProgress && (subAreaIndex != -1 && mode == 1) ? SubAreaTotalDroneMissilesUpgrades != 0 : TotalDroneMissilesUpgrades != 0 && MissilesModuleUnlocked)
+                if (!InGameMapControllerData.HideUpgradeProgress && ((subAreaIndex != -1 && mode == 1) ? SubAreaTotalDroneMissilesUpgrades != 0 : TotalDroneMissilesUpgrades != 0) && MissilesModuleUnlocked)
                 {
                     Image DroneMissilesUpgradeIcon = new(GFX.Gui["maps/keys/missile"]);
                     DroneMissilesUpgradeIcon.Position = new Vector2(Position.X, Position.Y + lineHeight * iconYPos + DroneMissilesUpgradeIcon.Height / 4);
@@ -1331,7 +1331,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     linesYPos.Insert(iconYPos, (int)((Position.Y + lineHeight * iconYPos + DroneMissilesUpgradeIcon.Height / 4) + (DroneMissilesUpgradeIcon.Height - characterImageHeight) / 2));
                     iconYPos++;
                 }
-                if (!InGameMapControllerData.HideUpgradeProgress && (subAreaIndex != -1 && mode == 1) ? SubAreaTotalDroneSuperMissilesUpgrades != 0 : TotalDroneSuperMissilesUpgrades != 0 && SuperMissilesModuleUnlocked)
+                if (!InGameMapControllerData.HideUpgradeProgress && ((subAreaIndex != -1 && mode == 1) ? SubAreaTotalDroneSuperMissilesUpgrades != 0 : TotalDroneSuperMissilesUpgrades != 0) && SuperMissilesModuleUnlocked)
                 {
                     Image DroneSuperMissilesUpgradeIcon = new(GFX.Gui["maps/keys/superMissile"]);
                     DroneSuperMissilesUpgradeIcon.Position = new Vector2(Position.X - 2f, Position.Y - 2f + lineHeight * iconYPos + DroneSuperMissilesUpgradeIcon.Height / 4);
