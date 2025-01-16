@@ -92,105 +92,108 @@ namespace Celeste.Mod.XaphanHelper.Managers
 
         public override void Update()
         {
-            Level level = SceneAs<Level>();
-            Player player = Scene.Tracker.GetEntity<Player>();
-            if (player != null)
+            if (!XaphanModule.ShowUI)
             {
-                if (player.CollideCheck<AirBubbles>())
+                Level level = SceneAs<Level>();
+                Player player = Scene.Tracker.GetEntity<Player>();
+                if (player != null)
                 {
-                    forceRechargeAir = true;
-                }
-                else
-                {
-                    forceRechargeAir = false;
-                }
-            }
-            bool playerCurrentlyInLiquid = false;
-            foreach (Liquid liquid in level.Tracker.GetEntities<Liquid>())
-            {
-                if (liquid.PlayerCompletelyInside() && liquid.canDrown && !liquid.visualOnly)
-                {
-                    playerCurrentlyInLiquid = true;
-                    if (liquid != currentLiquid)
+                    if (player.CollideCheck<AirBubbles>())
                     {
-                        currentLiquid = liquid;
-                        if (air == -1f)
-                        {
-                            air = liquid.airTimer;
-                        }
-                        else
-                        {
-                            air = GetAirPercent() * liquid.airTimer / 100;
-                        }
-                        currentMaxAir = liquid.airTimer;
-                    }
-                    break;
-                }
-            }
-            if (playerCurrentlyInLiquid)
-            {
-                isVisible = true;
-                if (!XaphanModule.UIOpened && currentLiquid != null)
-                {
-                    if (player != null && !player.Dead)
-                    {
-                        if (Scene.OnInterval(GetAirPercent() > ((100 / 15) * 4) ? 1.5f : 0.75f))
-                        {
-                            Scene.Add(new Liquid.AirBubble(player.Facing == Facings.Left ? player.TopLeft : player.TopRight - new Vector2(4f, 0f), currentLiquid));
-                        }
-                        if (GetAirPercent() < (4 * (100f / 15f)) && !XaphanModule.PlayerIsControllingRemoteDrone() && !forceRechargeAir)
-                        {
-                            if (Scene.OnRawInterval(0.06f))
-                            {
-                                Flashing = !Flashing;
-                            }
-                        }
-                        else
-                        {
-                            Flashing = false;
-                        }
-                    }
-                    if (!forceRechargeAir)
-                    {
-                        if (AirRoutine.Active)
-                        {
-                            AirRoutine.Cancel();
-                        }
-                        if (player != null && player.CanRetry && !XaphanModule.PlayerIsControllingRemoteDrone())
-                        {
-                            air -= Engine.DeltaTime;
-                        }
-                        if (air <= 0f)
-                        {
-                            air = 0f;
-                            if (!player.Dead)
-                            {
-                                player.Die(Vector2.Zero);
-                            }
-                        }
+                        forceRechargeAir = true;
                     }
                     else
                     {
-                        if (!AirRoutine.Active)
+                        forceRechargeAir = false;
+                    }
+                }
+                bool playerCurrentlyInLiquid = false;
+                foreach (Liquid liquid in level.Tracker.GetEntities<Liquid>())
+                {
+                    if (liquid.PlayerCompletelyInside() && liquid.canDrown && !liquid.visualOnly)
+                    {
+                        playerCurrentlyInLiquid = true;
+                        if (liquid != currentLiquid)
                         {
-                            Flashing = false;
-                            Add(AirRoutine = new Coroutine(RechargeAir(false)));
+                            currentLiquid = liquid;
+                            if (air == -1f)
+                            {
+                                air = liquid.airTimer;
+                            }
+                            else
+                            {
+                                air = GetAirPercent() * liquid.airTimer / 100;
+                            }
+                            currentMaxAir = liquid.airTimer;
+                        }
+                        break;
+                    }
+                }
+                if (playerCurrentlyInLiquid)
+                {
+                    isVisible = true;
+                    if (currentLiquid != null)
+                    {
+                        if (player != null && !player.Dead)
+                        {
+                            if (Scene.OnInterval(GetAirPercent() > ((100 / 15) * 4) ? 1.5f : 0.75f))
+                            {
+                                Scene.Add(new Liquid.AirBubble(player.Facing == Facings.Left ? player.TopLeft : player.TopRight - new Vector2(4f, 0f), currentLiquid));
+                            }
+                            if (GetAirPercent() < (4 * (100f / 15f)) && !XaphanModule.PlayerIsControllingRemoteDrone() && !forceRechargeAir)
+                            {
+                                if (Scene.OnRawInterval(0.06f))
+                                {
+                                    Flashing = !Flashing;
+                                }
+                            }
+                            else
+                            {
+                                Flashing = false;
+                            }
+                        }
+                        if (!forceRechargeAir)
+                        {
+                            if (AirRoutine.Active)
+                            {
+                                AirRoutine.Cancel();
+                            }
+                            if (player != null && player.CanRetry && !XaphanModule.PlayerIsControllingRemoteDrone())
+                            {
+                                air -= Engine.DeltaTime;
+                            }
+                            if (air <= 0f)
+                            {
+                                air = 0f;
+                                if (!player.Dead)
+                                {
+                                    player.Die(Vector2.Zero);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (!AirRoutine.Active)
+                            {
+                                Flashing = false;
+                                Add(AirRoutine = new Coroutine(RechargeAir(false)));
+                            }
                         }
                     }
                 }
-            }
-            else if (currentLiquid != null && player != null)
-            {
-                currentLiquid = null;
-                Flashing = false;
-                if (!AirRoutine.Active)
+                else if (currentLiquid != null && player != null)
                 {
-                    Add(AirRoutine = new Coroutine(RechargeAir()));
-                }                
-            }
-            if (AirRoutine != null)
-            {
-                AirRoutine.Update();
+                    currentLiquid = null;
+                    Flashing = false;
+                    if (!AirRoutine.Active)
+                    {
+                        Add(AirRoutine = new Coroutine(RechargeAir()));
+                    }
+                }
+                if (AirRoutine != null)
+                {
+                    AirRoutine.Update();
+                }
             }
         }
 
