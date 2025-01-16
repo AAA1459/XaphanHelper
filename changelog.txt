@@ -1,4 +1,5 @@
 Version 1.0.71 :
+- Entities attached to Break Blocks will not no longer appear after the block is broken if its Respawn attribute is set to Never
 - Fixed a bug allowing some icons to be displayed before their corresponding abiltiy is unlocked on the In-Game map progress display
 - Fixed a bug preventing the heat sound effect to stop if the inactive flag of the Heat Controller inside the room was true
 

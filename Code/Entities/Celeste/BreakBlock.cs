@@ -1,4 +1,5 @@
-﻿using Celeste.Mod.Entities;
+﻿using System.Collections.Generic;
+using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -124,8 +125,9 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Added(scene);
             if (CollideCheck<Player>())
             {
+                AddToNotLoad(SceneAs<Level>());
+                DestroyStaticMovers();
                 RemoveSelf();
-                SceneAs<Level>().Session.DoNotLoad.Add(eid);
             }
             else
             {
@@ -186,7 +188,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             tiles.Alpha = 0f;
             fade = true;
             cutout.Visible = false;
-            SceneAs<Level>().Session.DoNotLoad.Add(eid);
+            AddToNotLoad(SceneAs<Level>());
         }
 
         private void OnTransitionOutBegin()
@@ -299,7 +301,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Collidable = false;
             if (respawn == "Never")
             {
-                level.Session.DoNotLoad.Add(eid);
+                AddToNotLoad(level);
             }
             else if (respawn == "Until checkpoint")
             {
@@ -317,6 +319,30 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 DestroyStaticMovers();
             }
             RemoveSelf();
+        }
+
+        private void AddToNotLoad(Level level)
+        {
+            level.Session.DoNotLoad.Add(eid);
+            LevelData levelData = level.Session.LevelData;
+            List<int> ids = new();
+            foreach (EntityData entity in levelData.Entities)
+            {
+                if (staticMovers.Count > ids.Count)
+                {
+                    foreach (StaticMover staticMover in staticMovers)
+                    {
+                        if (entity.Position == (staticMover.Entity.Position - new Vector2(level.Bounds.Left, level.Bounds.Top)) && entity.ID != eid.ID)
+                        {
+                            ids.Add(entity.ID);
+                        }
+                    }
+                }
+            }
+            foreach (int id in ids)
+            {
+                level.Session.DoNotLoad.Add(new EntityID(level.Session.Level, id));
+            }
         }
 
 
