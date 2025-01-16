@@ -94,6 +94,7 @@ namespace Celeste.Mod.XaphanHelper.Managers
             }
             else
             {
+                StopSfx();
                 heat -= Engine.DeltaTime;
             }
         }
