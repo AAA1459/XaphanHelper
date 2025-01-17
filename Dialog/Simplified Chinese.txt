@@ -271,7 +271,7 @@
 	Xaphanhelper_UI_Misc= 其他
 	Xaphanhelper_UI_Beam= 光束：
 	Xaphanhelper_UI_Modules= 模块：
-	Xaphanhelper_UI_Time= 用时
+	Xaphanhelper_UI_Time= 倒计时
 	XaphanHelper_UI_Currently_In= 所在地：
 	XaphanHelper_UI_ReturnToMap_Rooms= 返回地图将保存你的进度。{n}回来时将从当前记录点重新开始。
 	XaphanHelper_UI_ReturnToMap_Warps= 返回地图将保存你的进度。{n}回来时将从到达过的最后一个传送站重新开始。
