@@ -231,9 +231,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
-            if (!XaphanModule.ModSettings.UseBagItemSlot.Check)
+            if (player != null && player.Holding != Hold)
             {
-                RemoveSelf();
+                player.Holding = Hold;
+                Hold.Pickup(player);
+                player.StateMachine.State = Player.StPickup;
             }
         }
 
