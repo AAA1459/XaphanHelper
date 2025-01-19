@@ -4,6 +4,7 @@ Version 1.0.71 :
 - Fixed a bug preventing the heat sound effect to stop if the inactive flag of the Heat Controller inside the room was true
 - Fixed a bug that caused the oxygem timer to deplete when the In-Game map, Achievements, Abilities and Lore book screens were open
 - Fixed a bug that could cause a bomb to spawn, but not being picked up when trying to jump and spawn a bomb at the same time
+- Fixed a bug that could prevent the drone to be thrown correctly when trying to jump and spawn it at the same time
 
 Version 1.0.70 :
 - Fixed a bug preventing bombs and mega bombs to use their whole explosion hitbox to activate touch switches
