@@ -2,6 +2,7 @@ Version 1.0.71 :
 - Interacting with Elevators and Warp Stations now immediately set the horizontal player sped to 0 to avoid cases where the player can fall off those entities and potentialy crash the game
 - Entities attached to Break Blocks will not no longer appear after the block is broken if its Respawn attribute is set to Never
 - Dashing near the borders of a Push Block from bellow will no longer auto-correct the player horizontally
+- The player position icon on the In-Game map now render on top of markers
 - Fixed a bug preventing the player icon to bedisplayed on the In-Game map in interlude chapters
 - Fixed a bug allowing some icons to be displayed before their corresponding abiltiy is unlocked on the In-Game map progress display
 - Fixed a bug preventing the heat sound effect to stop if the inactive flag of the Heat Controller inside the room was true

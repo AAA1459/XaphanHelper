@@ -190,6 +190,8 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
         public List<InGameMapIconsData> Icons = new();
 
+        public List<InGameMapIconsData> PlayerIcons = new();
+
         public List<InGameMapMarkersData> Markers = new();
 
         public List<InGameMapTilesData> TilesImage = new();
@@ -2251,10 +2253,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 {
                     playerIcon += "_varia";
                 }
-                Icons.Add(new InGameMapIconsData(playerIcon, currentRoom, Vector2.One + playerPosition * 40, false));
+                PlayerIcons.Add(new InGameMapIconsData(playerIcon, currentRoom, Vector2.One + playerPosition * 40, false));
                 if (!XaphanModule.useMetroidGameplay)
                 {
-                    Icons.Add(new InGameMapIconsData("player_hair", currentRoom, Vector2.One + playerPosition * 40, false));
+                    PlayerIcons.Add(new InGameMapIconsData("player_hair", currentRoom, Vector2.One + playerPosition * 40, false));
                 }
             }
         }
@@ -2993,10 +2995,6 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
                 foreach (InGameMapIconsData icon in Icons)
                 {
-                    if (chapterIndex != (level.Session.Area.ChapterIndex == -1 ? 0 : level.Session.Area.ChapterIndex) && (icon.Type.Contains("player") || icon.Type.Contains("samus")))
-                    {
-                        continue;
-                    }
                     Vector2 RoomPosition = CalcRoomPosition(RoomData[icon.Room].Position + (roomIsAdjusted(icon.Room) ? GetAdjustedPosition(icon.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
                     Vector2 IconPosition = icon.Position;
                     if (isNotVisibleOnScreen(RoomPosition, IconPosition))
@@ -3027,21 +3025,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     }
                     iconImage.Color *= Opacity;
                     iconImage.Position = RoomPosition + icon.Position;
-                    if (icon.Type.Contains("player") || icon.Type.Contains("samus"))
-                    {
-                        if (!HideIndicator)
-                        {
-                            iconImage.Color = icon.Type.Contains("hair") ? (level.Tracker.GetEntity<Player>() != null ? level.Tracker.GetEntity<Player>().Hair.Color * Opacity : Color.White * Opacity) : Color.White * Opacity;
-                            if (currentRoomIndicator)
-                            {
-                                iconImage.Render();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        iconImage.Render();
-                    }
+                    iconImage.Render();
                 }
 
                 // Markers
@@ -3084,6 +3068,35 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                             markerImage.Color *= Opacity;
                             markerImage.Position = RoomPosition + marker.Position;
                             markerImage.Render();
+                        }
+                    }
+                }
+
+                // Player Icon
+
+                foreach (InGameMapIconsData icon in PlayerIcons)
+                {
+                    if (chapterIndex != (level.Session.Area.ChapterIndex == -1 ? 0 : level.Session.Area.ChapterIndex))
+                    {
+                        continue;
+                    }
+                    Vector2 RoomPosition = CalcRoomPosition(RoomData[icon.Room].Position + (roomIsAdjusted(icon.Room) ? GetAdjustedPosition(icon.Room) : Vector2.Zero), currentRoomPosition, currentRoomJustify, worldmapPosition);
+                    Vector2 IconPosition = icon.Position;
+                    if (isNotVisibleOnScreen(RoomPosition, IconPosition))
+                    {
+                        continue;
+                    }
+                    Image iconImage = null;
+                    string path = "maps/";
+                    iconImage = new Image(GFX.Gui[path + icon.Type]);
+                    iconImage.Color *= Opacity;
+                    iconImage.Position = RoomPosition + icon.Position;
+                    if (!HideIndicator)
+                    {
+                        iconImage.Color = icon.Type.Contains("hair") ? (level.Tracker.GetEntity<Player>() != null ? level.Tracker.GetEntity<Player>().Hair.Color * Opacity : Color.White * Opacity) : Color.White * Opacity;
+                        if (currentRoomIndicator)
+                        {
+                            iconImage.Render();
                         }
                     }
                 }
