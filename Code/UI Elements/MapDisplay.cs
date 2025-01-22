@@ -2236,7 +2236,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                     }
                 }
             }
-            if (mode == "map" || mode == "worldmap")
+            if ((mode == "map" || mode == "worldmap"))
             {
                 if (playerPosition.Y == -1)
                 {
@@ -2993,7 +2993,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
 
                 foreach (InGameMapIconsData icon in Icons)
                 {
-                    if (chapterIndex != SceneAs<Level>().Session.Area.ChapterIndex && (icon.Type.Contains("player") || icon.Type.Contains("samus")))
+                    if (chapterIndex != (level.Session.Area.ChapterIndex == -1 ? 0 : level.Session.Area.ChapterIndex) && (icon.Type.Contains("player") || icon.Type.Contains("samus")))
                     {
                         continue;
                     }
