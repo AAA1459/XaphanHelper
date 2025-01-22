@@ -223,6 +223,12 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Add(new Coroutine(PushedRoutine(direction)));
                 player.Dashes = playerDashes;
                 SpaceJump.SetJumpBuffer(playerJumps);
+                if (direction.Y == -1)
+                {
+                    player.Speed = Vector2.Zero;
+                    player.StateMachine.State = Player.StNormal;
+                    return DashCollisionResults.NormalCollision;
+                }
                 return DashCollisionResults.Rebound;
             }
             if (canKill)
