@@ -263,6 +263,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         {
             if (player != null)
             {
+                player.Speed.X = 0;
                 player.StateMachine.State = 11;
                 yield return player.DummyWalkToExact((int)X + 16, false, 1f, true);
                 player.Facing = Facings.Right;

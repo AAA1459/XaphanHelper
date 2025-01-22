@@ -166,6 +166,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private void Interact(Player player)
         {
             talk.Enabled = false;
+            player.Speed.X = 0;
             CountdownDisplay timerDisplay = SceneAs<Level>().Tracker.GetEntity<CountdownDisplay>();
             if (timerDisplay != null)
             {
