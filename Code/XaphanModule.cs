@@ -693,6 +693,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Cassette.UnlockedBSide.EaseOut += modCassetteUnlockedBSideEaseOut;
             On.Celeste.Cassette.UnlockedBSide.Render += modCassetteUnlockedBSideRender;
             On.Celeste.GameplayStats.Render += onGameplayStatsRender;
+            On.Celeste.Holdable.Release += onHoldableRelease;
             On.Celeste.LevelEnter.Routine += modLevelEnterRoutine;
             On.Celeste.LevelEnter.BeforeRender += modLevelEnterBeforeRender;
             On.Celeste.LevelEnter.Go += onLevelEnterGo;
@@ -815,6 +816,7 @@ namespace Celeste.Mod.XaphanHelper
             On.Celeste.Cassette.UnlockedBSide.EaseOut -= modCassetteUnlockedBSideEaseOut;
             On.Celeste.Cassette.UnlockedBSide.Render -= modCassetteUnlockedBSideRender;
             On.Celeste.GameplayStats.Render -= onGameplayStatsRender;
+            On.Celeste.Holdable.Release -= onHoldableRelease;
             On.Celeste.LevelEnter.Routine -= modLevelEnterRoutine;
             On.Celeste.LevelEnter.BeforeRender -= modLevelEnterBeforeRender;
             On.Celeste.LevelEnter.Go -= onLevelEnterGo;
@@ -910,6 +912,15 @@ namespace Celeste.Mod.XaphanHelper
             Skultera.Unload();
             DebugBlocker.Unload();
             CustomPufferSpringCollider.Unload();
+        }
+
+        private void onHoldableRelease(On.Celeste.Holdable.orig_Release orig, Holdable self, Vector2 force)
+        {
+            if (self.Entity == null)
+            {
+                return;
+            }
+            orig(self, force);
         }
 
 
