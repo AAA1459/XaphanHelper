@@ -35,6 +35,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private FieldInfo HoldableCannotHoldTimer = typeof(Holdable).GetField("cannotHoldTimer", BindingFlags.Instance | BindingFlags.NonPublic);
 
+        private static FieldInfo PlayerMinHoldTimer = typeof(Player).GetField("minHoldTimer", BindingFlags.Instance | BindingFlags.NonPublic);
+
         private Sprite bombSprite;
 
         private BombSpriteDisplay bombSpriteDisplay;
@@ -100,6 +102,39 @@ namespace Celeste.Mod.XaphanHelper.Entities
             onCollideH = OnCollideH;
             onCollideV = OnCollideV;
             Depth = 1;
+        }
+
+        public static void Load()
+        {
+            On.Celeste.Player.Throw += OnPlayerThrow;
+        }
+
+        public static void Unload()
+        {
+            On.Celeste.Player.Throw -= OnPlayerThrow;
+        }
+
+        private static void OnPlayerThrow(On.Celeste.Player.orig_Throw orig, Player self)
+        {
+            if (self.Holding.Entity == null)
+            {
+                return;
+            }
+            if (self.Holding.Entity.GetType() != typeof(Bomb) || (self.Holding.Entity.GetType() == typeof(Bomb) && XaphanModule.ModSettings.UseBagItemSlot.Check))
+            {
+                orig(self);
+            }
+            else
+            {
+                if ((float)PlayerMinHoldTimer.GetValue(self) <= 0f)
+                {
+                    Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
+                    self.Holding.Release(Vector2.UnitX * (float)self.Facing);
+                    self.Play("event:/char/madeline/crystaltheo_throw");
+                    self.Sprite.Play("throw");
+                    self.Holding = null;
+                }
+            }
         }
 
         private void OnPickup()
@@ -312,6 +347,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                 Scene.Add(bombSpriteDisplay = new BombSpriteDisplay(Position, this));
                 player.Holding = Hold;
                 Hold.Pickup(player);
+                PlayerMinHoldTimer.SetValue(player, 0.35f);
                 player.StateMachine.State = Player.StPickup;
             }
         }

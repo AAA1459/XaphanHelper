@@ -791,6 +791,7 @@ namespace Celeste.Mod.XaphanHelper
             Skultera.Load();
             DebugBlocker.Load();
             CustomPufferSpringCollider.Load();
+            Bomb.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -912,6 +913,7 @@ namespace Celeste.Mod.XaphanHelper
             Skultera.Unload();
             DebugBlocker.Unload();
             CustomPufferSpringCollider.Unload();
+            Bomb.Unload();
         }
 
         private void onHoldableRelease(On.Celeste.Holdable.orig_Release orig, Holdable self, Vector2 force)

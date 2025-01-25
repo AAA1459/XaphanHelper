@@ -12,6 +12,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
     {
         private FieldInfo HoldableCannotHoldTimer = typeof(Holdable).GetField("cannotHoldTimer", BindingFlags.Instance | BindingFlags.NonPublic);
 
+        private static FieldInfo PlayerMinHoldTimer = typeof(Player).GetField("minHoldTimer", BindingFlags.Instance | BindingFlags.NonPublic);
+
         private Sprite bombSprite;
 
         public Vector2 Speed;
@@ -235,6 +237,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             {
                 player.Holding = Hold;
                 Hold.Pickup(player);
+                PlayerMinHoldTimer.SetValue(player, 0.35f);
                 player.StateMachine.State = Player.StPickup;
             }
         }
