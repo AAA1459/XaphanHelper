@@ -126,7 +126,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 EventInstance sound;
                 if (o != null && o.GetType() == typeof(float))
                 {
-                    if (Active(level) && !self.OnGround() && self.ClimbCheck(-1) && aim.X > 0 && self.Facing == Facings.Right && aim.Y == 0 && ((GravityJacket.determineIfInWater() || GravityJacket.determineIfInLava()) ? GravityJacket.Active(level) : true) && (Input.Grab.Check || level.Session.GetFlag("Xaphan_Helper_Shinesparking")))
+                    if (Active(level) && !self.OnGround() && self.ClimbCheck(-1) && aim.X > 0 && self.Facing == Facings.Right && aim.Y == 0 && ((GravityJacket.determineIfInWater() || GravityJacket.determineIfInLava()) ? GravityJacket.Active(level) : true) && (Input.GrabCheck || level.Session.GetFlag("Xaphan_Helper_Shinesparking")))
                     {
                         level.Session.SetFlag("Xaphan_Helper_Shinesparking", true);
                         sound = Audio.Play("event:/game/xaphan/shinespark_start");
@@ -144,7 +144,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                         Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
                         level.Session.SetFlag("Xaphan_Helper_Shinesparking", false);
                     }
-                    if (Active(level) && !self.OnGround() && self.ClimbCheck(1) && aim.X < 0 && self.Facing == Facings.Left && aim.Y == 0 && ((GravityJacket.determineIfInWater() || GravityJacket.determineIfInLava()) ? GravityJacket.Active(level) : true) && (Input.Grab.Check || level.Session.GetFlag("Xaphan_Helper_Shinesparking")))
+                    if (Active(level) && !self.OnGround() && self.ClimbCheck(1) && aim.X < 0 && self.Facing == Facings.Left && aim.Y == 0 && ((GravityJacket.determineIfInWater() || GravityJacket.determineIfInLava()) ? GravityJacket.Active(level) : true) && (Input.GrabCheck || level.Session.GetFlag("Xaphan_Helper_Shinesparking")))
                     {
                         level.Session.SetFlag("Xaphan_Helper_Shinesparking", true);
                         sound = Audio.Play("event:/game/xaphan/shinespark_start");
@@ -183,7 +183,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
         {
             Level level = self.SceneAs<Level>();
             Vector2 aim = Input.GetAimVector();
-            if (Active(level) && !self.OnGround() && ((self.ClimbCheck(-1) && aim.X > 0 && self.Facing == Facings.Right) || (self.ClimbCheck(1) && aim.X < 0 && self.Facing == Facings.Left)) && aim.Y == 0 && ((GravityJacket.determineIfInWater() || GravityJacket.determineIfInLava()) ? GravityJacket.Active(level) : true) && (Input.Grab.Check || level.Session.GetFlag("Xaphan_Helper_Shinesparking")))
+            if (Active(level) && !self.OnGround() && ((self.ClimbCheck(-1) && aim.X > 0 && self.Facing == Facings.Right) || (self.ClimbCheck(1) && aim.X < 0 && self.Facing == Facings.Left)) && aim.Y == 0 && ((GravityJacket.determineIfInWater() || GravityJacket.determineIfInLava()) ? GravityJacket.Active(level) : true) && (Input.GrabCheck || level.Session.GetFlag("Xaphan_Helper_Shinesparking")))
             {
                 self.Speed *= 3f;
                 self.Hair.Color = Calc.HexToColor("F2EB6D");
