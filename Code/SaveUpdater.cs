@@ -485,7 +485,20 @@ namespace Celeste.Mod.XaphanHelper
                         }
                     }
                 }
-                
+
+                //... Update save from 3.0.2 to 3.0.3
+                if (XaphanModule.SoCMVersion >= new Version(3, 0, 3) && XaphanModule.ModSaveData.SoCMVer != "3.0.3")
+                {
+                    if (SaveData.Instance.Areas_Safe[SaveData.Instance.LevelSetStats.AreaOffset + 1].Modes[0].Strawberries.Contains(new EntityID("D-13", 5176)))
+                    {
+                        SaveData.Instance.Areas_Safe[SaveData.Instance.LevelSetStats.AreaOffset + 1].Modes[0].Strawberries.Remove(new EntityID("D-13", 5176));
+                        AreaModeStats areaModeStats = SaveData.Instance.Areas_Safe[SaveData.Instance.LevelSetStats.AreaOffset + 1].Modes[0];
+                        areaModeStats.Strawberries.Remove(new EntityID("D-13", 5176));
+                        areaModeStats.TotalStrawberries--;
+                        SaveData.Instance.TotalStrawberries_Safe--;
+                        level.Session.DoNotLoad.Remove(new EntityID("D-13", 5176));
+                    }
+                }
             }
             XaphanModule.ModSaveData.SoCMVer = XaphanModule.SoCMVersion.Major + "." + XaphanModule.SoCMVersion.Minor + "." + XaphanModule.SoCMVersion.Build;
         }
