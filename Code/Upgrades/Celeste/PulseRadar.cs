@@ -6,6 +6,8 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 {
     class PulseRadar : Upgrade
     {
+        public static bool canUse = true;
+
         public override int GetDefaultValue()
         {
             return 0;
@@ -54,6 +56,11 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 if (isActive)
                 {
                     Player player = self.Tracker.GetEntity<Player>();
+                    if (player != null)
+                    {
+                        int radar = self.Tracker.GetEntities<Radar>().Count;
+                        canUse = player.Speed == Vector2.Zero && self.Tracker.GetEntities<RadarTile>().Count == 0 && radar == 0;
+                    }
                     if (self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && player != null && player.StateMachine.State == Player.StNormal && player.Speed == Vector2.Zero && !player.Ducking && !self.Session.GetFlag("In_bossfight") && XaphanModule.ModSettings.UseMiscItemSlot.Pressed && !XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null)
                     {
                         BagDisplay bagDisplay = GetDisplay(self, "misc");

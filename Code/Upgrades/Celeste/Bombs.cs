@@ -17,6 +17,8 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         public static bool isActive;
 
+        public static bool canUse = true;
+
         public override int GetDefaultValue()
         {
             return 0;
@@ -91,6 +93,10 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 if (isActive)
                 {
                     Player player = self.Tracker.GetEntity<Player>();
+                    if (player != null)
+                    {
+                        canUse = player.Holding != null ? true : self.Tracker.GetEntities<Bomb>().Count <= 4 && player.OnGround();
+                    }
                     if (!cooldown && self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && player != null && player.StateMachine.State == Player.StNormal && !player.Ducking && XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.UseMiscItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null)
                     {
                         BagDisplay bagDisplay = GetDisplay(self, "bag");
@@ -99,7 +105,6 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                             int totalBombs = self.Tracker.CountEntities<Bomb>();
                             if (bagDisplay.currentSelection == 1 && delay <= 0f && totalBombs <= 4)
                             {
-                                delay = 0.3f;
                                 UseBombCoroutine = new Coroutine(UseBomb(player, self));
                             }
                         }
@@ -123,6 +128,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 }
                 if (player.Scene != null && !player.Dead && !player.DashAttacking && player.StateMachine.State != Player.StClimb && !GravityJacket.determineIfInLiquid())
                 {
+                    delay = 0.35f;
                     cooldown = true;
                     level.Add(new Bomb(player.Position, player));
                     usedBomb = true;

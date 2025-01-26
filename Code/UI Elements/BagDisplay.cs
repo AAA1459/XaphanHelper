@@ -628,9 +628,58 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
 
             MTexture cross = GFX.Gui["upgrades/cross"];
-            if (type == "bag" && currentSelection == 3 && SceneAs<Level>().Session.GetFlag("XaphanHelper_Prevent_Drone"))
+            bool drawCross = false;
+            if (type == "bag")
             {
-                cross.DrawCentered(Center + Vector2.One * 50f);
+                if (currentSelection == 1)
+                {
+                    if (!Bombs.canUse)
+                    {
+                        drawCross = true;
+                    }
+                }
+                if (currentSelection == 2)
+                {
+                    if (!MegaBombs.canUse)
+                    {
+                        drawCross = true;
+                    }
+                }
+                if (currentSelection == 3)
+                {
+                    if (SceneAs<Level>().Session.GetFlag("XaphanHelper_Prevent_Drone") || !RemoteDrone.canUse)
+                    {
+                        drawCross = true;
+                    }
+                }
+            }
+            else
+            {
+                if (currentSelection == 1)
+                {
+                    if (!Binoculars.canUse)
+                    {
+                        drawCross = true;
+                    }
+                }
+                if (currentSelection == 2)
+                {
+                    if (!PortableStation.canUse)
+                    {
+                        drawCross = true;
+                    }
+                }
+                if (currentSelection == 3)
+                {
+                    if (!PulseRadar.canUse)
+                    {
+                        drawCross = true;
+                    }
+                }
+            }
+            if (drawCross)
+            {
+                cross.DrawCentered(Center + Vector2.One * 50f, Color.White * Opacity);
             }
         }
 

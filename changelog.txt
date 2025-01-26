@@ -5,6 +5,7 @@ Version 1.0.71 :
 - The player position icon on the In-Game map now render on top of markers
 - Arrows and Climbable Vines are now working correctly with the invert grab mode
 - The Lightning Dash ability now work correctly with the invert grab mode
+- Bag and Misc abilities displays now show a red cross on top of an ability if it cannot be used
 - Fixed a bug preventing the player icon to be displayed on the In-Game map in interlude chapters
 - Fixed a bug allowing some icons to be displayed before their corresponding abiltiy is unlocked on the In-Game map progress display
 - Fixed a bug preventing the heat sound effect to stop if the inactive flag of the Heat Controller inside the room was true
@@ -12,6 +13,7 @@ Version 1.0.71 :
 - Fixed a bug that could cause a bomb to spawn, but not being picked up when trying to jump and spawn a bomb at the same time
 - Fixed a bug that could prevent the drone to be thrown correctly when trying to jump and spawn it at the same time
 - Fixed a bug allowing to use both the Bag and Misc abilities selected at the same time, creating unintended behavior
+- Fixed a bug allowing the player to bypass the internal delay before being able to throw a bomb or mega bomb
 - Fixed a crash when a Drone Missile or Beam got destroyed on top of a Conveyor
 - Fixed a crash when releasing the Use Bag ability button at the same frame a bomb or mega bomb hold by the player would explode
 

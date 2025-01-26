@@ -12,6 +12,8 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         public static bool isActive;
 
+        public static bool canUse = true;
+
         public override int GetDefaultValue()
         {
             return 0;
@@ -58,7 +60,11 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 if (isActive && !XaphanModule.PlayerIsControllingRemoteDrone() && !GravityJacket.determineIfInWater())
                 {
                     Player player = self.Tracker.GetEntity<Player>();
-                    if (self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && player != null && player.StateMachine.State == Player.StNormal && !player.Ducking && !self.Session.GetFlag("In_bossfight") && !self.Session.GetFlag("XaphanHelper_Prevent_Drone") && XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.UseMiscItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null && !UseDroneCoroutine.Active)
+                    if (player != null)
+                    {
+                        canUse = player.OnSafeGround;
+                    }
+                    if (self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && player != null && player.StateMachine.State == Player.StNormal && !player.Ducking && !self.Session.GetFlag("In_bossfight") && !self.Session.GetFlag("XaphanHelper_Prevent_Drone") && XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.UseMiscItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null && !UseDroneCoroutine.Active && player.OnSafeGround)
                     {
                         BagDisplay bagDisplay = GetDisplay(self, "bag");
                         if (bagDisplay != null)
@@ -83,7 +89,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             bool usedDrone = false;
             while (XaphanModule.ModSettings.UseBagItemSlot.Check && !usedDrone)
             {
-                while (player.Speed != Vector2.Zero)
+                while (player.Speed != Vector2.Zero )
                 {
                     yield return null;
                 }

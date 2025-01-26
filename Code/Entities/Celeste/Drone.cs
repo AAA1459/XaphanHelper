@@ -274,7 +274,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             }
             else
             {
-                if ((bool)PlayerOnGround.GetValue(self))
+                if ((bool)PlayerOnGround.GetValue(self) && self.OnSafeGround)
                 {
                     orig(self);
                 }
