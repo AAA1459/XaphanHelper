@@ -316,13 +316,25 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             BackToMainMenu = false;
             mainMenu.Focused = mainMenu.Visible = false;
             SceneAs<Level>().Add(optionsMenu = new TextMenu());
-            optionsMenu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f);
-            optionsMenu.Add(new TextMenu.Header(Dialog.Clean("Xaphan_0_0_intro_vignette_Settings").ToUpper()));
-            optionsMenu.Add(new TextMenu.SubHeader(Dialog.Clean("Xaphan_0_Options_UI")));
-            optionsMenu.Add(new TextMenu.OnOff(Dialog.Clean("ModOptions_XaphanModule_ShowMiniMap"), XaphanModule.ModSettings.SoCMShowMiniMap).Change(delegate (bool b)
+            CreateSettingsMenu(optionsMenu);
+            optionsMenu.OnCancel = ReturnToMainmenu;
+            while (!BackToMainMenu)
+            {
+                yield return null;
+            }
+            XaphanModule.SaveModSettings();
+            level.FormationBackdrop.Display = false;
+        }
+
+        public static void CreateSettingsMenu(TextMenu menu)
+        {
+            menu.Position = new Vector2(Engine.Width / 2f, Engine.Height / 2f);
+            menu.Add(new TextMenu.Header(Dialog.Clean("Xaphan_0_0_intro_vignette_Settings").ToUpper()));
+            menu.Add(new TextMenu.SubHeader(Dialog.Clean("Xaphan_0_Options_UI")));
+            menu.Add(new TextMenu.OnOff(Dialog.Clean("ModOptions_XaphanModule_ShowMiniMap"), XaphanModule.ModSettings.SoCMShowMiniMap).Change(delegate (bool b)
             {
                 XaphanModule.ModSettings.SoCMShowMiniMap = b;
-                foreach (var item in optionsMenu.Items)
+                foreach (var item in menu.Items)
                 {
                     if (item.GetType() == typeof(TextMenu.Slider) && ((TextMenu.Slider)item).Label == Dialog.Clean("ModOptions_XaphanModule_MiniMapOpacity"))
                     {
@@ -331,7 +343,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
                     }
                 }
             }));
-            optionsMenu.Add(new TextMenu.Slider(Dialog.Clean("ModOptions_XaphanModule_MiniMapOpacity"), (int i) => i switch
+            menu.Add(new TextMenu.Slider(Dialog.Clean("ModOptions_XaphanModule_MiniMapOpacity"), (int i) => i switch
             {
                 1 => Dialog.Clean("ModOptions_XaphanModule_10"),
                 2 => Dialog.Clean("ModOptions_XaphanModule_20"),
@@ -347,7 +359,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             {
                 XaphanModule.ModSettings.SoCMMiniMapOpacity = i;
             }));
-            optionsMenu.Add(new TextMenu.Slider(Dialog.Clean("ModOptions_XaphanModule_SpaceJumpIndicator"), (int i) => i switch
+            menu.Add(new TextMenu.Slider(Dialog.Clean("ModOptions_XaphanModule_SpaceJumpIndicator"), (int i) => i switch
             {
                 0 => Dialog.Clean("ModOptions_XaphanModule_SpaceJumpIndicator_None"),
                 1 => Dialog.Clean("ModOptions_XaphanModule_SpaceJumpIndicator_Small"),
@@ -356,7 +368,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             {
                 XaphanModule.ModSettings.SoCMSpaceJumpIndicator = i;
             }));
-            optionsMenu.Add(new TextMenu.Slider(Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator"), (int i) => i switch
+            menu.Add(new TextMenu.Slider(Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator"), (int i) => i switch
             {
                 0 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_UI_Only"),
                 1 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Player_Only"),
@@ -365,7 +377,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             {
                 XaphanModule.ModSettings.SoCMStaminaIndicator = i;
             }));
-            optionsMenu.Add(new TextMenu.Slider(Dialog.Clean("ModOptions_XaphanModule_OxygenIndicator"), (int i) => i switch
+            menu.Add(new TextMenu.Slider(Dialog.Clean("ModOptions_XaphanModule_OxygenIndicator"), (int i) => i switch
             {
                 0 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_UI_Only"),
                 1 => Dialog.Clean("ModOptions_XaphanModule_StaminaIndicator_Player_Only"),
@@ -374,48 +386,41 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             {
                 XaphanModule.ModSettings.SoCMOxygenIndicator = i;
             }));
-            optionsMenu.Add(new TextMenu.SubHeader(Dialog.Clean("Xaphan_0_Options_Popups")));
-            optionsMenu.Add(new TextMenu.OnOff(Dialog.Clean("Xaphan_0_Options_Popups_ShowAchievementsPopups"), XaphanModule.ModSettings.ShowAchievementsPopups).Change(delegate (bool b)
+            menu.Add(new TextMenu.SubHeader(Dialog.Clean("Xaphan_0_Options_Popups")));
+            menu.Add(new TextMenu.OnOff(Dialog.Clean("Xaphan_0_Options_Popups_ShowAchievementsPopups"), XaphanModule.ModSettings.ShowAchievementsPopups).Change(delegate (bool b)
             {
                 XaphanModule.ModSettings.ShowAchievementsPopups = b;
             }));
-            optionsMenu.Add(new TextMenu.OnOff(Dialog.Clean("Xaphan_0_Options_Popups_ShowLorebookPopups"), XaphanModule.ModSettings.ShowLorebookPopups).Change(delegate (bool b)
+            menu.Add(new TextMenu.OnOff(Dialog.Clean("Xaphan_0_Options_Popups_ShowLorebookPopups"), XaphanModule.ModSettings.ShowLorebookPopups).Change(delegate (bool b)
             {
                 XaphanModule.ModSettings.ShowLorebookPopups = b;
             }));
-            optionsMenu.Add(new TextMenu.SubHeader(Dialog.Clean("Xaphan_0_Options_Cutscenes")));
-            optionsMenu.Add(new TextMenu.OnOff(Dialog.Clean("Xaphan_0_Options_Cutscenes_AutoSkipCutscenes"), XaphanModule.ModSettings.AutoSkipCutscenes).Change(delegate (bool b)
+            menu.Add(new TextMenu.SubHeader(Dialog.Clean("Xaphan_0_Options_Cutscenes")));
+            menu.Add(new TextMenu.OnOff(Dialog.Clean("Xaphan_0_Options_Cutscenes_AutoSkipCutscenes"), XaphanModule.ModSettings.AutoSkipCutscenes).Change(delegate (bool b)
             {
                 XaphanModule.ModSettings.AutoSkipCutscenes = b;
             }));
-            optionsMenu.Add(new TextMenu.SubHeader(Dialog.Clean("options_controls")));
-            optionsMenu.Add(new TextMenu.Button(Dialog.Clean("options_keyconfig")).Pressed(() => {
-                optionsMenu.Focused = false;
-                Engine.Scene.Add(CreateKeyboardConfigUI(optionsMenu));
+            menu.Add(new TextMenu.SubHeader(Dialog.Clean("options_controls")));
+            menu.Add(new TextMenu.Button(Dialog.Clean("options_keyconfig")).Pressed(() => {
+                menu.Focused = false;
+                Engine.Scene.Add(CreateKeyboardConfigUI(menu));
                 Engine.Scene.OnEndOfFrame += () => Engine.Scene.Entities.UpdateLists();
             }));
-            optionsMenu.Add(new TextMenu.Button(Dialog.Clean("options_btnconfig")).Pressed(() => {
-                optionsMenu.Focused = false;
-                Engine.Scene.Add(CreateButtonConfigUI(optionsMenu));
+            menu.Add(new TextMenu.Button(Dialog.Clean("options_btnconfig")).Pressed(() => {
+                menu.Focused = false;
+                Engine.Scene.Add(CreateButtonConfigUI(menu));
                 Engine.Scene.OnEndOfFrame += () => Engine.Scene.Entities.UpdateLists();
             }));
-            optionsMenu.Add(new TextMenu.SubHeader(Dialog.Clean("Xaphan_0_Options_Others")));
+            menu.Add(new TextMenu.SubHeader(Dialog.Clean("Xaphan_0_Options_Others")));
             TextMenu.OnOff DebugSetting = new TextMenu.OnOff(Dialog.Clean("Xaphan_0_Options_Others_Debug"), XaphanModule.ModSettings.AllowDebug);
             DebugSetting.Disabled = !XaphanModule.ModSettings.WatchedCredits;
-            optionsMenu.Add(DebugSetting.Change(delegate (bool b)
+            menu.Add(DebugSetting.Change(delegate (bool b)
             {
                 XaphanModule.ModSettings.AllowDebug = b;
             }));
-            optionsMenu.OnCancel = ReturnToMainmenu;
-            while (!BackToMainMenu)
-            {
-                yield return null;
-            }
-            XaphanModule.SaveModSettings();
-            level.FormationBackdrop.Display = false;
         }
 
-        private Entity CreateKeyboardConfigUI(TextMenu menu)
+        private static Entity CreateKeyboardConfigUI(TextMenu menu)
         {
             return new ModuleSettingsKeyboardConfigUI(XaphanModule.Instance)
             {
@@ -423,7 +428,7 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             };
         }
 
-        private Entity CreateButtonConfigUI(TextMenu menu)
+        private static Entity CreateButtonConfigUI(TextMenu menu)
         {
             return new ModuleSettingsButtonConfigUI(XaphanModule.Instance)
             {

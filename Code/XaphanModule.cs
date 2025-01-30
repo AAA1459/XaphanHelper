@@ -3049,6 +3049,26 @@ namespace Celeste.Mod.XaphanHelper
                     menu.Remove(menu.Items[restartCampaignIndex]);
                 }
 
+                // Find the position of "Options"
+                int OptionsIndex = menu.Items.FindIndex(item => item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean("MENU_PAUSE_OPTIONS"));
+
+                if (OptionsIndex == -1)
+                {
+                    // Bottom of the menu if "Options" is not found
+                    OptionsIndex = menu.Items.Count - 1;
+                }
+
+                // add the "Settings" button
+                TextMenu.Button SettingsButton = new(Dialog.Clean("Xaphan_0_0_intro_vignette_Settings"));
+                SettingsButton.Pressed(() =>
+                {
+                    level.PauseMainMenuOpen = false;
+                    menu.RemoveSelf();
+                    confirmSettingsMenu(level, menu.Selection);
+                });
+                SettingsButton.ConfirmSfx = "event:/ui/main/message_confirm";
+                menu.Insert(OptionsIndex, SettingsButton);
+
                 if (level.Session.Area.Mode == AreaMode.Normal)
                 {
                     // Find the position of "Return to map"
@@ -3091,7 +3111,8 @@ namespace Celeste.Mod.XaphanHelper
                             button.Label != Dialog.Clean("MENU_PAUSE_ASSIST") &&
                             button.Label != Dialog.Clean("MENU_PAUSE_VARIANT") &&
                             button.Label != Dialog.Clean("MENU_PAUSE_OPTIONS") &&
-                            button.Label != Dialog.Clean("MENU_PAUSE_MODOPTIONS") && 
+                            button.Label != Dialog.Clean("MENU_PAUSE_MODOPTIONS") &&
+                            button.Label != Dialog.Clean("Xaphan_0_0_intro_vignette_Settings") &&
                             button.Label != Dialog.Clean("Xaphan_0_Pause_Menu_ReturnTitle") &&
                             button.Label != Dialog.Clean("XaphanHelper_UI_GiveUpNM") &&
                             button.Label != Dialog.Clean("XaphanHelper_UI_GiveUpCM") &&
@@ -3108,6 +3129,26 @@ namespace Celeste.Mod.XaphanHelper
                     menu.Remove(menu.Items[index]);
                 }
             }
+        }
+
+        private static void confirmSettingsMenu(Level level, int returnIndex)
+        {
+            TextMenu SettingsMenu = new();
+            SoCMIntro.CreateSettingsMenu(SettingsMenu);
+            SettingsMenu.OnPause = (SettingsMenu.OnESC = delegate
+            {
+                SettingsMenu.RemoveSelf();
+                level.Paused = false;
+                Engine.FreezeTimer = 0.15f;
+                Audio.Play("event:/ui/game/unpause");
+            });
+            SettingsMenu.OnCancel = delegate
+            {
+                Audio.Play("event:/ui/main/button_back");
+                SettingsMenu.RemoveSelf();
+                level.Pause(returnIndex, minimal: false);
+            };
+            level.Add(SettingsMenu);
         }
 
         private static void confirmGiveUpCMMenu(Level level, int returnIndex)
