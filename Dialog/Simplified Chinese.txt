@@ -1,4 +1,4 @@
-﻿﻿# XaphanHelper - 1.0.67 翻译，由AAA1459制作
+﻿﻿﻿# XaphanHelper - 1.0.67 翻译，由AAA1459制作
 
 # NOTES:
 # The # Symbol at the start of a line counts as a Comment. To include in dialog, use a \#
@@ -27,7 +27,7 @@
 
 #Infos
 	XaphanHelper_Select= 选择
-	XaphanHelper_ToSelect= 来选择
+	XaphanHelper_ToSelect= 来切换至
 	XaphanHelper_Press= 按下
 	XaphanHelper_Hold= 按住
 	XaphanHelper_ThenHold= 然后按住
@@ -98,7 +98,7 @@
 	XaphanHelper_get_DashBoots_Name= 冲刺靴
 	XaphanHelper_get_DashBoots_Desc= 允许你在任意方向上做一个冲刺
 	XaphanHelper_get_DashBoots_Desc_b= 和任意方向键去冲刺
-	XaphanHelper_get_SpaceJump_Name= 空中跳跃
+	XaphanHelper_get_SpaceJump_Name= 踏空徽章
 	XaphanHelper_get_SpaceJump_Desc= 允许你在空中进行二段跳
 	XaphanHelper_get_SpaceJump_Desc_b= 在空中以二段跳
 	XaphanHelper_get_HoverJet_Name= 悬停喷气机
@@ -234,8 +234,8 @@
 	XaphanHelper_UI_GiveUpCSide_title= 放弃游玩 C 面？
 	XaphanHelper_UI_GiveUpBSide= 放弃
 	XaphanHelper_UI_GiveUpCSide= 放弃
-	XaphanHelper_UI_GiveUpBSide_info= 这将使你丢失此 B 面中的所有进度{n}并被送回 A 面。
-	XaphanHelper_UI_GiveUpCSide_info= 这将使你丢失此 C 面中的所有进度{n}并被送回 A 面。
+	XaphanHelper_UI_GiveUpBSide_info= 这将使你丢失此 B 面中的所有进度，{n}并被送回 A 面。
+	XaphanHelper_UI_GiveUpCSide_info= 这将使你丢失此 C 面中的所有进度，{n}并被送回 A 面。
 	XaphanHelper_UI_RestartCampaign_title= 重新开始整个系列？
 	XaphanHelper_UI_RestartCampaign= 确认
 	XaphanHelper_UI_RestartCampaign_info= 这将丢失这一系列的所有关卡进度，重头开始。
