@@ -63,7 +63,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
         private int modNormalUpdate(On.Celeste.Player.orig_NormalUpdate orig, Player self)
         {
             Level level = self.SceneAs<Level>();
-            if (Active(level) && (self.Speed.X > 300f || self.Speed.X < -300f) && self.Speed.Y < -100f)
+            if (Active(level) && (self.Speed.X > 300f || self.Speed.X < -300f) && self.Speed.Y < -100f && StartedLightningDash)
             {
                 self.Hair.Color = Calc.HexToColor("F2EB6D");
                 if (!level.Session.GetFlag("Xaphan_Helper_Shinesparking"))
@@ -85,6 +85,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             else
             {
                 level.Session.SetFlag("Xaphan_Helper_Shinesparking", false);
+                StartedLightningDash = false;
             }
             if (self.OnGround())
             {
@@ -152,6 +153,8 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             }
         }
 
+        private bool StartedLightningDash;
+
         private IEnumerator modDashCoroutine(On.Celeste.Player.orig_DashCoroutine orig, Player self)
         {
             IEnumerator coroutine = orig.Invoke(self);
@@ -218,11 +221,13 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             Vector2 aim = Input.GetAimVector();
             if (Active(level) && !self.OnGround() && ((self.ClimbCheck(-1) && aim.X > 0 && self.Facing == Facings.Right) || (self.ClimbCheck(1) && aim.X < 0 && self.Facing == Facings.Left)) && aim.Y == 0 && ((GravityJacket.determineIfInWater() || GravityJacket.determineIfInLava()) ? GravityJacket.Active(level) : true) && (Input.GrabCheck || level.Session.GetFlag("Xaphan_Helper_Shinesparking")))
             {
+                StartedLightningDash = true;
                 self.Speed *= 3f;
                 self.Hair.Color = Calc.HexToColor("F2EB6D");
             }
             else
             {
+                StartedLightningDash = false;
                 self.Speed *= 1f;
             }
         }
