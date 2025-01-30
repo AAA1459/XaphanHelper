@@ -18,6 +18,8 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
 
         private FieldInfo playerDashTrailTimer = typeof(Player).GetField("dashTrailTimer", BindingFlags.Instance | BindingFlags.NonPublic);
 
+        private static bool bouceJumped;
+
         public override int GetDefaultValue()
         {
             return 0;
@@ -39,6 +41,7 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             IL.Celeste.Player.CallDashEvents += modCallDashEvents;
             On.Celeste.Player.CreateTrail += modCreateTrail;
             On.Celeste.Player.DashUpdate += modDashUpdate;
+            On.Celeste.Player.NormalUpdate += modNormalUpdate;
             On.Celeste.Player.DashCoroutine += modDashCoroutine;
             using (new DetourContext() { After = { "*" } })
             {
@@ -52,8 +55,42 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             IL.Celeste.Player.CallDashEvents -= modCallDashEvents;
             On.Celeste.Player.CreateTrail -= modCreateTrail;
             On.Celeste.Player.DashUpdate -= modDashUpdate;
+            On.Celeste.Player.NormalUpdate -= modNormalUpdate;
             On.Celeste.Player.DashCoroutine -= modDashCoroutine;
             playerOrigUpdateHook?.Dispose();
+        }
+
+        private int modNormalUpdate(On.Celeste.Player.orig_NormalUpdate orig, Player self)
+        {
+            Level level = self.SceneAs<Level>();
+            if (Active(level) && (self.Speed.X > 300f || self.Speed.X < -300f) && self.Speed.Y < -100f)
+            {
+                self.Hair.Color = Calc.HexToColor("F2EB6D");
+                if (!level.Session.GetFlag("Xaphan_Helper_Shinesparking"))
+                {
+                    level.Session.SetFlag("Xaphan_Helper_Shinesparking", true);
+                    if (!bouceJumped)
+                    {
+                        self.Play("event:/game/xaphan/shinespark_start");
+                    }
+                    bouceJumped = true;
+                }
+                if (level.OnRawInterval(0.075f))
+                {
+                    Vector2 scale = new(Math.Abs(self.Sprite.Scale.X) * (float)self.Facing, self.Sprite.Scale.Y);
+                    TrailManager.Add(self, scale, Calc.HexToColor("F2EB6D"));
+                }
+                level.ParticlesFG.Emit(FlyFeather.P_Boost, self.Center + Calc.Random.Range(Vector2.One * -2f, Vector2.One * 2f), self.DashDir.Angle());
+            }
+            else
+            {
+                level.Session.SetFlag("Xaphan_Helper_Shinesparking", false);
+            }
+            if (self.OnGround())
+            {
+                bouceJumped = false;
+            }
+            return orig(self);
         }
 
         public bool Active(Level level)
@@ -126,41 +163,44 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 EventInstance sound;
                 if (o != null && o.GetType() == typeof(float))
                 {
-                    if (Active(level) && !self.OnGround() && self.ClimbCheck(-1) && aim.X > 0 && self.Facing == Facings.Right && aim.Y == 0 && ((GravityJacket.determineIfInWater() || GravityJacket.determineIfInLava()) ? GravityJacket.Active(level) : true) && (Input.GrabCheck || level.Session.GetFlag("Xaphan_Helper_Shinesparking")))
+                    if (Active(level) && !self.OnGround() && ((GravityJacket.determineIfInWater() || GravityJacket.determineIfInLava()) ? GravityJacket.Active(level) : true) && (Input.GrabCheck || level.Session.GetFlag("Xaphan_Helper_Shinesparking")))
                     {
-                        level.Session.SetFlag("Xaphan_Helper_Shinesparking", true);
-                        sound = Audio.Play("event:/game/xaphan/shinespark_start");
-                        while (Active(level) && (self.Speed.X > 600f) && self.StateMachine.State == 2)
+                        if (self.ClimbCheck(-1) && aim.X > 0 && self.Facing == Facings.Right && aim.Y == 0)
                         {
-                            yield return null;
-                            self.Hair.Color = Calc.HexToColor("F2EB6D");
-                            level.CameraOffset = new Vector2(60f, 0f);
-                            self.Facing = Facings.Right;
+                            level.Session.SetFlag("Xaphan_Helper_Shinesparking", true);
+                            sound = Audio.Play("event:/game/xaphan/shinespark_start");
+                            while (Active(level) && (self.Speed.X > 600f) && self.StateMachine.State == 2)
+                            {
+                                yield return null;
+                                self.Hair.Color = Calc.HexToColor("F2EB6D");
+                                level.CameraOffset = new Vector2(60f, 0f);
+                                self.Facing = Facings.Right;
+                            }
+                            level.DirectionalShake(aim, 0.2f);
+                            sound.stop(STOP_MODE.IMMEDIATE);
+                            level.CameraOffset = new Vector2(0f, 0f);
+                            sound = Audio.Play("event:/game/xaphan/shinespark_end");
+                            Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
+                            level.Session.SetFlag("Xaphan_Helper_Shinesparking", false);
                         }
-                        level.DirectionalShake(aim, 0.2f);
-                        sound.stop(STOP_MODE.IMMEDIATE);
-                        level.CameraOffset = new Vector2(0f, 0f);
-                        sound = Audio.Play("event:/game/xaphan/shinespark_end");
-                        Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
-                        level.Session.SetFlag("Xaphan_Helper_Shinesparking", false);
-                    }
-                    if (Active(level) && !self.OnGround() && self.ClimbCheck(1) && aim.X < 0 && self.Facing == Facings.Left && aim.Y == 0 && ((GravityJacket.determineIfInWater() || GravityJacket.determineIfInLava()) ? GravityJacket.Active(level) : true) && (Input.GrabCheck || level.Session.GetFlag("Xaphan_Helper_Shinesparking")))
-                    {
-                        level.Session.SetFlag("Xaphan_Helper_Shinesparking", true);
-                        sound = Audio.Play("event:/game/xaphan/shinespark_start");
-                        while (Active(level) && (self.Speed.X < -600f) && self.StateMachine.State == 2)
+                        if (self.ClimbCheck(1) && aim.X < 0 && self.Facing == Facings.Left && aim.Y == 0)
                         {
-                            yield return null;
-                            self.Hair.Color = Calc.HexToColor("F2EB6D");
-                            level.CameraOffset = new Vector2(-60f, 0f);
-                            self.Facing = Facings.Left;
+                            level.Session.SetFlag("Xaphan_Helper_Shinesparking", true);
+                            sound = Audio.Play("event:/game/xaphan/shinespark_start");
+                            while (Active(level) && (self.Speed.X < -600f) && self.StateMachine.State == 2)
+                            {
+                                yield return null;
+                                self.Hair.Color = Calc.HexToColor("F2EB6D");
+                                level.CameraOffset = new Vector2(-60f, 0f);
+                                self.Facing = Facings.Left;
+                            }
+                            level.DirectionalShake(aim, 0.2f);
+                            sound.stop(STOP_MODE.IMMEDIATE);
+                            level.CameraOffset = new Vector2(0f, 0f);
+                            sound = Audio.Play("event:/game/xaphan/shinespark_end");
+                            Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
+                            level.Session.SetFlag("Xaphan_Helper_Shinesparking", false);
                         }
-                        level.DirectionalShake(aim, 0.2f);
-                        sound.stop(STOP_MODE.IMMEDIATE);
-                        level.CameraOffset = new Vector2(0f, 0f);
-                        sound = Audio.Play("event:/game/xaphan/shinespark_end");
-                        Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
-                        level.Session.SetFlag("Xaphan_Helper_Shinesparking", false);
                     }
                     yield return o;
                 }
@@ -170,13 +210,6 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 }
             }
             yield break;
-        }
-
-        private PlayerDeadBody modDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible = false, bool registerDeathInStats = true)
-        {
-            Level level = self.SceneAs<Level>();
-            level.Session.SetFlag("Xaphan_Helper_Shinesparking", false);
-            return orig(self, direction, evenIfInvincible, registerDeathInStats);
         }
 
         private void modifyDashSpeed(Player self)
