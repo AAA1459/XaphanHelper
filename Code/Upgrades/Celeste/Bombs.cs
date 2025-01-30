@@ -120,11 +120,17 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
         private IEnumerator UseBomb(Player player, Level level)
         {
             bool usedBomb = false;
+            float leniency = 0.5f;
             while (XaphanModule.ModSettings.UseBagItemSlot.Check && !usedBomb)
             {
-                while (player.Speed.X != 0 || player.Dead || !player.OnGround())
+                while ((player.Speed.X != 0 || player.Dead || !player.OnGround()) && leniency > 0)
                 {
+                    leniency -= Engine.DeltaTime;
                     yield return null;
+                }
+                if (leniency <= 0)
+                {
+                    yield break;
                 }
                 if (player.Scene != null && !player.Dead && !player.DashAttacking && player.StateMachine.State != Player.StClimb && !GravityJacket.determineIfInLiquid())
                 {
