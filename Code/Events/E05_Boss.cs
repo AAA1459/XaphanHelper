@@ -216,7 +216,6 @@ namespace Celeste.Mod.XaphanHelper.Events
                         yield return null;
                     }
                     level.Remove(level.Tracker.GetEntity<BossHealthBar>());
-                    level.Session.SetFlag("boss_Checkpoint", false);
                     ceiling1.RemoveSelf();
                     ceiling2.RemoveSelf();
                     ceiling3.RemoveSelf();
@@ -229,6 +228,11 @@ namespace Celeste.Mod.XaphanHelper.Events
                     level.Displacement.AddBurst(refill3.Center, 0.5f, 8f, 32f, 0.5f);
                     refill3.RemoveSelf();
                     liquid.ReturnToOrigPosition();
+                    while (!player.OnGround())
+                    {
+                        yield return null;
+                    }
+                    level.Session.SetFlag("boss_Checkpoint", false);
                     string Prefix = level.Session.Area.LevelSet;
                     if (!HasGolden() && !level.Session.GetFlag("boss_Normal_Mode") && !level.Session.GetFlag("boss_Challenge_Mode"))
                     {
