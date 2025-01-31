@@ -97,7 +97,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             cameraLockY = data.Bool("cameraLockY");
             spriteName = data.Attr("spriteName");
             Add(light = new VertexLight(Color.White, 1f, 32, 64));
-            Collider = (circle = new Circle(14f, 0f, -6f));
+            Collider = (circle = new Circle(16f, 0f, -6f));
             Add(new PlayerCollider(OnPlayer));
             nodes = new Vector2[data.Nodes.GetLength(0) + 1];
             nodes[0] = data.Position + offset;
@@ -551,7 +551,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     {
                         yield return CastShield(4, 36, 3.5f, Position.X - level.Bounds.Left <= level.Bounds.Width / 2 ? true : false);
                     }
-                    yield return 0.4f;
+                    yield return 0.2f;
                     StartShootCharge();
                     GetTarget();
                     ShootAt(target);
@@ -811,7 +811,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private IEnumerator CastShield(int quantity, int radius, float rotationTime, bool clockwise)
         {
-            yield return 0.05f;
+            yield return 0.25f;
             while (Moving)
             {
                 yield return null;

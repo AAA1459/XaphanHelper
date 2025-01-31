@@ -64,8 +64,6 @@ namespace Celeste.Mod.XaphanHelper.Events
 
         private Decal warningSign;
 
-        private Strawberry strawberry;
-
         public bool BossDefeated()
         {
             return XaphanModule.ModSaveData.SavedFlags.Contains("Xaphan/0_Ch2_Boss_Defeated");
@@ -116,7 +114,6 @@ namespace Celeste.Mod.XaphanHelper.Events
             arrowLeft = new Decal("Xaphan/Common/arrow_left00.png", bounds, new Vector2(1f, 1f), 1);
             arrowRight = new Decal("Xaphan/Common/arrow_right00.png", bounds, new Vector2(1f, 1f), 1);
             warningSign = new Decal("Xaphan/Common/warning00.png", bounds + new Vector2(160f, 304f), new Vector2(1f, 1f), 1);
-            strawberry = level.Entities.FindFirst<Strawberry>();
         }
 
         public override void OnBegin(Level level)
@@ -285,6 +282,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                         level.Session.SetFlag("Boss_Defeated", false);
                     }
                 }
+
                 // Wait for player to trigger fight start
                 while (player.Position.X <= level.Bounds.Left + level.Bounds.Width / 2 && !level.Session.GetFlag("Boss_Appeared"))
                 {
@@ -493,8 +491,6 @@ namespace Celeste.Mod.XaphanHelper.Events
                         yield return null;
                     }
                     level.Remove(level.Tracker.GetEntity<BossHealthBar>());
-                    level.Session.SetFlag("boss_Checkpoint", false);
-                    level.Session.RespawnPoint = level.GetSpawnPoint(bounds + new Vector2(160f, 320f));
                     jumpThru2.RemoveSelf();
                     jumpThru3.RemoveSelf();
                     if (DashBootsCollected())
@@ -527,6 +523,8 @@ namespace Celeste.Mod.XaphanHelper.Events
                     {
                         yield return null;
                     }
+                    level.Session.RespawnPoint = level.GetSpawnPoint(bounds + new Vector2(160f, 320f));
+                    level.Session.SetFlag("boss_Checkpoint", false);
                     string Prefix = level.Session.Area.LevelSet;
                     if (!HasGolden() && !level.Session.GetFlag("boss_Normal_Mode") && !level.Session.GetFlag("boss_Challenge_Mode"))
                     {
