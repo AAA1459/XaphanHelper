@@ -324,7 +324,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
                     Collider.Width += 2f;
                     yield return 0.05f;
                 }
-                yield return 2f;
+                yield return 1f;
                 float timer = 1.5f;
                 while (timer > 0f)
                 {

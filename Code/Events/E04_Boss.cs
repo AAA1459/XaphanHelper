@@ -334,7 +334,6 @@ namespace Celeste.Mod.XaphanHelper.Events
                         yield return null;
                     }
                     level.Remove(level.Tracker.GetEntity<BossHealthBar>());
-                    level.Session.SetFlag("boss_Checkpoint", false);
                     level.Add(jumpThru1);
                     level.Displacement.AddBurst(jumpThru1.Center, 0.5f, 8f, 32f, 0.5f);
                     level.Add(jumpThru2);
@@ -365,6 +364,11 @@ namespace Celeste.Mod.XaphanHelper.Events
                         }
                         yield return null;
                     }
+                    while (!player.OnGround())
+                    {
+                        yield return null;
+                    }
+                    level.Session.SetFlag("boss_Checkpoint", false);
                     level.Session.SetFlag("AncientGuardian_Platforms", true);
                     string Prefix = level.Session.Area.LevelSet;
                     if (!HasGolden() && !level.Session.GetFlag("boss_Normal_Mode") && !level.Session.GetFlag("boss_Challenge_Mode"))
@@ -484,7 +488,7 @@ namespace Celeste.Mod.XaphanHelper.Events
             {
                 int countedOneUseRefills = 0;
                 int currentOneUseRefills;
-                while (boss.Health >= 0)
+                while (boss.Health > 0)
                 {
                     foreach (CustomRefill refill in SceneAs<Level>().Tracker.GetEntities<CustomRefill>())
                     {
@@ -505,6 +509,11 @@ namespace Celeste.Mod.XaphanHelper.Events
                         SceneAs<Level>().Displacement.AddBurst(refill2.Center, 0.5f, 8f, 32f, 0.5f);
                         yield return null;
                     }
+                }
+                foreach (CustomRefill refill in SceneAs<Level>().Tracker.GetEntities<CustomRefill>())
+                {
+                    SceneAs<Level>().Displacement.AddBurst(refill.Center, 0.5f, 8f, 32f, 0.5f);
+                    refill.RemoveSelf();
                 }
             }
         }
