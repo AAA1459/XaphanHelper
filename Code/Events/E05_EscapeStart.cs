@@ -79,6 +79,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                     IDs.Add(new EntityID("W-32", 2610));
                     IDs.Add(new EntityID("W-32", 2612));
                     IDs.Add(new EntityID("W-32", 2538));
+                    IDs.Add(new EntityID("W-32", 2511));
                     IDs.Add(new EntityID("W-34", 95));
                     IDs.Add(new EntityID("W-37", 4787));
                     IDs.Add(new EntityID("W-38", 4977));
