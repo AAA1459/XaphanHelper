@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using Celeste.Mod.XaphanHelper.Data;
 using Celeste.Mod.XaphanHelper.Entities;
@@ -6,7 +7,6 @@ using Celeste.Mod.XaphanHelper.Managers;
 using Celeste.Mod.XaphanHelper.Triggers;
 using Celeste.Mod.XaphanHelper.Upgrades;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 
 namespace Celeste.Mod.XaphanHelper.UI_Elements
@@ -57,6 +57,10 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
         private bool isFading;
 
         public bool shownTutorial;
+
+        private Coroutine CrossRoutine = new();
+
+        private bool drawCross;
 
         public BagDisplay(Level level, string type)
         {
@@ -628,52 +632,40 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
 
             MTexture cross = GFX.Gui["upgrades/cross"];
-            bool drawCross = false;
-            if (type == "bag")
+            if (!CrossRoutine.Active)
             {
-                if (currentSelection == 1)
+                if (XaphanModule.ModSettings.UseBagItemSlot.Pressed && XaphanModule.ModSettings.UseMiscItemSlot.Pressed)
                 {
-                    if (!Bombs.canUse)
+                    Add(CrossRoutine = new Coroutine(ShowCross()));
+                }
+                if (type == "bag")
+                {
+                    if (currentSelection == 1)
                     {
-                        drawCross = true;
+                        drawCross = !Bombs.canUse;
+                    }
+                    if (currentSelection == 2)
+                    {
+                        drawCross = !MegaBombs.canUse;
+                    }
+                    if (currentSelection == 3)
+                    {
+                        drawCross = SceneAs<Level>().Session.GetFlag("XaphanHelper_Prevent_Drone") || !RemoteDrone.canUse;
                     }
                 }
-                if (currentSelection == 2)
+                else
                 {
-                    if (!MegaBombs.canUse)
+                    if (currentSelection == 1)
                     {
-                        drawCross = true;
+                        drawCross = !Binoculars.canUse;
                     }
-                }
-                if (currentSelection == 3)
-                {
-                    if (SceneAs<Level>().Session.GetFlag("XaphanHelper_Prevent_Drone") || !RemoteDrone.canUse)
+                    if (currentSelection == 2)
                     {
-                        drawCross = true;
+                        drawCross = !PortableStation.canUse;
                     }
-                }
-            }
-            else
-            {
-                if (currentSelection == 1)
-                {
-                    if (!Binoculars.canUse)
+                    if (currentSelection == 3)
                     {
-                        drawCross = true;
-                    }
-                }
-                if (currentSelection == 2)
-                {
-                    if (!PortableStation.canUse)
-                    {
-                        drawCross = true;
-                    }
-                }
-                if (currentSelection == 3)
-                {
-                    if (!PulseRadar.canUse)
-                    {
-                        drawCross = true;
+                        drawCross = !PulseRadar.canUse;
                     }
                 }
             }
@@ -681,6 +673,16 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 cross.DrawCentered(Center + Vector2.One * 50f, Color.White * Opacity);
             }
+        }
+
+        private IEnumerator ShowCross()
+        {
+            while (XaphanModule.ModSettings.UseBagItemSlot.Check && XaphanModule.ModSettings.UseMiscItemSlot.Check)
+            {
+                drawCross = true;
+                yield return null;
+            }
+            drawCross = false;
         }
 
         public override void Removed(Scene scene)
