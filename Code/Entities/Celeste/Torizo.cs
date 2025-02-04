@@ -698,11 +698,14 @@ namespace Celeste.Mod.XaphanHelper.Entities
             Sprite.Play("swipe");
             float swipeDuration = Sprite.CurrentAnimationTotalFrames * 0.08f;
             float waveYPos = 0f;
+            float delay = 0f;
             while (swipeDuration > 0)
             {
                 swipeDuration -= Engine.DeltaTime;
-                if (SceneAs<Level>().OnInterval(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 0.3f : 0.4f))
+                delay -= Engine.DeltaTime;
+                if (delay <= 0)
                 {
+                    delay = SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 0.3f : 0.4f;
                     SceneAs<Level>().Add(new TorizoWave(new Vector2(Position.X + (Facing == Facings.Right ? 64 : 24), Position.Y + 40 + waveYPos * 24), new Vector2(SceneAs<Level>().Session.GetFlag("boss_Challenge_Mode") ? 225f : 175f, 0f), Facing == Facings.Left));
                     waveYPos += 1f;
                     if (waveYPos > 1f)
