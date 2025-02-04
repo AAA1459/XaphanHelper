@@ -23,6 +23,7 @@ namespace Celeste.Mod.XaphanHelper.Events
             {
                 player.StateMachine.State = XaphanModule.StFastFall;
             }
+            level.Session.SetFlag("XaphanHelper_Prevent_Drone", false);
         }
 
         public override void OnEnd(Level level)

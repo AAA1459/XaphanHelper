@@ -73,6 +73,7 @@ namespace Celeste.Mod.XaphanHelper.Events
                 }
                 if (!level.Session.GetFlag("Lab_Escape"))
                 {
+                    level.Session.SetFlag("XaphanHelper_Prevent_Drone", true);
                     List<EntityID> IDs = new();
                     List<EntityID> IDsToRemove = new();
                     IDs.Add(new EntityID("W-32", 2611));
