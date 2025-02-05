@@ -92,20 +92,17 @@ namespace Celeste.Mod.XaphanHelper.Managers
 
         public override void Update()
         {
-            if (!XaphanModule.ShowUI)
+            Player player = Scene.Tracker.GetEntity<Player>();
+            if (player != null && !XaphanModule.ShowUI && player.StateMachine.State != Player.StDummy)
             {
                 Level level = SceneAs<Level>();
-                Player player = Scene.Tracker.GetEntity<Player>();
-                if (player != null)
+                if (player.CollideCheck<AirBubbles>())
                 {
-                    if (player.CollideCheck<AirBubbles>())
-                    {
-                        forceRechargeAir = true;
-                    }
-                    else
-                    {
-                        forceRechargeAir = false;
-                    }
+                    forceRechargeAir = true;
+                }
+                else
+                {
+                    forceRechargeAir = false;
                 }
                 bool playerCurrentlyInLiquid = false;
                 foreach (Liquid liquid in level.Tracker.GetEntities<Liquid>())
@@ -134,7 +131,7 @@ namespace Celeste.Mod.XaphanHelper.Managers
                     isVisible = true;
                     if (currentLiquid != null)
                     {
-                        if (player != null && !player.Dead)
+                        if (!player.Dead)
                         {
                             if (Scene.OnInterval(GetAirPercent() > ((100 / 15) * 4) ? 1.5f : 0.75f))
                             {
