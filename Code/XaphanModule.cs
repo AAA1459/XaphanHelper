@@ -3426,6 +3426,10 @@ namespace Celeste.Mod.XaphanHelper
             {
                 menu.OnCancel();
             }));
+            if (level.Session.Area.LevelSet == "Xaphan/0")
+            {
+                menu.Selection = 2;
+            }
             menu.OnPause = (menu.OnESC = delegate
             {
                 menu.RemoveSelf();
