@@ -57,14 +57,14 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                 {
                     isActive = false;
                 }
-                if (isActive && !XaphanModule.PlayerIsControllingRemoteDrone() && !GravityJacket.determineIfInWater())
+                if (isActive)
                 {
                     Player player = self.Tracker.GetEntity<Player>();
                     if (player != null)
                     {
-                        canUse = player.OnSafeGround;
+                        canUse = player.OnSafeGround && !GravityJacket.determineIfInWater();
                     }
-                    if (self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && player != null && player.StateMachine.State == Player.StNormal && !player.Ducking && !self.Session.GetFlag("In_bossfight") && !self.Session.GetFlag("XaphanHelper_Prevent_Drone") && XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.UseMiscItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null && !UseDroneCoroutine.Active && player.OnSafeGround)
+                    if (self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && !GravityJacket.determineIfInWater() && player != null && player.StateMachine.State == Player.StNormal && !player.Ducking && !self.Session.GetFlag("In_bossfight") && !self.Session.GetFlag("XaphanHelper_Prevent_Drone") && XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.UseMiscItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null && !UseDroneCoroutine.Active && player.OnSafeGround)
                     {
                         BagDisplay bagDisplay = GetDisplay(self, "bag");
                         if (bagDisplay != null)

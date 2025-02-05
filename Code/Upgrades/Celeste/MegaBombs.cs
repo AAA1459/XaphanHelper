@@ -81,9 +81,9 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
                     Player player = self.Tracker.GetEntity<Player>();
                     if (player != null)
                     {
-                        canUse = player.Holding != null ? true : self.Tracker.GetEntity<MegaBomb>() == null && player.OnGround();
+                        canUse = player.Holding != null ? true : self.Tracker.GetEntity<MegaBomb>() == null && player.OnGround() && !GravityJacket.determineIfInWater();
                     }
-                    if (!cooldown && self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && player != null && player.StateMachine.State == Player.StNormal && !player.Ducking && XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.UseMiscItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null)
+                    if (!cooldown && self.CanPause && !XaphanModule.PlayerIsControllingRemoteDrone() && !GravityJacket.determineIfInWater() && player != null && player.StateMachine.State == Player.StNormal && !player.Ducking && XaphanModule.ModSettings.UseBagItemSlot.Pressed && !XaphanModule.ModSettings.UseMiscItemSlot.Pressed && !XaphanModule.ModSettings.OpenMap.Check && !XaphanModule.ModSettings.SelectItem.Check && !self.Session.GetFlag("Map_Opened") && player.Holding == null)
                     {
                         BagDisplay bagDisplay = GetDisplay(self, "bag");
                         if (bagDisplay != null)
