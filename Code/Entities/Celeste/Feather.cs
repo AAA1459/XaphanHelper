@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -7,6 +8,8 @@ namespace Celeste.Mod.XaphanHelper.Entities
     [Tracked(true)]
     public class Feather : Actor
     {
+        private static FieldInfo PlayerMinHoldTimer = typeof(Player).GetField("minHoldTimer", BindingFlags.Instance | BindingFlags.NonPublic);
+
         private ParticleType P_Glow;
 
         public Vector2 Speed;
@@ -27,8 +30,11 @@ namespace Celeste.Mod.XaphanHelper.Entities
 
         private bool hasBeenHolded;
 
-        public Feather(Vector2 position) : base(position)
+        private Player player;
+
+        public Feather(Vector2 position, Player player) : base(position)
         {
+            this.player = player;
             Collider = new Hitbox(8f, 10f, -4f, -10f);
             Add(sprite = new Sprite(GFX.Game, "upgrades/GoldenFeather/"));
             sprite.AddLoop("held", "held", 1f);
@@ -65,6 +71,13 @@ namespace Celeste.Mod.XaphanHelper.Entities
         public override void Added(Scene scene)
         {
             base.Added(scene);
+            if (player != null && player.Holding != Hold)
+            {
+                player.Holding = Hold;
+                Hold.Pickup(player);
+                PlayerMinHoldTimer.SetValue(player, 0.35f);
+                player.StateMachine.State = Player.StPickup;
+            }
             level = SceneAs<Level>();
         }
 

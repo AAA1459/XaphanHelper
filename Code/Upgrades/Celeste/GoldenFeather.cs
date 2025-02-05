@@ -87,12 +87,12 @@ namespace Celeste.Mod.XaphanHelper.Upgrades
             {
                 yield return null;
             }
-            if (player.Speed.Y >= 100f && Input.Grab.Check)
+            if (player.Speed.Y >= 100f && Input.Grab.Pressed)
             {
                 int totalFeathers = level.Tracker.CountEntities<Feather>();
                 if (totalFeathers == 0 && !ClimbCheck(player, player.Facing == Facings.Left ? -1 : 1))
                 {
-                    level.Add(new Feather(player.Position));
+                    level.Add(new Feather(player.Position, player));
                 }
             }
         }
