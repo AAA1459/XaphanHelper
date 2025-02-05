@@ -671,7 +671,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             }
             if (drawCross)
             {
-                cross.DrawCentered(Center + Vector2.One * 50f, Color.White * Opacity);
+                cross.DrawCentered(Center + Vector2.One * 50f, Color.White * Opacity * 0.6f);
             }
         }
 
