@@ -422,7 +422,12 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
                 "Accelyte",
                 "JorgeDelLanis"));
             list.Add(new Thanks(padding, spacing, "Korean translation",
-                "Prime "));
+                "Prime"));
+            list.Add(new Thanks(padding, spacing, "Simplified Chinese translation",
+                "AAA1459",
+                "Desom-fu",
+                "HarbingerLeo",
+                "yeshengxiaozu"));
             list.Add(new Thanks(padding, spacing, "Special Thanks",
                 "0x0ade",
                 "Cruor",
@@ -458,7 +463,7 @@ namespace Celeste.Mod.XaphanHelper.UI_Elements
             {
                 height -= 280f;
             }
-            AutoScrollSpeedMultiplier = fromTitleScreen ? 0.78f : 1f;
+            AutoScrollSpeedMultiplier = fromTitleScreen ? 0.81f : 1.05f;
         }
 
         public void Update()
