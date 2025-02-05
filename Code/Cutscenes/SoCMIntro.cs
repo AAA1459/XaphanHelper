@@ -518,6 +518,10 @@ namespace Celeste.Mod.XaphanHelper.Cutscenes
             {
                 logo.Render();
             }
+            if (mainMenu != null && !Level.FormationBackdrop.Display)
+            {
+                ActiveFont.Draw(XaphanModule.SoCMVersion.ToString(), new Vector2(Engine.Width - 100f, Engine.Height - 35f), Vector2.One * 0.5f, Vector2.One * 0.55f, Color.Gold * mainMenu.Alpha);
+            }
         }
     }
 }
