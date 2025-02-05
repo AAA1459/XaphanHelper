@@ -96,7 +96,7 @@ namespace Celeste.Mod.XaphanHelper.Entities
             base.Update();
             if (refill != null)
             {
-                refill.canCollect = !Collidable;
+                refill.Collidable = false;
                 UpdateY();
             }
             else if (sine != null)
@@ -166,6 +166,10 @@ namespace Celeste.Mod.XaphanHelper.Entities
         private IEnumerator Break(Player player)
         {
             Collidable = Visible = false;
+            if (refill != null)
+            {
+                refill.OnPlayer(player);
+            }
             float direction = ((!(player.Speed != Vector2.Zero)) ? (Position - player.Center).Angle() : player.Speed.Angle());
             if (refill == null)
             {

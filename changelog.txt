@@ -19,6 +19,7 @@ Version 1.0.71 :
 - Fixed a bug allowing to use both the Bag and Misc abilities selected at the same time
 - Fixed a bug allowing the player to bypass the internal delay before being able to throw a bomb or mega bomb
 - Fixed a bug that could prevent the player to correctly grab the Golden Feather ability when using it
+- Fixed a bug that could prevent a refill inside a Bouncy Bubble to be used when breaking the bubble
 - Fixed a crash when a Drone Missile or Beam got destroyed on top of a Conveyor
 - Fixed a crash when releasing the Use Bag ability button at the same frame a bomb or mega bomb hold by the player would explode
 
