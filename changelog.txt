@@ -9,6 +9,7 @@ Version 1.0.71 :
 - Pressing the Bag or Misc ability buttons will use the corresponding ability if the player meet the required conditions up to the next 0.5 seconds after the button press, even if these conditions were not meet when the button was pressed
 - Normalised the Bombs and Mega Bombs leniency to use the 0.5 seconds leniency instead of an infinite time
 - Throwing a bomb no longer push the player backward
+- Added Simplified Chinese translation by AAA1459
 - Fixed a bug preventing the player icon to be displayed on the In-Game map in interlude chapters
 - Fixed a bug allowing some icons to be displayed before their corresponding abiltiy is unlocked on the In-Game map progress display
 - Fixed a bug preventing the heat sound effect to stop if the inactive flag of the Heat Controller inside the room was true
