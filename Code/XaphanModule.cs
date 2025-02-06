@@ -139,6 +139,8 @@ namespace Celeste.Mod.XaphanHelper
 
         public static bool SaveIconVisible = true;
 
+        public static bool IgnoreShakeSettings = false;
+
         public enum Upgrades
         {
             // Celeste Upgrades
@@ -792,6 +794,7 @@ namespace Celeste.Mod.XaphanHelper
             DebugBlocker.Load();
             CustomPufferSpringCollider.Load();
             Bomb.Load();
+            LevelShake.Load();
         }
 
         // Optional, do anything requiring either the Celeste or mod content here.
@@ -914,6 +917,7 @@ namespace Celeste.Mod.XaphanHelper
             DebugBlocker.Unload();
             CustomPufferSpringCollider.Unload();
             Bomb.Unload();
+            LevelShake.Unload();
         }
 
         private void onHoldableRelease(On.Celeste.Holdable.orig_Release orig, Holdable self, Vector2 force)

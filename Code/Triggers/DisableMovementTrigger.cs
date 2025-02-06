@@ -58,6 +58,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                 yield return null;
             }
             player.StateMachine.State = Player.StDummy;
+            XaphanModule.IgnoreShakeSettings = true;
             SceneAs<Level>().CanRetry = false;
             Facings currentFacing = player.Facing;
             if (WalkCenter)
@@ -77,6 +78,7 @@ namespace Celeste.Mod.XaphanHelper.Triggers
                 Time -= Engine.DeltaTime;
                 yield return null;
             }
+            XaphanModule.IgnoreShakeSettings = false;
             player.StateMachine.State = Player.StNormal;
             MapDisplay.UpdateTiles(this);
             SceneAs<Level>().CanRetry = true;
